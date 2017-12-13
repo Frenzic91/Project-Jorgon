@@ -1,0 +1,27 @@
+html, body, div, canvas {
+  margin: 0;
+  padding: 0;
+}
+
+.unselectable {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+.gameWindow {
+  margin: 0;
+  padding: 0;
+  cursor: none;
+}
+
+#chat-text, #chat-input, #chat-button{
+  background-color: #333333;
+  color: #a6a6a6;
+  border:1px solid #000000;
+}
+
+.chat-message, #chat-input {
+  font-family: Arial;
+  font-size: 10pt;
+}
