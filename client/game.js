@@ -121,11 +121,6 @@ var charSprites = [
     type: "player",
     name: "playerShoesFull",
     src: "client/images/player_shoes_full_57.png"
-  },
-  {
-    type: "bullet",
-    name: "bullet1",
-    src:"client/images/bullet1.png"
   }
 ];
 
@@ -334,7 +329,7 @@ var Hud = function(){
     self.canvas.drawImage(HudImg.crosshair.crosshair2,mouseX-16,mouseY-16,32,32);
   }
 
-  self.drawHealth = function(){
+    self.drawHealth = function(){
     //Draw clear + with black border
     self.canvas.fillStyle = "#000000";
     self.canvas.fillRect(hudHPMargin+((hudHPLength-hudHPWidth)/2), HEIGHT - hudHPLength - hudHPMargin, hudHPWidth, hudHPLength);
@@ -526,51 +521,6 @@ var Player = function(initPack){
 }
 Player.list = {};
 
-var Bullet = function(initPack){
-  let self = {};
-  self.id = initPack.id;
-  self.x = initPack.x;
-  self.y = initPack.y;
-  self.parent = initPack.parent;
-  self.angle = initPack.angle;
-  self.xOld = self.x;
-  self.xDiff;
-  self.yOld = self.y;
-  //console.log("X,Y = " + self.x + ", " + self.y + " Parent X,Y = " + self.xOld + ", " + self.yOld);
-  self.yDiff;
-  self.image = rotateAndCache(Img.bullet.bullet1, self.angle / 180 * Math.PI)
-
-
-  self.draw = function(){
-    //self.xDiff = Math.abs(self.x - self.xOld);
-    //self.yDiff = Math.abs(self.y - self.yOld);
-    self.xOld = self.xOld + 0.5*(self.x-self.xOld);
-    self.yOld = self.yOld + 0.5*(self.y-self.yOld);
-
-    //ctx.fillRect(self.xOld-2, self.yOld-2,4,4);
-    ctx.drawImage(self.image, self.xOld - self.image.width/2, self.yOld - self.image.height/2, self.image.width, self.image.height);
-  }
-
-  self.getAngleRads = function(){
-    let x = self.x - self.xOld;
-    let y = self.y - self.yOld;
-    return Math.atan2(y,x) + 1.5708;
-  }
-
-  self.addBlood = function(x,y){
-    bloodMap.push({
-      x: x,
-      y: y,
-      sprite: MapImg.blood[randomObject(MapImg.blood)],
-      initTime: Date.now()
-    })
-  }
-
-  Bullet.list[self.id] = self;
-  return self;
-}
-Bullet.list = {};
-
 function rotateAndCache(image,angle) {
   let offscreenCanvas = document.createElement('canvas');
   let offscreenCtx = offscreenCanvas.getContext('2d');
@@ -604,9 +554,6 @@ socket.on('init', function(data){
   for(let i = 0; i < data.players.length; i++){
     new Player(data.players[i]);
   }
-  for(let i = 0; i < data.bullets.length; i++){
-    new Bullet(data.bullets[i]);
-  }
 })
 
 //updated
@@ -633,30 +580,12 @@ socket.on('update', function(data){
     }
   }
 
-  for(let i = 0; i < data.bullets.length; i++){
-    let pack = data.bullets[i];
-    let b = Bullet.list[pack.id];
-    if(b){
-      if(pack.x !== undefined){
-        b.x = pack.x;
-      }
-      if(pack.y !== undefined){
-        b.y = pack.y;
-      }
-    }
-  }
 });
 
 //remove
 socket.on('remove', function(data){
   for(let i = 0; i < data.players.length; i++){
     delete Player.list[data.players[i]];
-  }
-  for(let i = 0; i < data.bullets.length; i++){
-    if(data.bullets[i].x && data.bullets[i].y){
-      Bullet.list[data.bullets[i].id].addBlood(data.bullets[i].x, data.bullets[i].y);
-    }
-    delete Bullet.list[data.bullets[i].id];
   }
 })
 
@@ -701,16 +630,6 @@ document.onkeyup = function(event){
   else if(event.keyCode === 13) { // Enter
     toggleChat();
   }
-}
-
-document.onmousedown = function(event){
-  if(!chatFocused){
-  socket.emit('keyPress', {inputId:'attack', state:true});
-  }
-}
-
-document.onmouseup = function(event){
-  socket.emit('keyPress', {inputId: 'attack', state:false});
 }
 
 document.onmousemove = function(event){
@@ -801,9 +720,6 @@ setInterval(function() {
     // Draw players in order from top to bottom of screen
     for(let i in sortedList){
       Player.list[sortedList[i].key].draw();
-    }
-    for(let i in Bullet.list){
-      Bullet.list[i].draw();
     }
     ctxhud.clearRect(0,0,WIDTH,HEIGHT);
     hud.drawHud();

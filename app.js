@@ -9,7 +9,25 @@ var io = require('socket.io')(server, {});
 
 const DEBUG = true;
 
+const IMPACT_DISTANCE = 30;
+
+const PLAYER_WIDTH = 20;
+const PLAYER_HEIGHT = 46;
+
+const WIDTH = 1280;
+const HEIGHT = 720;
+
+const MINHEIGHT = 22;
+const MINWIDTH = 16;
+
+const MAXHEIGHT = HEIGHT - MINHEIGHT;
+const MAXWIDTH = WIDTH - MINWIDTH;
+
 var SOCKET_LIST = {};
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
 
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/client/index.html');
@@ -159,10 +177,6 @@ var Player = function(id, playerData){
   self.update = function(){
     self.updateSpd();
     super_update();
-
-    if(self.pressingAttack){
-      self.shootBullet(self.mouseAngle);
-    }
   }
 
   //set the default updatePosition to super_updatePosition (for use in new updatePosition function)
@@ -262,9 +276,6 @@ Player.onConnect = function(socket, playerData){
     else if(data.inputId === 'down'){
       player.pressingDown = data.state;
     }
-    else if(data.inputId === 'attack'){
-      player.pressingAttack = data.state;
-    }
     else if(data.inputId === 'mouseAngle'){
       player.mouseAngle = data.state;
     }
@@ -279,11 +290,9 @@ Player.onDisconnect = function(socket){
 
 Player.init = function(socket){
   let players = Player.getAllInitPack();
-  let bullets = Bullet.getAllInitPack();
 
   socket.emit('init', {
-    players:players,
-    bullets:bullets
+    players:players
   });
 }
 
