@@ -32,13 +32,14 @@ var playerName = "";
 var playerX = 0;
 var playerY = 0;
 var playerID = 0;
+var playerDirection = 0; // down = 0, left = 1, right = 2, up = 3
 
 let xTrans = 0;
 let yTrans = 0;
 
 var mouseX = 0;
 var mouseY = 0;
-var mouseAngle = 0;
+var mouseClicked = false;
 
 var pressingUp = false;
 var pressingDown = false;
@@ -64,63 +65,8 @@ let hudHPMargin = 20;
 var charSprites = [
   {
     type: "player",
-    name: "player",
-    src: "client/images/player2.png"
-  },
-  {
-    type: "player",
-    name: "shirt",
-    src: "client/images/shirt.png"
-  },
-  {
-    type: "player",
-    name: "shirt2",
-    src: "client/images/shirt2.png"
-  },
-  {
-    type: "player",
-    name: "jeans",
-    src: "client/images/jeans.png"
-  },
-  {
-    type: "player",
-    name: "shoes",
-    src: "client/images/shoes.png"
-  },
-  {
-    type: "player",
-    name: "hat",
-    src: "client/images/hat.png"
-  },
-  {
-    type: "player",
-    name: "sunglasses",
-    src: "client/images/sunglasses.png"
-  },
-  {
-    type: "player",
-    name: "dualPistols",
-    src: "client/images/dual_pistols.png"
-  },
-  {
-    type: "player",
     name: "playerFull",
     src: "client/images/player_full_57.png"
-  },
-  {
-    type: "player",
-    name: "playerShirtFull",
-    src: "client/images/player_shirt_full_57.png"
-  },
-  {
-    type: "player",
-    name: "playerPantsFull",
-    src: "client/images/player_pants_full_57.png"
-  },
-  {
-    type: "player",
-    name: "playerShoesFull",
-    src: "client/images/player_shoes_full_57.png"
   }
 ];
 
@@ -150,23 +96,18 @@ var mapSprites = [
 var hudSprites = [
   {
     type: "crosshair",
-    name: "crosshair1",
-    src: "client/images/hud/crosshair1.png"
-  },
-  {
-    type: "crosshair",
-    name: "crosshair2",
+    name: "crosshair",
     src: "client/images/hud/crosshair2.png"
   },
   {
     type: "crosshair",
-    name: "crosshair3",
-    src: "client/images/hud/crosshair3.png"
+    name: "cursor",
+    src: "client/images/hud/cursor2.png"
   },
   {
     type: "crosshair",
-    name: "crosshair4",
-    src: "client/images/hud/crosshair4.png"
+    name: "cursorClick",
+    src: "client/images/hud/cursor2_click.png"
   }
 ];
 
@@ -194,25 +135,6 @@ function getHexRGB(r,g,b){
     blueHex = "0" + blueHex;
   }
   return "#" + redHex + greenHex + blueHex;
-}
-
-function getDirection(angle){
-  if(angle >= 45 && angle < 135){
-    //down
-    return 0;
-  }
-  else if(angle >= 135 || angle < -135){
-    //left
-    return 1;
-  }
-  else if(angle >= -45 && angle < 45){
-    //right
-    return 2;
-  }
-  else if(angle >= -135 && angle < -45){
-    //up
-    return 3;
-  }
 }
 
 function randomObject(obj){
@@ -322,14 +244,19 @@ var Hud = function(){
     self.drawHealth();
     self.drawMiniMap();
     self.drawFPS();
-
-
-
-    // Draw crosshair
-    self.canvas.drawImage(HudImg.crosshair.crosshair2,mouseX-16,mouseY-16,32,32);
+    self.drawCursor();
   }
 
-    self.drawHealth = function(){
+  self.drawCursor = function(){
+    // Draw cursor
+    if(!mouseClicked) {
+      self.canvas.drawImage(HudImg.crosshair.cursor,mouseX-16,mouseY-16,32,32);
+    } else {
+      self.canvas.drawImage(HudImg.crosshair.cursorClick,mouseX-16,mouseY-16,32,32);
+    }
+  }
+
+  self.drawHealth = function(){
     //Draw clear + with black border
     self.canvas.fillStyle = "#000000";
     self.canvas.fillRect(hudHPMargin+((hudHPLength-hudHPWidth)/2), HEIGHT - hudHPLength - hudHPMargin, hudHPWidth, hudHPLength);
@@ -369,7 +296,7 @@ var Hud = function(){
   }
 
   self.drawMiniMap = function(){
-
+    // does nothing atm
   }
 
   self.drawFPS = function(){
@@ -402,7 +329,6 @@ function translateView(){
   ctxbg.translate(xTrans,yTrans);
 }
 
-let hpOffset = 6;
 let hpBarWidth = 30;
 
 var Player = function(initPack){
@@ -440,7 +366,7 @@ var Player = function(initPack){
       self.hpBarOffset = 5;
     }
 
-    self.drawPlayer(getDirection(self.mouseAngle), self.isMoving(), PLAYERSPRITEWIDTH, PLAYERSPRITEHEIGHT);
+    self.drawPlayer(self.isMoving(), PLAYERSPRITEWIDTH, PLAYERSPRITEHEIGHT);
 
     self.drawName();
   }
@@ -465,7 +391,6 @@ var Player = function(initPack){
     ctx.textAlign="center"
     ctx.font = "8pt Arial Black";
     ctx.fillText(self.name, self.xOld, self.yOld - 30 - self.hpBarOffset);
-    ctx.fillText(self.score, self.xOld, self.yOld - 40 - self.hpBarOffset);
   }
 
   self.isMoving = function(){
@@ -476,7 +401,8 @@ var Player = function(initPack){
     }
   }
 
-  self.drawPlayer = function(direction, isMoving, width, height){
+  self.drawPlayer = function(isMoving, width, height){
+    let direction = playerDirection;
     let index;
     if(isMoving){
       index = undefined;
@@ -485,29 +411,22 @@ var Player = function(initPack){
     }
     if(self.runState === 0){
       ctx.drawImage(Img.player.playerFull, index*57 || 57*0, 57*direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
-      ctx.drawImage(Img.player.playerShoesFull, index*57 || 57*0, 57*direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
-      ctx.drawImage(Img.player.playerPantsFull, index*57 || 57*0, 57*direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
-      ctx.drawImage(Img.player.playerShirtFull, index*57 || 57*0, 57*direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
 
       if(Date.now() - self.stateTime >= ANIMATIONTIME){
         self.runState = 1;
         self.stateTime = Date.now();
       }
+
     } else if(self.runState === 1) {
       ctx.drawImage(Img.player.playerFull, index*57 || 57*1, 57*direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
-      ctx.drawImage(Img.player.playerShoesFull, index*57 || 57*1, 57*direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
-      ctx.drawImage(Img.player.playerPantsFull, index*57 || 57*1, 57*direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
-      ctx.drawImage(Img.player.playerShirtFull, index*57 || 57*1, 57*direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
 
       if(Date.now() - self.stateTime >= ANIMATIONTIME/2){
         self.runState = 2;
         self.stateTime = Date.now();
       }
+
     } else if(self.runState === 2) {
       ctx.drawImage(Img.player.playerFull, index*57 || 57*2, 57*direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
-      ctx.drawImage(Img.player.playerShoesFull, index*57 || 57*2, 57*direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
-      ctx.drawImage(Img.player.playerPantsFull, index*57 || 57*2, 57*direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
-      ctx.drawImage(Img.player.playerShirtFull, index*57 || 57*2, 57*direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
 
       if(Date.now() - self.stateTime >= ANIMATIONTIME){
         self.runState = 0;
@@ -594,14 +513,22 @@ document.onkeydown = function(event){
     if(event.keyCode === 68) { // d
       socket.emit('keyPress', {inputId:'right', state: true});
       pressingRight = true;
+      playerDirection = 2;
     }
     else if(event.keyCode === 83) { // s
       socket.emit('keyPress', {inputId: 'down', state: true});
       pressingDown = true;
+      playerDirection = 0;
     }
     else if(event.keyCode === 65) { // a
       socket.emit('keyPress', {inputId: 'left', state: true});
       pressingLeft = true;
+      playerDirection = 1;
+    }
+    else if(event.keyCode === 87) { // w
+      socket.emit('keyPress', {inputId: 'up', state: true});
+      pressingUp = true;
+      playerDirection = 3;
     }
     else if(event.keyCode === 87) { // w
       socket.emit('keyPress', {inputId: 'up', state: true});
@@ -632,6 +559,18 @@ document.onkeyup = function(event){
   }
 }
 
+document.onmousedown = function(event){
+  if(!chatFocused){
+  //socket.emit('keyPress', {inputId:'attack', state:true});
+  mouseClicked = true;
+  }
+}
+
+document.onmouseup = function(event){
+  //socket.emit('keyPress', {inputId: 'attack', state:false});
+  mouseClicked = false;
+}
+
 document.onmousemove = function(event){
   mouseX = event.clientX;
   mouseY = event.clientY;
@@ -644,7 +583,7 @@ function updateAngle(){
   let x = mouseX - WIDTH/2;
   let y = mouseY - HEIGHT/2;
   mouseAngle = Math.atan2(y,x) / Math.PI * 180;
-  socket.emit('keyPress', {inputId:'mouseAngle', state:mouseAngle});
+  //socket.emit('keyPress', {inputId:'mouseAngle', state:mouseAngle});
 }
 
 function isPlayerMoving(){
@@ -652,7 +591,7 @@ function isPlayerMoving(){
 }
 
 document.addEventListener('mousewheel', function(e) {
-  if(!chatFocused && isMouseOverGame()){
+  if(!chatFocused){
     setZoom(e.deltaY);
   }
 }, false)
@@ -709,8 +648,6 @@ setInterval(function() {
       drawTestMap(testMap);
       ctxbg.restore();
     }
-
-
 
     // Draw players and bullets
     ctx.clearRect(-WIDTH/2,-HEIGHT/2,2*WIDTH,2*HEIGHT);
