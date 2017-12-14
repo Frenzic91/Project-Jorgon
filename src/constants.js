@@ -1,0 +1,30 @@
+const DEBUG = true;
+
+const IMPACT_DISTANCE = 30;
+
+const PLAYER_WIDTH = 20;
+const PLAYER_HEIGHT = 46;
+
+const WIDTH = 1280;
+const HEIGHT = 720;
+
+const MINHEIGHT = 22;
+const MINWIDTH = 16;
+
+const MAXHEIGHT = HEIGHT - MINHEIGHT;
+const MAXWIDTH = WIDTH - MINWIDTH;
+
+
+
+module.exports = {
+  DEBUG,
+  IMPACT_DISTANCE,
+  PLAYER_WIDTH,
+  PLAYER_HEIGHT,
+  WIDTH,
+  HEIGHT,
+  MINHEIGHT,
+  MINWIDTH,
+  MAXHEIGHT,
+  MAXWIDTH
+}
