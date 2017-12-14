@@ -1,3 +1,9 @@
+var CT = require('./src/constants.js');
+var utils = require('./src/utils.js');
+var db = require('./src/server/db.js');
+var Entity = require('./src/server/entity.js');
+console.log(Entity)
+
 var mongojs = require('mongojs');
 var db = mongojs('localhost:27017/Jorgon', ['account', 'progress']);
 var colors = require('colors/safe');
@@ -7,67 +13,17 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server, {});
 
-const DEBUG = true;
-
-const IMPACT_DISTANCE = 30;
-
-const PLAYER_WIDTH = 20;
-const PLAYER_HEIGHT = 46;
-
-const WIDTH = 1280;
-const HEIGHT = 720;
-
-const MINHEIGHT = 22;
-const MINWIDTH = 16;
-
-const MAXHEIGHT = HEIGHT - MINHEIGHT;
-const MAXWIDTH = WIDTH - MINWIDTH;
-
 var SOCKET_LIST = {};
 
-function isNumeric(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
-}
-
 app.get('/', function(req, res) {
-  res.sendFile(__dirname + '/client/index.html');
+  res.sendFile(__dirname + '/src/client/index.html');
 });
 
 app.get('/test', function(req,res){
-  res.sendFile(__dirname + '/client/test.html');
+  res.sendFile(__dirname + '/src/client/test.html');
 })
 
-app.use('/client', express.static(__dirname + '/client'));
-
-var isValidPassword = function(data, cb){
-  db.account.find({usernameKey:data.username.toUpperCase(), password:data.password}, function(err, res){
-    if(res.length > 0){
-      cb(true, res);
-    } else {
-      cb(false);
-    }
-  });
-}
-
-var isUsernameTaken = function(data, cb){
-  db.account.find({usernameKey:data.username.toUpperCase()},function(err,res){
-    if(res.length > 0){
-      cb(true);
-    } else {
-      cb(false);
-    }
-  });
-}
-
-var addUser = function(data, cb){
-  db.account.insert({usernameKey:data.username.toUpperCase(), username:data.username, password:data.password},function(err){
-    if(!err){
-      cb(true);
-    } else {
-      cb(false);
-    }
-  });
-}
+app.use('/client', express.static(__dirname + '/src/client'));
 
 io.sockets.on('connection', function(socket){
   console.log('socket connection.');
@@ -75,7 +31,7 @@ io.sockets.on('connection', function(socket){
   SOCKET_LIST[socket.id] = socket;
 
   socket.on('login', function(data){
-    isValidPassword(data, function(status, res){
+    db.isValidPassword(data, function(status, res){
       if(status){
         Player.onConnect(socket, res[0]);
         socket.emit('loginResponse', {success:true});
@@ -86,11 +42,11 @@ io.sockets.on('connection', function(socket){
   });
 
   socket.on('register', function(data){
-    isUsernameTaken(data, function(res){
+    db.isUsernameTaken(data, function(res){
       if(res){
         socket.emit('registerResponse', {success:false});
       } else {
-        addUser(data,function(res){
+        db.addUser(data,function(res){
           if(res){
             socket.emit('registerResponse', {success:true});
           } else {
@@ -108,7 +64,7 @@ io.sockets.on('connection', function(socket){
   });
 
   socket.on('evalServer', function(data){
-    if(!DEBUG){
+    if(!CT.DEBUG){
       return;
     }
     var response = "";
@@ -131,34 +87,11 @@ server.listen(2000);
 console.log('Server listening on port 2000');
 
 // Default Entity class - We should pull this into a seperate file
-var Entity = function(SpawnX,SpawnY){
-  var self = {
-    x: isNumeric(SpawnX) ? SpawnX : WIDTH/2,
-    y: isNumeric(SpawnY) ? SpawnY : HEIGHT/2,
-    spdX: 0,
-    spdY: 0,
-    id:""
-  }
 
-  self.update = function(){
-    self.updatePosition();
-  }
-
-  self.updatePosition = function(){
-    self.x += self.spdX;
-    self.y += self.spdY;
-  }
-
-  self.getDistance = function(point){
-    return Math.sqrt(Math.pow(self.x-point.x,2) + Math.pow(self.y-point.y,2));
-  }
-
-  return self;
-}
 
 // Player class (based on Entity) - We should pull this into a seperate file
 var Player = function(id, playerData){
-  var self = Entity();
+  var self = new Entity();
   self.id = id; // equivalent to socket ID
   self.name = playerData.username;
   self.number = "" + Math.floor(10 * Math.random()); // random array value - likely a better way to do this
@@ -184,16 +117,16 @@ var Player = function(id, playerData){
 
   self.updatePosition = function(){
     super_updatePosition();
-    if(self.x < MINWIDTH){
-      self.x = MINWIDTH;
-    } else if(self.x > MAXWIDTH){
-      self.x = MAXWIDTH;
+    if(self.x < CT.MINWIDTH){
+      self.x = CT.MINWIDTH;
+    } else if(self.x > CT.MAXWIDTH){
+      self.x = CT.MAXWIDTH;
     }
 
-    if(self.y < MINHEIGHT){
-      self.y = MINHEIGHT;
-    } else if(self.y > MAXHEIGHT){
-      self.y = MAXHEIGHT;
+    if(self.y < CT.MINHEIGHT){
+      self.y = CT.MINHEIGHT;
+    } else if(self.y > CT.MAXHEIGHT){
+      self.y = CT.MAXHEIGHT;
     }
   }
 
