@@ -1,3 +1,6 @@
+var mongojs = require('mongojs');
+var db = mongojs('localhost:27017/Jorgon', ['account', 'progress']);
+
 var isValidPassword = function(data, cb){
   db.account.find({usernameKey:data.username.toUpperCase(), password:data.password}, function(err, res){
     if(res.length > 0){

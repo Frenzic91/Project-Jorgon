@@ -1,4 +1,5 @@
 var utils = require('../utils.js');
+var CT = require('../constants.js');
 
 class Entity {
   constructor(SpawnX, SpawnY) {
@@ -10,12 +11,13 @@ class Entity {
   }
 
   updatePosition() {
-    this.x += this.spdX;
-    this.y += this.spdY;
+
   }
 
   update() {
-    updatePosition();
+    this.x += this.spdX;
+    this.y += this.spdY;
+    //this.updatePosition();
   }
 
   getDistance(point) {

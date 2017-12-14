@@ -1,11 +1,9 @@
 var CT = require('./src/constants.js');
 var utils = require('./src/utils.js');
-var db = require('./src/server/db.js');
-var Entity = require('./src/server/entity.js');
+var database = require('./src/server/db.js');
+//var Entity = require('./src/server/entity.js');
 console.log(Entity)
 
-var mongojs = require('mongojs');
-var db = mongojs('localhost:27017/Jorgon', ['account', 'progress']);
 var colors = require('colors/safe');
 
 var express = require('express');
@@ -31,7 +29,7 @@ io.sockets.on('connection', function(socket){
   SOCKET_LIST[socket.id] = socket;
 
   socket.on('login', function(data){
-    db.isValidPassword(data, function(status, res){
+    database.isValidPassword(data, function(status, res){
       if(status){
         Player.onConnect(socket, res[0]);
         socket.emit('loginResponse', {success:true});
@@ -42,11 +40,11 @@ io.sockets.on('connection', function(socket){
   });
 
   socket.on('register', function(data){
-    db.isUsernameTaken(data, function(res){
+    database.isUsernameTaken(data, function(res){
       if(res){
         socket.emit('registerResponse', {success:false});
       } else {
-        db.addUser(data,function(res){
+        database.addUser(data,function(res){
           if(res){
             socket.emit('registerResponse', {success:true});
           } else {
@@ -87,11 +85,34 @@ server.listen(2000);
 console.log('Server listening on port 2000');
 
 // Default Entity class - We should pull this into a seperate file
+var Entity = function(SpawnX,SpawnY){
+  var self = {
+    x: utils.isNumeric(SpawnX) ? SpawnX : CT.WIDTH/2,
+    y: utils.isNumeric(SpawnY) ? SpawnY : CT.HEIGHT/2,
+    spdX: 0,
+    spdY: 0,
+    id:""
+  }
 
+  self.update = function(){
+    self.updatePosition();
+  }
+
+  self.updatePosition = function(){
+    self.x += self.spdX;
+    self.y += self.spdY;
+  }
+
+  self.getDistance = function(point){
+    return Math.sqrt(Math.pow(self.x-point.x,2) + Math.pow(self.y-point.y,2));
+  }
+
+  return self;
+}
 
 // Player class (based on Entity) - We should pull this into a seperate file
 var Player = function(id, playerData){
-  var self = new Entity();
+  var self = Entity();
   self.id = id; // equivalent to socket ID
   self.name = playerData.username;
   self.number = "" + Math.floor(10 * Math.random()); // random array value - likely a better way to do this
