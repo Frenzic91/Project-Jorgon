@@ -2,7 +2,6 @@ var CT = require('./src/constants.js');
 var utils = require('./src/utils.js');
 var database = require('./src/server/db.js');
 //var Entity = require('./src/server/entity.js');
-console.log(Entity)
 
 var colors = require('colors/safe');
 
@@ -112,7 +111,7 @@ var Entity = function(SpawnX,SpawnY){
 
 // Player class (based on Entity) - We should pull this into a seperate file
 var Player = function(id, playerData){
-  var self = Entity();
+  var self = new Entity();
   self.id = id; // equivalent to socket ID
   self.name = playerData.username;
   self.number = "" + Math.floor(10 * Math.random()); // random array value - likely a better way to do this
@@ -120,7 +119,9 @@ var Player = function(id, playerData){
   self.pressingLeft = false;
   self.pressingUp = false;
   self.pressingDown = false;
-  self.maxSpd = 10;
+  self.moveDelay = 250;
+  self.moveAmount = 64;
+  self.lastMoved = 0;
 
   self.hp = 100;
   self.hpMax = 100;
@@ -137,7 +138,10 @@ var Player = function(id, playerData){
   var super_updatePosition = self.updatePosition;
 
   self.updatePosition = function(){
-    super_updatePosition();
+    if(Date.now() - self.lastMoved > self.moveDelay){
+      self.lastMoved = Date.now();
+      super_updatePosition();
+    }
     if(self.x < CT.MINWIDTH){
       self.x = CT.MINWIDTH;
     } else if(self.x > CT.MAXWIDTH){
@@ -153,24 +157,31 @@ var Player = function(id, playerData){
 
   //Update player speed based on player input (right, left, up, down)
   self.updateSpd = function(){
+    self.resetSpeed();
     if(self.pressingRight){
-      self.spdX = self.maxSpd;
+      self.spdX = self.moveAmount;
     }
     else if(self.pressingLeft){
-      self.spdX = -self.maxSpd;
+      self.spdX = -self.moveAmount;
     }
-    else {
-      self.spdX = 0;
-    }
-    if(self.pressingUp){
-      self.spdY = -self.maxSpd;
+    else if(self.pressingUp){
+      self.spdY = -self.moveAmount;
     }
     else if(self.pressingDown){
-      self.spdY = self.maxSpd;
+      self.spdY = self.moveAmount;
     }
-    else{
-      self.spdY = 0;
-    }
+  }
+
+  self.resetKeys = function(){
+    self.pressingRight = false;
+    self.pressingLeft = false;
+    self.pressingUp = false;
+    self.pressingDown = false;
+  }
+
+  self.resetSpeed = function(){
+    self.spdX = 0;
+    self.spdY = 0;
   }
 
   // Sends the starting data to the client for this player
@@ -184,7 +195,9 @@ var Player = function(id, playerData){
       hp: self.hp,
       hpMax: self.hpMax,
       score: self.score,
-      mouseAngle: self.mouseAngle
+      mouseAngle: self.mouseAngle,
+      moveDelay: self.moveDelay,
+      moveAmount: self.moveAmount
     }
   }
 
@@ -219,15 +232,19 @@ Player.onConnect = function(socket, playerData){
 
   socket.on('keyPress', function(data){
     if(data.inputId === 'left'){
+      player.resetKeys();
       player.pressingLeft = data.state;
     }
     else if(data.inputId === 'right'){
+      player.resetKeys();
       player.pressingRight = data.state;
     }
     else if(data.inputId === 'up'){
+      player.resetKeys();
       player.pressingUp = data.state;
     }
     else if(data.inputId === 'down'){
+      player.resetKeys();
       player.pressingDown = data.state;
     }
     else if(data.inputId === 'mouseAngle'){

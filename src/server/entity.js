@@ -2,22 +2,21 @@ var utils = require('../utils.js');
 var CT = require('../constants.js');
 
 class Entity {
-  constructor(SpawnX, SpawnY) {
-    this.x = utils.isNumeric(SpawnX) ? SpawnX : CT.WIDTH/2;
-    this.y = utils.isNumeric(SpawnY) ? SpawnY : CT.HEIGHT/2;
+  constructor(SpawnX = CT.WIDTH/2, SpawnY = CT.HEIGHT/2) {
+    this.x = utils.isNumeric(SpawnX);
+    this.y = utils.isNumeric(SpawnY);
     this.spdX = 0;
     this.spdY = 0;
     this.id = "";
   }
 
   updatePosition() {
-
+    this.x += this.spdX;
+    this.y += this.spdY;
   }
 
   update() {
-    this.x += this.spdX;
-    this.y += this.spdY;
-    //this.updatePosition();
+    this.updatePosition();
   }
 
   getDistance(point) {

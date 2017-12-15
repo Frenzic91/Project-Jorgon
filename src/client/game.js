@@ -342,6 +342,8 @@ var Player = function(initPack){
   self.hpMax = initPack.hpMax;
   self.score = initPack.score;
   self.mouseAngle = initPack.mouseAngle;
+  self.moveDelay = initPack.moveDelay;
+  self.moveAmount = initPack.moveAmount;
   self.xOld = self.x;
   self.yOld = self.y;
   self.stateTime = Date.now();
@@ -352,8 +354,10 @@ var Player = function(initPack){
     let width = Img.player.width;
     let height = Img.player.height;
 
-    self.xOld = self.xOld + 0.1*(self.x-self.xOld);
-    self.yOld = self.yOld + 0.1*(self.y-self.yOld);
+    //self.xOld = self.xOld + 0.1*(self.x-self.xOld);
+    self.xOld = self.xOld + (1000/self.moveDelay)*(0.01)*(self.x-self.xOld);
+    //self.yOld = self.yOld + 0.1*(self.y-self.yOld);
+    self.yOld = self.yOld + (1000/self.moveDelay)*(0.01)*(self.y-self.yOld);
     if(Math.abs(self.xOld - self.x) < 2){
       self.xOld = self.x;
     }
