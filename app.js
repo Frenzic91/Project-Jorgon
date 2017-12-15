@@ -143,27 +143,26 @@ var Player = function(id, playerData){
     if(Date.now() - self.lastMoved > self.moveDelay){
       self.updateSpd();
       self.lastMoved = Date.now();
+      // use pendingMove if exists
       if(self.pendingMoveX !== 0){
-        console.log("PendingX triggered");
         self.spdX = self.pendingMoveX;
       }
       if(self.pendingMoveY !== 0){
-        console.log("PendingY triggered");
         self.spdY = self.pendingMoveY;
       }
       super_updatePosition();
       self.resetPendingMove();
     }
     if(self.x < CT.MINWIDTH){
-      self.x = CT.MINWIDTH;
+      self.x += self.moveAmount;
     } else if(self.x > CT.MAXWIDTH){
-      self.x = CT.MAXWIDTH;
+      self.x -= self.moveAmount;
     }
 
     if(self.y < CT.MINHEIGHT){
-      self.y = CT.MINHEIGHT;
+      self.y += self.moveAmount;
     } else if(self.y > CT.MAXHEIGHT){
-      self.y = CT.MAXHEIGHT;
+      self.y -= self.moveAmount;
     }
   }
 
@@ -252,7 +251,6 @@ Player.onConnect = function(socket, playerData){
   Player.init(socket);
 
   socket.on('keyPress', function(data){
-    console.log("Key pressed: " + data.inputId);
     if(data.inputId === 'left'){
       //Queues up the direction button so it triggers player movement -- if player is not moving
       if(!player.isMoving()){
