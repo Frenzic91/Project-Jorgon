@@ -357,10 +357,26 @@ var Player = function(initPack){
     let width = Img.player.width;
     let height = Img.player.height;
 
-    //self.xOld = self.xOld + 0.1*(self.x-self.xOld);
-    self.xOld = self.xOld + (1000/self.moveDelay)*(self.interp)*(self.x-self.xOld);
-    //self.yOld = self.yOld + 0.1*(self.y-self.yOld);
-    self.yOld = self.yOld + (1000/self.moveDelay)*(self.interp)*(self.y-self.yOld);
+    let deltaX = self.x - self.xOld;
+    let deltaY = self.y - self.yOld;
+
+    let interpRate = 2.5*(200/self.moveDelay)
+
+    if(deltaX > interpRate){
+      self.xOld += interpRate;
+    } else if (deltaX < -interpRate){
+      self.xOld -= interpRate;
+    } else {
+      self.xOld = self.x;
+    }
+
+    if(deltaY > interpRate){
+      self.yOld += interpRate;
+    } else if (deltaY < -interpRate){
+      self.yOld -= interpRate;
+    } else {
+      self.yOld = self.y;
+    }
 
     if(self.interp < MAXINTERP){
       self.interp += 0.001;

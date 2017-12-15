@@ -119,7 +119,7 @@ var Player = function(id, playerData){
   self.pressingLeft = false;
   self.pressingUp = false;
   self.pressingDown = false;
-  self.moveDelay = 250;
+  self.moveDelay = 150;
   self.moveAmount = 64;
   self.pendingMoveX = 0;
   self.pendingMoveY = 0;
@@ -251,13 +251,17 @@ Player.onConnect = function(socket, playerData){
   Player.init(socket);
 
   socket.on('keyPress', function(data){
+    console.log("Player pressed: " + data.inputId)
     if(data.inputId === 'left'){
       //Queues up the direction button so it triggers player movement -- if player is not moving
       if(!player.isMoving()){
         player.pendingMoveX = -player.moveAmount;
         player.pendingMoveY= 0;
       }
-      player.resetKeys();
+      //If the player was going in a different direction -- Reset movement
+      if(player.pressingLeft != data.state && data.state === true){
+        player.resetKeys();
+      }
       player.pressingLeft = data.state;
     }
     else if(data.inputId === 'right'){
@@ -266,7 +270,10 @@ Player.onConnect = function(socket, playerData){
         player.pendingMoveX = player.moveAmount;
         player.pendingMoveY= 0;
       }
-      player.resetKeys();
+      //If the player was going in a different direction -- Reset movement
+      if(player.pressingRight != data.state && data.state === true){
+        player.resetKeys();
+      }
       player.pressingRight = data.state;
     }
     else if(data.inputId === 'up'){
@@ -275,7 +282,10 @@ Player.onConnect = function(socket, playerData){
         player.pendingMoveX = 0;
         player.pendingMoveY= -player.moveAmount;
       }
-      player.resetKeys();
+      //If the player was going in a different direction -- Reset movement
+      if(player.pressingUp != data.state && data.state === true){
+        player.resetKeys();
+      }
       player.pressingUp = data.state;
     }
     else if(data.inputId === 'down'){
@@ -284,7 +294,10 @@ Player.onConnect = function(socket, playerData){
         player.pendingMoveX = 0;
         player.pendingMoveY= player.moveAmount;
       }
-      player.resetKeys();
+      //If the player was going in a different direction -- Reset movement
+      if(player.pressingDown != data.state && data.state === true){
+        player.resetKeys();
+      }
       player.pressingDown = data.state;
     }
     else if(data.inputId === 'mouseAngle'){
