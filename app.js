@@ -121,6 +121,8 @@ var Player = function(id, playerData){
   self.pressingDown = false;
   self.moveDelay = 250;
   self.moveAmount = 64;
+  self.pendingMoveX = 0;
+  self.pendingMoveY = 0;
   self.lastMoved = 0;
 
   self.hp = 100;
@@ -130,7 +132,7 @@ var Player = function(id, playerData){
   var super_update = self.update;
 
   self.update = function(){
-    self.updateSpd();
+    //self.updateSpd();
     super_update();
   }
 
@@ -139,8 +141,18 @@ var Player = function(id, playerData){
 
   self.updatePosition = function(){
     if(Date.now() - self.lastMoved > self.moveDelay){
+      self.updateSpd();
       self.lastMoved = Date.now();
+      if(self.pendingMoveX !== 0){
+        console.log("PendingX triggered");
+        self.spdX = self.pendingMoveX;
+      }
+      if(self.pendingMoveY !== 0){
+        console.log("PendingY triggered");
+        self.spdY = self.pendingMoveY;
+      }
       super_updatePosition();
+      self.resetPendingMove();
     }
     if(self.x < CT.MINWIDTH){
       self.x = CT.MINWIDTH;
@@ -184,6 +196,11 @@ var Player = function(id, playerData){
     self.spdY = 0;
   }
 
+  self.resetPendingMove = function(){
+    self.pendingMoveX = 0;
+    self.pendingMoveY = 0;
+  }
+
   // Sends the starting data to the client for this player
   self.getInitPack = function(){
     return {
@@ -213,6 +230,10 @@ var Player = function(id, playerData){
     }
   }
 
+  self.isMoving = function(){
+    return self.pressingDown || self.pressingLeft || self.pressingRight || self.pressingUp
+  }
+
   // Add this player to the server Player array
   Player.list[id] = self;
   initPack.players.push(self.getInitPack());
@@ -231,19 +252,40 @@ Player.onConnect = function(socket, playerData){
   Player.init(socket);
 
   socket.on('keyPress', function(data){
+    console.log("Key pressed: " + data.inputId);
     if(data.inputId === 'left'){
+      //Queues up the direction button so it triggers player movement -- if player is not moving
+      if(!player.isMoving()){
+        player.pendingMoveX = -player.moveAmount;
+        player.pendingMoveY= 0;
+      }
       player.resetKeys();
       player.pressingLeft = data.state;
     }
     else if(data.inputId === 'right'){
+      //Queues up the direction button so it triggers player movement -- if player is not moving
+      if(!player.isMoving()){
+        player.pendingMoveX = player.moveAmount;
+        player.pendingMoveY= 0;
+      }
       player.resetKeys();
       player.pressingRight = data.state;
     }
     else if(data.inputId === 'up'){
+      //Queues up the direction button so it triggers player movement -- if player is not moving
+      if(!player.isMoving()){
+        player.pendingMoveX = 0;
+        player.pendingMoveY= -player.moveAmount;
+      }
       player.resetKeys();
       player.pressingUp = data.state;
     }
     else if(data.inputId === 'down'){
+      //Queues up the direction button so it triggers player movement -- if player is not moving
+      if(!player.isMoving()){
+        player.pendingMoveX = 0;
+        player.pendingMoveY= player.moveAmount;
+      }
       player.resetKeys();
       player.pressingDown = data.state;
     }

@@ -5,6 +5,8 @@ const WIDTH = 1280;
 const HEIGHT = 720;
 const PLAYERSPRITEWIDTH = 57;
 const PLAYERSPRITEHEIGHT = 57;
+const MININTERP = 0.01;
+const MAXINTERP = 0.02;
 const BLOODDURATION = 10000;
 var ANIMATIONTIME = 100;
 var scale = 1;
@@ -32,7 +34,6 @@ var playerName = "";
 var playerX = 0;
 var playerY = 0;
 var playerID = 0;
-var playerDirection = 0; // down = 0, left = 1, right = 2, up = 3
 
 let xTrans = 0;
 let yTrans = 0;
@@ -336,6 +337,8 @@ var Player = function(initPack){
   self.id = initPack.id;
   self.number = initPack.number;
   self.name = initPack.name;
+  self.direction = 0;
+  self.interp = MININTERP;
   self.x = initPack.x;
   self.y = initPack.y;
   self.hp = initPack.hp;
@@ -355,13 +358,21 @@ var Player = function(initPack){
     let height = Img.player.height;
 
     //self.xOld = self.xOld + 0.1*(self.x-self.xOld);
-    self.xOld = self.xOld + (1000/self.moveDelay)*(0.01)*(self.x-self.xOld);
+    self.xOld = self.xOld + (1000/self.moveDelay)*(self.interp)*(self.x-self.xOld);
     //self.yOld = self.yOld + 0.1*(self.y-self.yOld);
-    self.yOld = self.yOld + (1000/self.moveDelay)*(0.01)*(self.y-self.yOld);
-    if(Math.abs(self.xOld - self.x) < 2){
+    self.yOld = self.yOld + (1000/self.moveDelay)*(self.interp)*(self.y-self.yOld);
+
+    if(self.interp < MAXINTERP){
+      self.interp += 0.001;
+    }
+
+
+    self.setDirection();
+
+    if(Math.abs(self.xOld - self.x) < 1){
       self.xOld = self.x;
     }
-    if(Math.abs(self.yOld - self.y) < 2){
+    if(Math.abs(self.yOld - self.y) < 1){
       self.yOld = self.y;
     }
 
@@ -373,6 +384,25 @@ var Player = function(initPack){
     self.drawPlayer(self.isMoving(), PLAYERSPRITEWIDTH, PLAYERSPRITEHEIGHT);
 
     self.drawName();
+  }
+
+  self.setDirection = function(){
+    // down = 0, left = 1, right = 2, up = 3
+    let deltaX = self.x - self.xOld;
+    let deltaY = self.y - self.yOld;
+    let isXLarger = Math.abs(deltaX) > Math.abs(deltaY);
+    if(deltaX > 0 && isXLarger){
+      self.direction = 2;
+    } else if(deltaX < 0 && isXLarger) {
+      self.direction = 1;
+    } else if(deltaY > 0){
+      self.direction = 0;
+    } else if(deltaY < 0){
+      self.direction = 3;
+    } else {
+      //reset Movement Interp
+      self.interp = MININTERP;
+    }
   }
 
   self.drawHPBar = function(){
@@ -406,7 +436,7 @@ var Player = function(initPack){
   }
 
   self.drawPlayer = function(isMoving, width, height){
-    let direction = playerDirection;
+
     let index;
     if(isMoving){
       index = undefined;
@@ -414,7 +444,7 @@ var Player = function(initPack){
       index = 1;
     }
     if(self.runState === 0){
-      ctx.drawImage(Img.player.playerFull, index*57 || 57*0, 57*direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
+      ctx.drawImage(Img.player.playerFull, index*57 || 57*0, 57*self.direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
 
       if(Date.now() - self.stateTime >= ANIMATIONTIME){
         self.runState = 1;
@@ -422,7 +452,7 @@ var Player = function(initPack){
       }
 
     } else if(self.runState === 1) {
-      ctx.drawImage(Img.player.playerFull, index*57 || 57*1, 57*direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
+      ctx.drawImage(Img.player.playerFull, index*57 || 57*1, 57*self.direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
 
       if(Date.now() - self.stateTime >= ANIMATIONTIME/2){
         self.runState = 2;
@@ -430,7 +460,7 @@ var Player = function(initPack){
       }
 
     } else if(self.runState === 2) {
-      ctx.drawImage(Img.player.playerFull, index*57 || 57*2, 57*direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
+      ctx.drawImage(Img.player.playerFull, index*57 || 57*2, 57*self.direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
 
       if(Date.now() - self.stateTime >= ANIMATIONTIME){
         self.runState = 0;
@@ -517,22 +547,18 @@ document.onkeydown = function(event){
     if(event.keyCode === 68) { // d
       socket.emit('keyPress', {inputId:'right', state: true});
       pressingRight = true;
-      playerDirection = 2;
     }
     else if(event.keyCode === 83) { // s
       socket.emit('keyPress', {inputId: 'down', state: true});
       pressingDown = true;
-      playerDirection = 0;
     }
     else if(event.keyCode === 65) { // a
       socket.emit('keyPress', {inputId: 'left', state: true});
       pressingLeft = true;
-      playerDirection = 1;
     }
     else if(event.keyCode === 87) { // w
       socket.emit('keyPress', {inputId: 'up', state: true});
       pressingUp = true;
-      playerDirection = 3;
     }
     else if(event.keyCode === 87) { // w
       socket.emit('keyPress', {inputId: 'up', state: true});
