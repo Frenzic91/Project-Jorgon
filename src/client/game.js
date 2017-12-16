@@ -258,6 +258,7 @@ let updateCount = 0;
 let fpsTimer = Date.now();
 let fpsCount = 0;
 let fps = 0;
+
 //Game update loop
 setInterval(function() {
   // Update local player position

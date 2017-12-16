@@ -132,10 +132,11 @@ class Player extends Entity {
 
     // Add this player to the server Player array
     initPack.players.push(player.getInitPack());
+    console.log(initPack);
 
     Player.initPlayer(socket, player);
     //Initiate All other players
-    Player.init(socket);
+    Player.init(socket, playerList);
 
     socket.on('keyPress', function(data){
       if(data.inputId === 'left'){
@@ -198,18 +199,18 @@ class Player extends Entity {
     delete playerList[socket.id];
   }
 
-  static init(socket){
-    let players = Player.getAllInitPack();
+  static init(socket, playerList){
+    let players = Player.getAllInitPack(playerList);
 
     socket.emit('init', {
       players:players
     });
   }
 
-  static getAllInitPack(){
+  static getAllInitPack(playerList){
     let players = [];
-    for(let i in Player.list){
-      players.push(Player.list[i].getInitPack());
+    for(let i in playerList){
+      players.push(playerList[i].getInitPack());
     }
     return players;
   }
