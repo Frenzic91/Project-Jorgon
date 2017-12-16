@@ -14,6 +14,7 @@ var io = require('socket.io')(server, {});
 
 var SOCKET_LIST = {};
 var playerList = {};
+var tileMap = [];
 
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/src/client/index.html');
@@ -81,6 +82,12 @@ io.sockets.on('connection', function(socket){
     delete SOCKET_LIST[socket.id];
     Player.onDisconnect(removePack, playerList, socket);
   });
+
+  socket.on('attack', function(data) {
+    // look up the specified tileId from data in the tile playerArray
+    console.log(data);
+    // get the player that is on the tile (if any) and save as the attacking players
+  });
 })
 
 server.listen(2000);
@@ -101,6 +108,8 @@ mainUpdate();
 
 function mainUpdate() {
   let start = Date.now();
+
+  Player.execPlayerAttacks(playerList);
 
   var pack = {
     players: Player.getPlayerPositions(playerList)

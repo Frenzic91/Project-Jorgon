@@ -20,8 +20,34 @@ class Player extends Entity {
 
     this.hp = 100;
     this.hpMax = 100;
+
+    this.target = undefined
+    this.lastAttacked = 0;
+    this.attackDelay = 500;
+    this.x = 0;
+    this.y = 0;
   }
 
+  isTargetInRange() {
+    if (this.target) {
+      // calculate and return the smallest of the horizontal or vertical
+      // distance between this player and the target
+      return (Math.abs(this.x - this.target.x) <= 1) &&
+              (Math.abs(this.y - this.target.y) <= 1)
+    }
+    return false;
+  }
+
+  attack() {
+    // only melee attacks for now
+    if (this.isTargetInRange() && (Date.now() - this.lastAttacked > this.attackDelay)) {
+      // set lastAttacked back to curret time
+      this.lastAttacked = Date.now();
+
+      // update target players health, static value for now
+      this.target.hp -= 5;
+    }
+  }
 
   update() {
     //this.updateSpd();
@@ -228,6 +254,14 @@ class Player extends Entity {
       playerArray.push(player.getUpdatePack());
     }
     return playerArray;
+  }
+
+  // handle all player attacks
+  static execPlayerAttacks(playerList) {
+    for (let i in playerList) {
+      let player = playerList[i];
+        player.attack()
+    }
   }
 
   // Sends data package to all players
