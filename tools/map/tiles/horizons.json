@@ -14,582 +14,582 @@
     {
      "10":
         {
-         "collission":false
+         "collision":0
         },
      "11":
         {
-         "collission":false
+         "collision":0
         },
      "12":
         {
-         "collission":false
+         "collision":0
         },
      "13":
         {
-         "collission":false
+         "collision":0
         },
      "14":
         {
-         "collission":false
+         "collision":0
         },
      "15":
         {
-         "collission":false
+         "collision":0
         },
      "16":
         {
-         "collission":false
+         "collision":0
         },
      "17":
         {
-         "collission":false
+         "collision":0
         },
      "18":
         {
-         "collission":false
+         "collision":0
         },
      "19":
         {
-         "collission":false
+         "collision":0
         },
      "20":
         {
-         "collission":false
+         "collision":0
         },
      "21":
         {
-         "collission":false
+         "collision":0
         },
      "22":
         {
-         "collission":false
+         "collision":0
         },
      "23":
         {
-         "collission":false
+         "collision":0
         },
      "24":
         {
-         "collission":false
+         "collision":0
         },
      "25":
         {
-         "collission":false
+         "collision":0
         },
      "26":
         {
-         "collission":false
+         "collision":0
         },
      "27":
         {
-         "collission":false
+         "collision":0
         },
      "28":
         {
-         "collission":false
+         "collision":0
         },
      "29":
         {
-         "collission":false
+         "collision":0
         },
      "30":
         {
-         "collission":false
+         "collision":0
         },
      "31":
         {
-         "collission":false
+         "collision":0
         },
      "32":
         {
-         "collission":false
+         "collision":0
         },
      "33":
         {
-         "collission":false
+         "collision":0
         },
      "34":
         {
-         "collission":false
+         "collision":0
         },
      "35":
         {
-         "collission":false
+         "collision":0
         },
      "36":
         {
-         "collission":false
+         "collision":0
         },
      "37":
         {
-         "collission":false
+         "collision":0
         },
      "38":
         {
-         "collission":false
+         "collision":0
         },
      "39":
         {
-         "collission":false
+         "collision":0
         },
      "40":
         {
-         "collission":false
+         "collision":0
         },
      "41":
         {
-         "collission":false
+         "collision":0
         },
      "42":
         {
-         "collission":true
+         "collision":1
         },
      "43":
         {
-         "collission":true
+         "collision":1
         },
      "44":
         {
-         "collission":true
+         "collision":1
         },
      "45":
         {
-         "collission":true
+         "collision":1
         },
      "46":
         {
-         "collission":true
+         "collision":1
         },
      "47":
         {
-         "collission":true
+         "collision":1
         },
      "48":
         {
-         "collission":true
+         "collision":1
         },
      "49":
         {
-         "collission":true
+         "collision":1
         },
      "50":
         {
-         "collission":true
+         "collision":1
         },
      "51":
         {
-         "collission":true
+         "collision":1
         },
      "52":
         {
-         "collission":true
+         "collision":1
         },
      "53":
         {
-         "collission":true
+         "collision":1
         },
      "54":
         {
-         "collission":true
+         "collision":1
         },
      "55":
         {
-         "collission":true
+         "collision":1
         },
      "56":
         {
-         "collission":true
+         "collision":1
         },
      "57":
         {
-         "collission":true
+         "collision":1
         },
      "58":
         {
-         "collission":true
+         "collision":1
         },
      "59":
         {
-         "collission":true
+         "collision":1
         },
      "60":
         {
-         "collission":true
+         "collision":1
         },
      "61":
         {
-         "collission":true
+         "collision":1
         },
      "62":
         {
-         "collission":false
+         "collision":0
         },
      "63":
         {
-         "collission":false
+         "collision":0
         },
      "64":
         {
-         "collission":false
+         "collision":0
         },
      "65":
         {
-         "collission":false
+         "collision":0
         },
      "66":
         {
-         "collission":false
+         "collision":0
         },
      "67":
         {
-         "collission":false
+         "collision":0
         },
      "68":
         {
-         "collission":false
+         "collision":0
         },
      "69":
         {
-         "collission":false
+         "collision":0
         },
      "70":
         {
-         "collission":false
+         "collision":0
         },
      "71":
         {
-         "collission":false
+         "collision":0
         },
      "72":
         {
-         "collission":false
+         "collision":0
         },
      "73":
         {
-         "collission":false
+         "collision":0
         },
      "74":
         {
-         "collission":false
+         "collision":0
         },
      "75":
         {
-         "collission":false
+         "collision":0
         },
      "76":
         {
-         "collission":false
+         "collision":0
         },
      "77":
         {
-         "collission":false
+         "collision":0
         },
      "78":
         {
-         "collission":false
+         "collision":0
         },
      "79":
         {
-         "collission":false
+         "collision":0
         },
      "80":
         {
-         "collission":false
+         "collision":0
         },
      "81":
         {
-         "collission":false
+         "collision":0
         }
     },
  "tilepropertytypes":
     {
      "10":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "11":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "12":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "13":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "14":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "15":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "16":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "17":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "18":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "19":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "20":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "21":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "22":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "23":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "24":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "25":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "26":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "27":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "28":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "29":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "30":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "31":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "32":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "33":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "34":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "35":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "36":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "37":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "38":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "39":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "40":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "41":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "42":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "43":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "44":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "45":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "46":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "47":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "48":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "49":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "50":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "51":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "52":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "53":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "54":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "55":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "56":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "57":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "58":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "59":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "60":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "61":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "62":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "63":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "64":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "65":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "66":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "67":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "68":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "69":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "70":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "71":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "72":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "73":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "74":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "75":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "76":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "77":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "78":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "79":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "80":
         {
-         "collission":"bool"
+         "collision":"int"
         },
      "81":
         {
-         "collission":"bool"
+         "collision":"int"
         }
     },
  "tiles":
