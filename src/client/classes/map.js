@@ -5,7 +5,7 @@ class Map {
     this.height = mapJSON.height;
     this.canvas = canvas;
     this.offscreenCanvas = document.createElement('canvas');
-    this.offsceenContext = this.offscreenCanvas.getContext('2d');
+    this.offscreenContext = this.offscreenCanvas.getContext('2d');
     this.initialized = false;
   }
 
@@ -15,8 +15,8 @@ class Map {
 
     let mapSheet = mapImg.tile.horizons_1_1;
 
-    this.offsceenContext.fillStyle = "#000000";
-    this.offsceenContext.fillRect(-WIDTH,-HEIGHT,this.offscreenCanvas.width+WIDTH,this.offscreenCanvas.height+HEIGHT)
+    this.offscreenContext.fillStyle = "#000000";
+    this.offscreenContext.fillRect(-WIDTH/2,-HEIGHT/2,this.width*TILESIZE+WIDTH,this.height*TILESIZE+HEIGHT)
 
     for(let i = 0; i < this.height; i++){
       for(let j = this.width-1; j >= 0; j--){
@@ -24,36 +24,26 @@ class Map {
         let spriteIndexRow = Math.floor(currentTileValue/(SPRITESHEETWIDTH))
         let spriteIndexCol = currentTileValue % (SPRITESHEETWIDTH);
         // Map is shifted TILESIZE/2 left and TILESIZE/4 up in order to draw players in the middle of tiles
-        this.offsceenContext.drawImage(mapSheet, TILESIZE*spriteIndexCol, TILESIZE*spriteIndexRow, TILESIZE, TILESIZE, j*TILESIZE - TILESIZE/2, i*TILESIZE - TILESIZE/4, TILESIZE, TILESIZE);
+        this.offscreenContext.drawImage(mapSheet, TILESIZE*spriteIndexCol, TILESIZE*spriteIndexRow, TILESIZE, TILESIZE, j*TILESIZE - TILESIZE/2, i*TILESIZE - TILESIZE/4, TILESIZE, TILESIZE);
       }
     }
     this.initialized = true;
   }
 
-  drawGround(x,y){
-    let mapSheet = mapImg.tile.horizons_1_1;
-    ctxGround.fillStyle = "#000000";
-    ctxGround.fillRect(x-2*WIDTH,y-2*HEIGHT,4*WIDTH,4*HEIGHT);
-    for(let i = 0; i < this.height; i++){
-      for(let j = this.width-1; j >= 0; j--){
-        let currentTileValue = this.data[i][j].ground.id - SPRITEOFFSET;
-        let spriteIndexRow = Math.floor(currentTileValue/(SPRITESHEETWIDTH))
-        let spriteIndexCol = currentTileValue % (SPRITESHEETWIDTH);
-        // Map is shifted TILESIZE/2 left and TILESIZE/4 up in order to draw players in the middle of tiles
-        this.canvas.drawImage(mapSheet, TILESIZE*spriteIndexCol, TILESIZE*spriteIndexRow, TILESIZE, TILESIZE, j*TILESIZE - TILESIZE/2, i*TILESIZE - TILESIZE/4, TILESIZE, TILESIZE);
+  drawGround(x,y) {
+    if(this.initialized){
+      try {
+      this.canvas.fillStyle = "#000000";
+      this.canvas.fillRect(-WIDTH/2,-HEIGHT/2,this.width*TILESIZE+WIDTH,this.height*TILESIZE+HEIGHT)
+      this.canvas.drawImage(this.offscreenCanvas, 0, 0);
+    } catch(err) {
+        console.log("reinitializing MAP");
+        this.initializeMap();
       }
+    } else {
+      this.initializeMap();
     }
   }
-
-  // drawGround(x,y) {
-  //   if(this.intialized){
-  //     // Take image from off-screen canvas
-  //     let image = this.offscreenContext.getImageData(x - WIDTH, y - HEIGHT, WIDTH, HEIGHT);
-  //     this.canvas.putImageData(image, x - WIDTH, y - HEIGHT);
-  //   } else {
-  //     this.initializeMap();
-  //   }
-  // }
 
 
   drawEntities(canvas,x,y){
