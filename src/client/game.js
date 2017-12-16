@@ -13,6 +13,8 @@ var scale = 1;
 const MAXSCALE = 3;
 const MINSCALE = 1;
 
+var playerList = {};
+
 window.onbeforeunload = function() { return "You work will be lost."; };
 
 var canvas = document.getElementById('ctx');
@@ -62,6 +64,7 @@ let hudHPWidth = 26;
 let hudHPLength = 62;
 let hudOutlineThickness = 2;
 let hudHPMargin = 20;
+let hpBarWidth = 30;
 
 function drawTestMap(testMap){
   ctxbg.fillRect(-WIDTH/2,-HEIGHT/2,2*WIDTH,2*HEIGHT);
@@ -97,7 +100,7 @@ var Hud = function(){
     self.canvas.clearRect(hudHPMargin + hudOutlineThickness, HEIGHT - hudHPMargin - (hudHPLength/2 + hudHPWidth/2) + hudOutlineThickness, hudHPLength - 2*hudOutlineThickness, hudHPWidth - 2*hudOutlineThickness);
 
     //Calculate how much of + to fill
-    let playerHPPercent = Player.list[playerID].hp/Player.list[playerID].hpMax;
+    let playerHPPercent = playerList[playerID].hp/playerList[playerID].hpMax;
     let fillHeight = (hudHPLength - 2*hudOutlineThickness) - Math.floor((hudHPLength - 2*hudOutlineThickness) * playerHPPercent);
     let horFillHeight = fillHeight - (hudHPLength - hudHPWidth)/2;
     if(horFillHeight < 0){
@@ -161,166 +164,6 @@ function translateView(){
   ctxbg.translate(xTrans,yTrans);
 }
 
-let hpBarWidth = 30;
-
-var Player = function(initPack){
-  let self = {};
-  self.id = initPack.id;
-  self.number = initPack.number;
-  self.name = initPack.name;
-  self.direction = 0;
-  self.interp = MININTERP;
-  self.x = initPack.x;
-  self.y = initPack.y;
-  self.hp = initPack.hp;
-  self.hpMax = initPack.hpMax;
-  self.score = initPack.score;
-  self.mouseAngle = initPack.mouseAngle;
-  self.moveDelay = initPack.moveDelay;
-  self.moveAmount = initPack.moveAmount;
-  self.xOld = self.x;
-  self.yOld = self.y;
-  self.stateTime = Date.now();
-  self.runState = 0;
-  self.hpBarOffset = 0;
-
-  self.draw = function(){
-    let width = Img.player.width;
-    let height = Img.player.height;
-
-    let deltaX = self.x - self.xOld;
-    let deltaY = self.y - self.yOld;
-
-    let interpRate = 2.5*(200/self.moveDelay)
-
-    if(deltaX > interpRate){
-      self.xOld += interpRate;
-    } else if (deltaX < -interpRate){
-      self.xOld -= interpRate;
-    } else {
-      self.xOld = self.x;
-    }
-
-    if(deltaY > interpRate){
-      self.yOld += interpRate;
-    } else if (deltaY < -interpRate){
-      self.yOld -= interpRate;
-    } else {
-      self.yOld = self.y;
-    }
-
-    if(self.interp < MAXINTERP){
-      self.interp += 0.001;
-    }
-
-
-    self.setDirection();
-
-    if(Math.abs(self.xOld - self.x) < 1){
-      self.xOld = self.x;
-    }
-    if(Math.abs(self.yOld - self.y) < 1){
-      self.yOld = self.y;
-    }
-
-    if(self.id === playerID){
-      self.drawHPBar();
-      self.hpBarOffset = 5;
-    }
-
-    self.drawPlayer(self.isMoving(), PLAYERSPRITEWIDTH, PLAYERSPRITEHEIGHT);
-
-    self.drawName();
-  }
-
-  self.setDirection = function(){
-    // down = 0, left = 1, right = 2, up = 3
-    let deltaX = self.x - self.xOld;
-    let deltaY = self.y - self.yOld;
-    let isXLarger = Math.abs(deltaX) > Math.abs(deltaY);
-    if(deltaX > 0 && isXLarger){
-      self.direction = 2;
-    } else if(deltaX < 0 && isXLarger) {
-      self.direction = 1;
-    } else if(deltaY > 0){
-      self.direction = 0;
-    } else if(deltaY < 0){
-      self.direction = 3;
-    } else {
-      //reset Movement Interp
-      self.interp = MININTERP;
-    }
-  }
-
-  self.drawHPBar = function(){
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(self.xOld - hpBarWidth/2,self.yOld - 32,30, 4);
-    let hpWidth = hpBarWidth * self.hp/self.hpMax;
-    if(self.hp === self.hpMax){
-      ctx.fillStyle = "#0000FF";
-    } else{
-      let hpPercent = self.hp/self.hpMax;
-      let green = parseInt(Math.floor(255 * hpPercent));
-      let red = 255 - green;
-      ctx.fillStyle = getHexRGB(red, green, 0);
-    }
-    ctx.fillRect(self.xOld - hpBarWidth/2,self.yOld - 32,hpWidth, 4);
-    ctx.fillStyle = "#000000";
-  }
-
-  self.drawName = function(){
-    ctx.textAlign="center"
-    ctx.font = "8pt Arial Black";
-    ctx.fillText(self.name, self.xOld, self.yOld - 30 - self.hpBarOffset);
-  }
-
-  self.isMoving = function(){
-    if(self.xOld !== self.x || self.yOld !== self.y){
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  self.drawPlayer = function(isMoving, width, height){
-
-    let index;
-    if(isMoving){
-      index = undefined;
-    } else {
-      index = 1;
-    }
-    if(self.runState === 0){
-      ctx.drawImage(Img.player.playerFull, index*57 || 57*0, 57*self.direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
-
-      if(Date.now() - self.stateTime >= ANIMATIONTIME){
-        self.runState = 1;
-        self.stateTime = Date.now();
-      }
-
-    } else if(self.runState === 1) {
-      ctx.drawImage(Img.player.playerFull, index*57 || 57*1, 57*self.direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
-
-      if(Date.now() - self.stateTime >= ANIMATIONTIME/2){
-        self.runState = 2;
-        self.stateTime = Date.now();
-      }
-
-    } else if(self.runState === 2) {
-      ctx.drawImage(Img.player.playerFull, index*57 || 57*2, 57*self.direction, 57, 57, self.xOld-width/2, self.yOld-height/2, 57, 57);
-
-      if(Date.now() - self.stateTime >= ANIMATIONTIME){
-        self.runState = 0;
-        self.stateTime = Date.now();
-      }
-    }
-  }
-
-  Player.list[self.id] = self;
-  return self;
-}
-Player.list = {};
-
 function rotateAndCache(image,angle) {
   let offscreenCanvas = document.createElement('canvas');
   let offscreenCtx = offscreenCanvas.getContext('2d');
@@ -351,7 +194,8 @@ socket.on('initPlayer',function(data){
 socket.on('init', function(data){
   // { player:}w
   for(let i = 0; i < data.players.length; i++){
-    new Player(data.players[i]);
+    let player = new Player(data.players[i]);
+    playerList[player.id] = player;
   }
 })
 
@@ -359,7 +203,7 @@ socket.on('init', function(data){
 socket.on('update', function(data){
   for(let i = 0; i < data.players.length; i++){
     let pack = data.players[i];
-    let p = Player.list[pack.id];
+    let p = playerList[pack.id];
     if(p){
       if(pack.x !== undefined){
         p.x = pack.x;
@@ -384,7 +228,7 @@ socket.on('update', function(data){
 //remove
 socket.on('remove', function(data){
   for(let i = 0; i < data.players.length; i++){
-    delete Player.list[data.players[i]];
+    delete playerList[data.players[i]];
   }
 })
 
@@ -488,10 +332,10 @@ function setZoom(delta){
 
 function sortPlayersByY(){
   let sortedList = [];
-  for(let i in Player.list){
+  for(let i in playerList){
     sortedList.push({
       key: i,
-      y: Player.list[i].y
+      y: playerList[i].y
     });
   }
   sortedList.sort(function(a,b){
@@ -526,8 +370,8 @@ let fps = 0;
 setInterval(function() {
   // Update local player position
   if(loggedIn && isLoaded()){
-    playerX = Player.list[playerID].xOld;
-    playerY = Player.list[playerID].yOld;
+    playerX = playerList[playerID].xOld;
+    playerY = playerList[playerID].yOld;
     // Update aim
     if(updateCount >= 50){
       updateAngle();
@@ -549,7 +393,7 @@ setInterval(function() {
 
     // Draw players in order from top to bottom of screen
     for(let i in sortedList){
-      Player.list[sortedList[i].key].draw();
+      playerList[sortedList[i].key].draw();
     }
     ctxhud.clearRect(0,0,WIDTH,HEIGHT);
     hud.drawHud();
