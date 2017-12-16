@@ -1,0 +1,34 @@
+{ "columns":0,
+ "grid":
+    {
+     "height":1,
+     "orientation":"orthogonal",
+     "width":1
+    },
+ "margin":0,
+ "name":"horizons_3_3",
+ "spacing":0,
+ "tilecount":1,
+ "tileheight":192,
+ "tiles":
+    {
+     "84":
+        {
+         "image":"tree.png",
+         "imageheight":192,
+         "imagewidth":192,
+		 "collision": [ 
+			[0, 1, 0],
+			[0, 0, 0],
+			[0, 0, 0]
+		 ],
+		 "occlusion": [
+			[0, 0, 0],
+			[1, 1, 1],
+			[0, 1, 0]
+		 ]
+        }
+    },
+ "tilewidth":192,
+ "type":"tileset"
+}

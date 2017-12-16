@@ -63,177 +63,8 @@ let hudHPLength = 62;
 let hudOutlineThickness = 2;
 let hudHPMargin = 20;
 
-var charSprites = [
-  {
-    type: "player",
-    name: "playerFull",
-    src: "client/images/player_full_57.png"
-  }
-];
-
-var mapSprites = [
-  {
-    type: "grass",
-    name: "grass1",
-    src: "client/images/world/grass_isometric3.png"
-  },
-  {
-    type: "grass",
-    name: "grass2",
-    src: "client/images/world/grass_isometric3-1.png"
-  },
-  {
-    type: "blood",
-    name: "blood1",
-    src:"client/images/world/blood_1.png"
-  },
-  {
-    type: "blood",
-    name: "blood2",
-    src:"client/images/world/blood_2.png"
-  }
-];
-
-var hudSprites = [
-  {
-    type: "crosshair",
-    name: "crosshair",
-    src: "client/images/hud/crosshair2.png"
-  },
-  {
-    type: "crosshair",
-    name: "cursor",
-    src: "client/images/hud/cursor2.png"
-  },
-  {
-    type: "crosshair",
-    name: "cursorClick",
-    src: "client/images/hud/cursor2_click.png"
-  }
-];
-
-var Img = loadImages(charSprites);
-var MapImg = loadImages(mapSprites);
-var HudImg = loadImages(hudSprites);
-
-var testMap;
-var bloodMap = [];
-
-function getHexRGB(r,g,b){
-  if(r > 255 || r < 0 || g > 255 || g < 0 || b > 255 || b < 0){
-    return false;
-  }
-  let greenHex = g.toString(16);
-  let redHex = r.toString(16);
-  let blueHex = b.toString(16);
-  if(greenHex.length === 1){
-    greenHex = "0" + greenHex;
-  }
-  if(redHex.length === 1){
-    redHex = "0" + redHex;
-  }
-  if(blueHex.length === 1){
-    blueHex = "0" + blueHex;
-  }
-  return "#" + redHex + greenHex + blueHex;
-}
-
-function randomObject(obj){
-  let result;
-  let count = 0;
-  for(let prop in obj){
-    if(Math.random() < 1/++count){
-      result = prop;
-    }
-  }
-  return result;
-}
-
-function loadImages(spriteArray){
-  loadedImages = {};
-  for(let i = 0; i < spriteArray.length; i++){
-    loadedImages[spriteArray[i].type] = loadedImages[spriteArray[i].type] || {};
-    loadedImages[spriteArray[i].type][spriteArray[i].name] = new Image();
-    loadedImages[spriteArray[i].type][spriteArray[i].name].src = spriteArray[i].src;
-    loadedImages[spriteArray[i].type][spriteArray[i].name].onload = function(){
-    this.isLoaded = true;
-    }
-  }
-  return loadedImages;
-}
-
-function isLoaded(){
-  if(loaded){
-    return true;
-  } else {
-    for(let i in Img){
-      for(let j in Img[i]){
-        if(!Img[i][j].isLoaded){
-          console.log('character sprite not loaded!');
-          return false;
-        }
-      }
-    }
-    for(let i in MapImg){
-      for(let j in MapImg[i]){
-        if(!MapImg[i][j].isLoaded){
-          console.log('map sprite not loaded!');
-          return false;
-        }
-      }
-    }
-    loaded = true;
-    return true;
-  }
-}
-
-MapImg.grass.grass1.onload = function(){
-  width = MapImg.grass.grass1.width;
-  height = MapImg.grass.grass1.width*(0.639/1.083);
-  imageHeight = MapImg.grass.grass1.height;
-  loopHeight = Math.ceil(HEIGHT/height);
-  loopWidth = Math.ceil(WIDTH/width);
-  this.isLoaded = true;
-};
-
-var MapTile = function(x, y, width, height, sprite){
-  let self = {};
-  self.x = x;
-  self.y = y;
-  self.width = width;
-  self.height = height;
-  self.sprite = sprite;
-  return self;
-}
-
-function buildTestMap(){
-  let testMap = [];
-  for(let i = 0; i < loopHeight; i++){
-    for(let j = 0; j < loopWidth; j++){
-      let sprite = MapImg["grass"][randomObject(MapImg["grass"])];
-      let mapTile = MapTile(j*width - width/2, i*height - height/2, width, imageHeight, sprite);
-      testMap.push(mapTile);
-    }
-    for(let k = 0; k < loopWidth; k++){
-      let sprite = MapImg["grass"][randomObject(MapImg["grass"])];
-      let mapTile = MapTile(k*width, i*height, width, imageHeight, sprite);
-      testMap.push(mapTile);
-    }
-  }
-  return testMap;
-}
-
 function drawTestMap(testMap){
   ctxbg.fillRect(-WIDTH/2,-HEIGHT/2,2*WIDTH,2*HEIGHT);
-  for(let i in testMap){
-    ctxbg.drawImage(testMap[i].sprite, testMap[i].x, testMap[i].y, testMap[i].width, testMap[i].height);
-  }
-  for(let i = bloodMap.length - 1; i >= 0; i--){
-    ctxbg.drawImage(bloodMap[i].sprite, bloodMap[i].x - bloodMap[i].sprite.width/2, bloodMap[i].y - 20, bloodMap[i].sprite.width, bloodMap[i].sprite.height);
-    if(Date.now() - bloodMap[i].initTime > BLOODDURATION){
-      bloodMap.splice(i,1);
-    }
-  }
 }
 
 var Hud = function(){
@@ -511,8 +342,7 @@ socket.on('initPlayer',function(data){
   playerX = data.x;
   playerY = data.y;
   playerID = data.id;
-  testMap = buildTestMap();
-  drawTestMap(testMap);
+  drawTestMap();
   hud = new Hud();
   loggedIn = true;
 });
@@ -670,6 +500,23 @@ function sortPlayersByY(){
   return sortedList;
 }
 
+function isLoaded(){
+  if(loaded){
+    return true;
+  } else {
+    for(let i in Img){
+      for(let j in Img[i]){
+        if(!Img[i][j].isLoaded){
+          console.log('character sprite not loaded!');
+          return false;
+        }
+      }
+    }
+    loaded = true;
+    return true;
+  }
+}
+
 let frameRate = 144;
 let updateCount = 0;
 let fpsTimer = Date.now();
@@ -691,7 +538,7 @@ setInterval(function() {
     ctxbg.scale(scale,scale);
 
     if(isPlayerMoving){
-      drawTestMap(testMap);
+      drawTestMap();
       ctxbg.restore();
     }
 
