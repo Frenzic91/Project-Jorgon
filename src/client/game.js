@@ -59,100 +59,14 @@ let width = 0;
 let height = 0;
 let imageHeight = 0;
 
-// Hud details
-let hudHPWidth = 26;
-let hudHPLength = 62;
-let hudOutlineThickness = 2;
-let hudHPMargin = 20;
-let hpBarWidth = 30;
+var hudHPWidth = 26;
+var hudHPLength = 62;
+var hudOutlineThickness = 2;
+var hudHPMargin = 20;
+var hpBarWidth = 30;
 
 function drawTestMap(testMap){
   ctxbg.fillRect(-WIDTH/2,-HEIGHT/2,2*WIDTH,2*HEIGHT);
-}
-
-var Hud = function(){
-  let self = {};
-  self.canvas = ctxhud;
-
-  self.drawHud = function(){
-    self.canvas.clearRect(0,0,WIDTH,HEIGHT);
-    self.drawHealth();
-    self.drawMiniMap();
-    self.drawFPS();
-    self.drawCursor();
-  }
-
-  self.drawCursor = function(){
-    // Draw cursor
-    if(!mouseClicked) {
-      self.canvas.drawImage(HudImg.crosshair.cursor,mouseX-16,mouseY-16,32,32);
-    } else {
-      self.canvas.drawImage(HudImg.crosshair.cursorClick,mouseX-16,mouseY-16,32,32);
-    }
-  }
-
-  self.drawHealth = function(){
-    //Draw clear + with black border
-    self.canvas.fillStyle = "#000000";
-    self.canvas.fillRect(hudHPMargin+((hudHPLength-hudHPWidth)/2), HEIGHT - hudHPLength - hudHPMargin, hudHPWidth, hudHPLength);
-    self.canvas.fillRect(hudHPMargin, HEIGHT - hudHPMargin - (hudHPLength/2 + hudHPWidth/2), hudHPLength, hudHPWidth);
-    self.canvas.clearRect(hudHPMargin+((hudHPLength-hudHPWidth)/2) + hudOutlineThickness, HEIGHT - hudHPLength - hudHPMargin + hudOutlineThickness, hudHPWidth - 2*hudOutlineThickness, hudHPLength - 2*hudOutlineThickness);
-    self.canvas.clearRect(hudHPMargin + hudOutlineThickness, HEIGHT - hudHPMargin - (hudHPLength/2 + hudHPWidth/2) + hudOutlineThickness, hudHPLength - 2*hudOutlineThickness, hudHPWidth - 2*hudOutlineThickness);
-
-    //Calculate how much of + to fill
-    let playerHPPercent = playerList[playerID].hp/playerList[playerID].hpMax;
-    let fillHeight = (hudHPLength - 2*hudOutlineThickness) - Math.floor((hudHPLength - 2*hudOutlineThickness) * playerHPPercent);
-    let horFillHeight = fillHeight - (hudHPLength - hudHPWidth)/2;
-    if(horFillHeight < 0){
-      horFillHeight = 0;
-    } else if(horFillHeight > (hudHPWidth - 2*hudOutlineThickness)){
-      horFillHeight = hudHPWidth - 2*hudOutlineThickness;
-    }
-
-    //Generate fill colour based on health %
-    let green = Math.floor(255 * playerHPPercent);
-    let red = 255 - green;
-    self.canvas.fillStyle = getHexRGB(red, green, 0);
-
-    //Fill + with colour
-    self.canvas.fillRect(hudHPMargin+((hudHPLength-hudHPWidth)/2) + hudOutlineThickness, HEIGHT - hudHPLength - hudHPMargin + hudOutlineThickness + fillHeight, hudHPWidth - 2*hudOutlineThickness, hudHPLength - 2*hudOutlineThickness - fillHeight);
-    self.canvas.fillRect(hudHPMargin + hudOutlineThickness, HEIGHT - hudHPMargin - (hudHPLength/2 + hudHPWidth/2) + hudOutlineThickness + horFillHeight, hudHPLength - 2*hudOutlineThickness, hudHPWidth - 2*hudOutlineThickness - horFillHeight);
-
-    //Print hp% in black over +
-
-    self.canvas.fillStyle = "#FFFFFF";
-    self.canvas.textAlign="center"
-    self.fontSize = 16;
-    self.canvas.font = "Bold " + self.fontSize + "pt Calibri";
-    self.canvas.fillText(Math.ceil(playerHPPercent*100), hudHPLength/2 + hudHPMargin , HEIGHT - hudHPLength/2 - hudHPMargin + self.fontSize/2 - 1);
-    self.canvas.lineWidth = 1;
-    self.canvas.strokeStyle = '#000000';
-    self.canvas.strokeText(Math.ceil(playerHPPercent*100),hudHPLength/2 + hudHPMargin , HEIGHT - hudHPLength/2 - hudHPMargin + self.fontSize/2 - 1);
-  }
-
-  self.drawMiniMap = function(){
-    // does nothing atm
-  }
-
-  self.drawFPS = function(){
-    if(fps >= frameRate){
-      self.canvas.fillStyle = "#00FF00";
-    } else if(fps >= frameRate*(.95)){
-      self.canvas.fillStyle = "#FFFF00";
-    } else {
-      self.canvas.fillStyle = "#FF0000";
-    }
-
-    self.canvas.textAlign="center"
-    self.fontSize = 12;
-    self.canvas.font = "Bold " + self.fontSize + "pt Calibri";
-    self.canvas.fillText(fps, WIDTH - hudHPMargin , hudHPMargin);
-    self.canvas.lineWidth = 1;
-    self.canvas.strokeStyle = '#000000';
-    self.canvas.strokeText(fps,WIDTH - hudHPMargin , hudHPMargin);
-  }
-
-  return self;
 }
 
 function translateView(){
@@ -186,7 +100,7 @@ socket.on('initPlayer',function(data){
   playerY = data.y;
   playerID = data.id;
   drawTestMap();
-  hud = new Hud();
+  hud = new Hud(ctxhud);
   loggedIn = true;
 });
 
@@ -386,7 +300,7 @@ setInterval(function() {
       ctxbg.restore();
     }
 
-    // Draw players and bullets
+    // Draw players
     ctx.clearRect(-WIDTH/2,-HEIGHT/2,2*WIDTH,2*HEIGHT);
 
     let sortedList = sortPlayersByY();

@@ -50,7 +50,6 @@ class Player {
     //   this.interp += 0.001;
     // }
 
-
     this.setDirection();
 
     if(Math.abs(this.xOld - this.x) < 1){
