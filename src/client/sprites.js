@@ -2,11 +2,15 @@ var mapSprites = [
   {
     type: "tile",
     name: "horizons_1_1",
+    width: TILESIZE,
+    height: TILESIZE,
     src: "client/images/horizons_1_1.png"
   },
   {
     type: "entities",
     name: "horizons_3_3",
+    width: TILESIZE*3,
+    height: TILESIZE*3,
     src: "client/images/horizons_3_3.png"
   }
 ];
@@ -37,9 +41,9 @@ var hudSprites = [
   }
 ];
 
-var Img = loadImages(charSprites);
-var HudImg = loadImages(hudSprites);
-var MapImg = loadImages(mapSprites);
+var playerImg = loadImages(charSprites);
+var hudImg = loadImages(hudSprites);
+var mapImg = loadImages(mapSprites);
 
 function loadImages(spriteArray){
   loadedImages = {};
@@ -47,6 +51,8 @@ function loadImages(spriteArray){
     loadedImages[spriteArray[i].type] = loadedImages[spriteArray[i].type] || {};
     loadedImages[spriteArray[i].type][spriteArray[i].name] = new Image();
     loadedImages[spriteArray[i].type][spriteArray[i].name].src = spriteArray[i].src;
+    loadedImages[spriteArray[i].type][spriteArray[i].name].spriteHeight = spriteArray[i].height || 64;
+    loadedImages[spriteArray[i].type][spriteArray[i].name].spriteWidth = spriteArray[i].width || 64;
     loadedImages[spriteArray[i].type][spriteArray[i].name].onload = function(){
       this.isLoaded = true;
     }

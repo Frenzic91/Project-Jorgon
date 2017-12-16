@@ -2,9 +2,9 @@ var utils = require('../utils.js');
 var CT = require('../constants.js');
 
 class Entity {
-  constructor(SpawnX = CT.WIDTH/2, SpawnY = CT.HEIGHT/2) {
-    this.x = utils.isNumeric(SpawnX);
-    this.y = utils.isNumeric(SpawnY);
+  constructor(SpawnX = CT.DEFAULTSPAWNX, SpawnY = CT.DEFAULTSPAWNY) {
+    this.x = SpawnX;
+    this.y = SpawnX;
     this.spdX = 0;
     this.spdY = 0;
     this.id = "";

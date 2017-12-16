@@ -16,9 +16,9 @@ class Hud {
   drawCursor() {
     // Draw cursor
     if(!mouseClicked) {
-      this.canvas.drawImage(HudImg.crosshair.cursor,mouseX-16,mouseY-16,32,32);
+      this.canvas.drawImage(hudImg.crosshair.cursor,mouseX-16,mouseY-16,32,32);
     } else {
-      this.canvas.drawImage(HudImg.crosshair.cursorClick,mouseX-16,mouseY-16,32,32);
+      this.canvas.drawImage(hudImg.crosshair.cursorClick,mouseX-16,mouseY-16,32,32);
     }
   }
 

@@ -21,8 +21,8 @@ class Player {
   }
 
   draw() {
-    let width = Img.player.width;
-    let height = Img.player.height;
+    let width = playerImg.player.width;
+    let height = playerImg.player.height;
 
     let deltaX = this.x - this.xOld;
     let deltaY = this.y - this.yOld;
@@ -126,7 +126,7 @@ class Player {
       index = 1;
     }
     if(this.runState === 0){
-      ctxEntities.drawImage(Img.player.playerFull, index*57 || 57*0, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
+      ctxEntities.drawImage(playerImg.player.playerFull, index*57 || 57*0, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
 
       if(Date.now() - this.stateTime >= ANIMATIONTIME){
         this.runState = 1;
@@ -134,7 +134,7 @@ class Player {
       }
 
     } else if(this.runState === 1) {
-      ctxEntities.drawImage(Img.player.playerFull, index*57 || 57*1, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
+      ctxEntities.drawImage(playerImg.player.playerFull, index*57 || 57*1, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
 
       if(Date.now() - this.stateTime >= ANIMATIONTIME/2){
         this.runState = 2;
@@ -142,7 +142,7 @@ class Player {
       }
 
     } else if(this.runState === 2) {
-      ctxEntities.drawImage(Img.player.playerFull, index*57 || 57*2, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
+      ctxEntities.drawImage(playerImg.player.playerFull, index*57 || 57*2, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
 
       if(Date.now() - this.stateTime >= ANIMATIONTIME){
         this.runState = 0;

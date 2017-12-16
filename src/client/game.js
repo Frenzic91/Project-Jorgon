@@ -1,18 +1,6 @@
 var socket = io();
 
-//Game
-const WIDTH = 1280;
-const HEIGHT = 720;
-const TILESIZE = 64;
-const PLAYERSPRITEWIDTH = 57;
-const PLAYERSPRITEHEIGHT = 57;
-const MININTERP = 0.01;
-const MAXINTERP = 0.02;
-const BLOODDURATION = 10000;
-var ANIMATIONTIME = 100;
 var scale = 1;
-const MAXSCALE = 3;
-const MINSCALE = 1;
 
 var playerList = {};
 
@@ -53,7 +41,6 @@ var pressingDown = false;
 var pressingLeft = false;
 var pressingRight = false;
 
-var playerListLoaded = false;
 var loggedIn = false;
 var loaded = false;
 
@@ -102,7 +89,6 @@ socket.on('init', function(data){
     let player = new Player(data.players[i]);
     playerList[player.id] = player;
   }
-  playerListLoaded = true;
 })
 
 //updated
@@ -254,9 +240,9 @@ function isLoaded(){
   if(loaded){
     return true;
   } else {
-    for(let i in Img){
-      for(let j in Img[i]){
-        if(!Img[i][j].isLoaded){
+    for(let i in playerImg){
+      for(let j in playerImg[i]){
+        if(!playerImg[i][j].isLoaded){
           console.log('character sprite not loaded!');
           return false;
         }
@@ -275,7 +261,7 @@ let fps = 0;
 //Game update loop
 setInterval(function() {
   // Update local player position
-  if(loggedIn && isLoaded() && playerListLoaded){
+  if(loggedIn && isLoaded()){
     playerX = playerList[playerID].xOld;
     playerY = playerList[playerID].yOld;
     // Update aim
@@ -288,12 +274,12 @@ setInterval(function() {
     ctxGround.scale(scale,scale);
 
     if(isPlayerMoving){
-      map.drawGround();
+      map.drawGround(playerX, playerY);
       ctxGround.restore();
     }
 
     // Draw players
-    ctxEntities.clearRect(-WIDTH/2,-HEIGHT/2,2*WIDTH,2*HEIGHT);
+    ctxEntities.clearRect(playerX - WIDTH/2,playerY - HEIGHT/2,WIDTH,HEIGHT);
 
     let sortedList = sortPlayersByY();
 
