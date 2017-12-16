@@ -3,6 +3,7 @@ var socket = io();
 //Game
 const WIDTH = 1280;
 const HEIGHT = 720;
+const TILESIZE = 64;
 const PLAYERSPRITEWIDTH = 57;
 const PLAYERSPRITEHEIGHT = 57;
 const MININTERP = 0.01;
@@ -17,20 +18,23 @@ var playerList = {};
 
 window.onbeforeunload = function() { return "You work will be lost."; };
 
-var canvas = document.getElementById('ctx');
-canvas.onselectstart = function(){return false;}
-var ctx = document.getElementById("ctx").getContext("2d");
+var canvasGround = document.getElementById('ctxGround');
+canvasGround.onselectstart = function(){return false;};
+var ctxGround = document.getElementById("ctxGround").getContext("2d");
 
-var canvasbg = document.getElementById('ctxbg');
-canvasbg.onselectstart = function(){return false;};
-var ctxbg = document.getElementById("ctxbg").getContext("2d");
+var canvasEntities = document.getElementById('ctxEntities');
+canvasEntities.onselectstart = function(){return false;};
+var ctxEntities = document.getElementById("ctxEntities").getContext("2d");
 
-var canvashud = document.getElementById('ctxhud');
-canvashud.onselectstart = function(){return false;};
-var ctxhud = document.getElementById("ctxhud").getContext("2d");
+var canvasHud = document.getElementById('ctxHUD');
+canvasHud.onselectstart = function(){return false;};
+var ctxHUD = document.getElementById("ctxHUD").getContext("2d");
 
-ctx.scale(scale,scale);
-ctxbg.scale(scale,scale);
+var hud;
+var map;
+
+ctxEntities.scale(scale,scale);
+ctxGround.scale(scale,scale);
 
 var playerName = "";
 var playerX = 0;
@@ -49,6 +53,7 @@ var pressingDown = false;
 var pressingLeft = false;
 var pressingRight = false;
 
+var playerListLoaded = false;
 var loggedIn = false;
 var loaded = false;
 
@@ -66,31 +71,16 @@ var hudHPMargin = 20;
 var hpBarWidth = 30;
 
 function drawTestMap(testMap){
-  ctxbg.fillRect(-WIDTH/2,-HEIGHT/2,2*WIDTH,2*HEIGHT);
+  ctxGround.fillRect(-WIDTH/2,-HEIGHT/2,2*WIDTH,2*HEIGHT);
 }
 
 function translateView(){
   xTrans = WIDTH/(2) - playerX*scale;
   yTrans = HEIGHT/(2) - playerY*scale;
-  ctx.save();
-  ctxbg.save();
-  ctx.translate(xTrans,yTrans);
-  ctxbg.translate(xTrans,yTrans);
-}
-
-function rotateAndCache(image,angle) {
-  let offscreenCanvas = document.createElement('canvas');
-  let offscreenCtx = offscreenCanvas.getContext('2d');
-
-  let size = Math.max(image.width, image.height);
-  offscreenCanvas.width = size;
-  offscreenCanvas.height = size;
-
-  offscreenCtx.translate(size/2, size/2);
-  offscreenCtx.rotate(angle + Math.PI/2);
-  offscreenCtx.drawImage(image, -(image.width/2), -(image.height/2));
-
-  return offscreenCanvas;
+  ctxEntities.save();
+  ctxGround.save();
+  ctxEntities.translate(xTrans,yTrans);
+  ctxGround.translate(xTrans,yTrans);
 }
 
 // Initialize the actual player
@@ -100,7 +90,8 @@ socket.on('initPlayer',function(data){
   playerY = data.y;
   playerID = data.id;
   drawTestMap();
-  hud = new Hud(ctxhud);
+  hud = new Hud(ctxHUD);
+  map = new Map(ctxGround,worldJSON);
   loggedIn = true;
 });
 
@@ -111,6 +102,7 @@ socket.on('init', function(data){
     let player = new Player(data.players[i]);
     playerList[player.id] = player;
   }
+  playerListLoaded = true;
 })
 
 //updated
@@ -283,7 +275,7 @@ let fps = 0;
 //Game update loop
 setInterval(function() {
   // Update local player position
-  if(loggedIn && isLoaded()){
+  if(loggedIn && isLoaded() && playerListLoaded){
     playerX = playerList[playerID].xOld;
     playerY = playerList[playerID].yOld;
     // Update aim
@@ -292,16 +284,16 @@ setInterval(function() {
     }
 
     translateView();
-    ctx.scale(scale,scale);
-    ctxbg.scale(scale,scale);
+    ctxEntities.scale(scale,scale);
+    ctxGround.scale(scale,scale);
 
     if(isPlayerMoving){
-      drawTestMap();
-      ctxbg.restore();
+      map.drawGround();
+      ctxGround.restore();
     }
 
     // Draw players
-    ctx.clearRect(-WIDTH/2,-HEIGHT/2,2*WIDTH,2*HEIGHT);
+    ctxEntities.clearRect(-WIDTH/2,-HEIGHT/2,2*WIDTH,2*HEIGHT);
 
     let sortedList = sortPlayersByY();
 
@@ -309,10 +301,10 @@ setInterval(function() {
     for(let i in sortedList){
       playerList[sortedList[i].key].draw();
     }
-    ctxhud.clearRect(0,0,WIDTH,HEIGHT);
+    ctxHUD.clearRect(0,0,WIDTH,HEIGHT);
     hud.drawHud();
 
-    ctx.restore();
+    ctxEntities.restore();
     fpsCount++;
     if(Date.now() - fpsTimer >= 1000){
       let now = Date.now();

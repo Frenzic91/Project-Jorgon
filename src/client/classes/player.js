@@ -13,8 +13,8 @@ class Player {
   this.mouseAngle = initPack.mouseAngle;
   this.moveDelay = initPack.moveDelay;
   this.moveAmount = initPack.moveAmount;
-  this.xOld = self.x;
-  this.yOld = self.y;
+  this.xOld = initPack.x;
+  this.yOld = initPack.y;
   this.stateTime = Date.now();
   this.runState = 0;
   this.hpBarOffset = 0;
@@ -89,25 +89,25 @@ class Player {
   }
 
   drawHPBar() {
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(this.xOld - hpBarWidth/2,this.yOld - 32,30, 4);
+    ctxEntities.fillStyle = "#000000";
+    ctxEntities.fillRect(this.xOld - hpBarWidth/2,this.yOld - 32,30, 4);
     let hpWidth = hpBarWidth * this.hp/this.hpMax;
     if(this.hp === this.hpMax){
-      ctx.fillStyle = "#0000FF";
+      ctxEntities.fillStyle = "#0000FF";
     } else{
       let hpPercent = this.hp/this.hpMax;
       let green = parseInt(Math.floor(255 * hpPercent));
       let red = 255 - green;
-      ctx.fillStyle = getHexRGB(red, green, 0);
+      ctxEntities.fillStyle = getHexRGB(red, green, 0);
     }
-    ctx.fillRect(this.xOld - hpBarWidth/2,this.yOld - 32,hpWidth, 4);
-    ctx.fillStyle = "#000000";
+    ctxEntities.fillRect(this.xOld - hpBarWidth/2,this.yOld - 32,hpWidth, 4);
+    ctxEntities.fillStyle = "#000000";
   }
 
   drawName() {
-    ctx.textAlign="center"
-    ctx.font = "8pt Arial Black";
-    ctx.fillText(this.name, this.xOld, this.yOld - 30 - this.hpBarOffset);
+    ctxEntities.textAlign="center"
+    ctxEntities.font = "8pt Arial Black";
+    ctxEntities.fillText(this.name, this.xOld, this.yOld - 30 - this.hpBarOffset);
   }
 
   isMoving() {
@@ -126,7 +126,7 @@ class Player {
       index = 1;
     }
     if(this.runState === 0){
-      ctx.drawImage(Img.player.playerFull, index*57 || 57*0, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
+      ctxEntities.drawImage(Img.player.playerFull, index*57 || 57*0, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
 
       if(Date.now() - this.stateTime >= ANIMATIONTIME){
         this.runState = 1;
@@ -134,7 +134,7 @@ class Player {
       }
 
     } else if(this.runState === 1) {
-      ctx.drawImage(Img.player.playerFull, index*57 || 57*1, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
+      ctxEntities.drawImage(Img.player.playerFull, index*57 || 57*1, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
 
       if(Date.now() - this.stateTime >= ANIMATIONTIME/2){
         this.runState = 2;
@@ -142,7 +142,7 @@ class Player {
       }
 
     } else if(this.runState === 2) {
-      ctx.drawImage(Img.player.playerFull, index*57 || 57*2, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
+      ctxEntities.drawImage(Img.player.playerFull, index*57 || 57*2, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
 
       if(Date.now() - this.stateTime >= ANIMATIONTIME){
         this.runState = 0;

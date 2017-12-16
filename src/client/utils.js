@@ -27,3 +27,18 @@ function randomObject(obj){
   }
   return result;
 }
+
+function rotateAndCache(image,angle) {
+  let offscreenCanvas = document.createElement('canvas');
+  let offscreenCtx = offscreenCanvas.getContext('2d');
+
+  let size = Math.max(image.width, image.height);
+  offscreenCanvas.width = size;
+  offscreenCanvas.height = size;
+
+  offscreenCtx.translate(size/2, size/2);
+  offscreenCtx.rotate(angle + Math.PI/2);
+  offscreenCtx.drawImage(image, -(image.width/2), -(image.height/2));
+
+  return offscreenCanvas;
+}

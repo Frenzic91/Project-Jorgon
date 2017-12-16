@@ -1,6 +1,6 @@
 class Hud {
-  constructor(ctxhud){
-    this.canvas = ctxhud;
+  constructor(ctxHud){
+    this.canvas = ctxHud;
     // Hud details
 
   }
@@ -32,7 +32,6 @@ class Hud {
 
     //Calculate how much of + to fill
     let playerHPPercent = playerList[playerID].hp/playerList[playerID].hpMax;
-    console.log(playerHPPercent);
     let fillHeight = (hudHPLength - 2*hudOutlineThickness) - Math.floor((hudHPLength - 2*hudOutlineThickness) * playerHPPercent);
     let horFillHeight = fillHeight - (hudHPLength - hudHPWidth)/2;
     if(horFillHeight < 0){
