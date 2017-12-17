@@ -28,8 +28,12 @@ class Player extends Entity {
 
   isTargetInRange() {
     if (this.target) {
+      console.log("calculating range, we have a target already")
       // calculate and return the smallest of the horizontal or vertical
       // distance between this player and the target
+      console.log(Math.abs(this.x/64 - this.target.x));
+      console.log(Math.abs(Math.round(this.y/64) - Math.round(this.target.y/64)));
+
       return (Math.abs(Math.round(this.x/64) - Math.round(this.target.x/64)) <= 1) &&
               (Math.abs(Math.round(this.y/64) - Math.round(this.target.y/64)) <= 1)
     }
@@ -43,6 +47,7 @@ class Player extends Entity {
       this.lastAttacked = Date.now();
 
       // update target players health, static value for now
+      console.log("TRYING TO ATTACK");
       this.target.hp -= 5;
     }
   }
@@ -56,7 +61,7 @@ class Player extends Entity {
   updatePosition(tileMap){
     var xInTiles = this.x / 64;
     var yInTiles = this.y / 64;
-    var tileIndex = xInTiles * yInTiles;
+    var tileIndex = 100 * yInTiles + xInTiles;
 
     //set the default updatePosition to super_updatePosition (for use in new updatePosition function)
     if(Date.now() - this.lastMoved > this.moveDelay){
@@ -91,10 +96,10 @@ class Player extends Entity {
     xInTiles = this.x / 64;
     yInTiles = this.y / 64;
 
-    tileIndex = xInTiles * yInTiles;
+    tileIndex = 100 * yInTiles + xInTiles;
 
     // need to add check if player already occupies tile
-    tileMap[tileIndex].occupyingPlayer = this.id;
+    tileMap[tileIndex].occupyingPlayer = this;
   }
 
   //Update player speed based on player input (right, left, up, down)
