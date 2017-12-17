@@ -2,8 +2,10 @@ var CT = require('./src/constants.js');
 var utils = require('./src/utils.js');
 var database = require('./src/server/db.js');
 var Player = require('./src/server/player.js');
+var worldJSON = require('./src/client/mapData.js');
+var Tile = require('./src/server/tile.js');
 
-console.log(Player)
+//console.log(mapJSON);
 
 var colors = require('colors/safe');
 
@@ -15,6 +17,26 @@ var io = require('socket.io')(server, {});
 var SOCKET_LIST = {};
 var playerList = {};
 var tileMap = [];
+
+for (let row in worldJSON.map) {
+	for (let col in worldJSON.map[row]) {
+    var tile = new Tile(col, row,
+      {
+        spriteId: worldJSON.map[row][col].ground.id,
+        collision: worldJSON.map[row][col].ground.collision
+      },
+      {
+        spriteId: worldJSON.map[row][col].entity.id,
+        collision: worldJSON.map[row][col].entity.collision,
+        occlusion: worldJSON.map[row][col].entity.occlusion
+      })
+
+    tileMap.push(tile)
+    //console.log(tile);
+	}
+}
+
+console.log(tileMap);
 
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/src/client/index.html');
@@ -84,9 +106,15 @@ io.sockets.on('connection', function(socket){
   });
 
   socket.on('attack', function(data) {
-    // look up the specified tileId from data in the tile playerArray
     console.log(data);
+    console.log(100 * data.tileY + data.tileX);
+    // look up the specified tileId from data in the tile playerArray
+    var targetTile = tileMap[100 * Math.round(data.tileY) + Math.round(data.tileX)];
+    console.log(targetTile);
     // get the player that is on the tile (if any) and save as the attacking players
+    if (targetTile.occupyingPlayer) {
+      playerList[data.playerID].target = targetTile.occupyingPlayer;
+    }
   });
 })
 
@@ -112,7 +140,7 @@ function mainUpdate() {
   Player.execPlayerAttacks(playerList);
 
   var pack = {
-    players: Player.getPlayerPositions(playerList)
+    players: Player.getPlayerPositions(playerList, tileMap)
   }
 
   let fullPack = [

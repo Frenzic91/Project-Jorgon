@@ -173,9 +173,12 @@ document.onkeyup = function(event){
 
 document.onmousedown = function(event){
   if(!chatFocused){
-    console.log(playerX, playerY);
-    console.log(mouseX, mouseY);
-
+    //console.log(playerX, playerY);
+    //console.log(mouseX, mouseY);
+    //let x = mouseX - WIDTH/2;
+    //let y = mouseY - HEIGHT/2;
+    //console.log(mouseX - 640);
+    //console.log(mouseY - 364);
     // figure out which tile was clicked
     var currentTileX = playerX / 64;
     var currentTileY = playerY / 64;
@@ -186,6 +189,9 @@ document.onmousedown = function(event){
 
     var targetTileX = currentTileX + distFromTargetInTilesX;
     var targetTileY = currentTileY + distFromTargetInTilesY;
+    console.log(targetTileX);
+    console.log(targetTileY);
+    //console.log(targetTileX, targetTileY)
 
     socket.emit('attack', {attackingPlayer: playerID, tileX: targetTileX, tileY: targetTileY})
     //socket.emit('keyPress', {inputId:'attack', state:true});

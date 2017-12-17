@@ -120002,3 +120002,5 @@ var worldJSON = {
 		}
 	}]]
 };
+
+module.exports = worldJSON;

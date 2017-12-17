@@ -24,16 +24,14 @@ class Player extends Entity {
     this.target = undefined
     this.lastAttacked = 0;
     this.attackDelay = 500;
-    this.x = 0;
-    this.y = 0;
   }
 
   isTargetInRange() {
     if (this.target) {
       // calculate and return the smallest of the horizontal or vertical
       // distance between this player and the target
-      return (Math.abs(this.x - this.target.x) <= 1) &&
-              (Math.abs(this.y - this.target.y) <= 1)
+      return (Math.abs(Math.round(this.x/64) - Math.round(this.target.x/64)) <= 1) &&
+              (Math.abs(Math.round(this.y/64) - Math.round(this.target.y/64)) <= 1)
     }
     return false;
   }
@@ -49,13 +47,17 @@ class Player extends Entity {
     }
   }
 
-  update() {
+  update(tileMap) {
     //this.updateSpd();
     //set the default update function to super_update (for use in new update function)
-    this.updatePosition()
+    this.updatePosition(tileMap)
   }
 
-  updatePosition(){
+  updatePosition(tileMap){
+    var xInTiles = this.x / 64;
+    var yInTiles = this.y / 64;
+    var tileIndex = xInTiles * yInTiles;
+
     //set the default updatePosition to super_updatePosition (for use in new updatePosition function)
     if(Date.now() - this.lastMoved > this.moveDelay){
       this.updateSpd();
@@ -71,16 +73,28 @@ class Player extends Entity {
       this.resetPendingMove();
     }
     if(this.x < CT.MINWIDTH){
+      tileMap[tileIndex].occupyingPlayer = undefined;
       this.x += this.moveAmount;
     } else if(this.x > CT.MAXWIDTH){
+      tileMap[tileIndex].occupyingPlayer = undefined;
       this.x -= this.moveAmount;
     }
 
     if(this.y < CT.MINHEIGHT){
+      tileMap[tileIndex].occupyingPlayer = undefined;
       this.y += this.moveAmount;
     } else if(this.y > CT.MAXHEIGHT){
+      tileMap[tileIndex].occupyingPlayer = undefined;
       this.y -= this.moveAmount;
     }
+    // not sure where to put this
+    xInTiles = this.x / 64;
+    yInTiles = this.y / 64;
+
+    tileIndex = xInTiles * yInTiles;
+
+    // need to add check if player already occupies tile
+    tileMap[tileIndex].occupyingPlayer = this.id;
   }
 
   //Update player speed based on player input (right, left, up, down)
@@ -246,12 +260,12 @@ class Player extends Entity {
   }
 
   // Updates all players and returns an array
-  static getPlayerPositions(playerList){
+  static getPlayerPositions(playerList, tileMap){
     //console.log("getPlayerPositions()")
     let playerArray = [];
     for(let i in playerList){
       let player = playerList[i];
-      player.update();
+      player.update(tileMap);
       playerArray.push(player.getUpdatePack());
     }
     return playerArray;
