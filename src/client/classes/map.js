@@ -21,6 +21,7 @@ class Map {
     for(let i = 0; i < this.height; i++){
       for(let j = this.width-1; j >= 0; j--){
         let currentTileValue = this.data[i][j].ground.id - SPRITEOFFSET;
+        // Calculate the row/column to grab the image from the sprite map
         let spriteIndexRow = Math.floor(currentTileValue/(SPRITESHEETWIDTH))
         let spriteIndexCol = currentTileValue % (SPRITESHEETWIDTH);
         // Map is shifted TILESIZE/2 left and TILESIZE/4 up in order to draw players in the middle of tiles
