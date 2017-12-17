@@ -46,9 +46,9 @@ for(let i = 0; i < mapJSON.height; i++){
     let tile = new Tile();
     tile.ground.id = mapJSON.layers[0].data[i*100+j];
     if(tile.ground.id > 0){
-      tile.ground.collission = horizonsTile1x1.tileproperties[tile.ground.id].collision;
+      tile.ground.collision = horizonsTile1x1.tileproperties[tile.ground.id].collision;
     } else {
-      tile.ground.collission = 0;
+      tile.ground.collision = 0;
     }
 
     tile.entity.id = mapJSON.layers[1].data[i*100+j];
