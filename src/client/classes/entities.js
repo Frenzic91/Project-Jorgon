@@ -18,32 +18,18 @@ class Entities {
     let playerCordX = playerX / 64;
     let playerCordY = playerY / 64;
 
-    let tileStartX = playerCordX - 10 - 3;
-    let tileStartY = playerCordY - 6 - 3;
+    let spriteWidthTiles = Math.floor(entitySheetTileSize/TILESIZE);
 
-    let tilesX = 30;
-    let tilesY = 17;
+    let tileStartX = playerCordX - Math.ceil((WIDTH/64)/2) - spriteWidthTiles; //need to replace 3 with sprite width (this should be another value on the tile)
+    let tileStartY = playerCordY - Math.ceil((HEIGHT/64)/2) - spriteWidthTiles; //need to replace 3 with sprite width (this should be another value on the tile)
 
-    // let topLeftX = playerX - WIDTH/2;
-    // topLeftX = topLeftX - (topLeftX % 64);
-    // let topLeftY = playerY - HEIGHT/2;
-    // topLeftY = topLeftY - (topLeftY % 64);
-    // let tileStartX = topLeftX / TILESIZE - 1;
-    // let tileStartY = Math.floor(topLeftY / TILESIZE) - 1;
-    // let tileEndX = tileStartX + (WIDTH/TILESIZE);
-    // let tileEndY = Math.floor(tileStartY + (HEIGHT/TILESIZE));
-
-    // this.offscreenCanvas.width = WIDTH;
-    // this.offscreenCanvas.height = HEIGHT;
+    let tilesX = Math.ceil(WIDTH/64) + spriteWidthTiles*2; // how many tiles to draw on x axis
+    let tilesY = Math.ceil(HEIGHT/64) + spriteWidthTiles*2; // how many tiles to draw on y axis
 
     this.offscreenCanvas.width = tilesX * TILESIZE;
     this.offscreenCanvas.height = tilesY * TILESIZE;
 
-
-
-
     let virtualY = 0;
-
     let totalTrees = 0;
 
     // Traverse the map going LEFT-DOWN
