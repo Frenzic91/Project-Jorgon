@@ -14,18 +14,21 @@ class Map {
     this.offscreenCanvas.height = this.height * TILESIZE;
 
     let mapSheet = mapImg.tile.horizons_1_1;
+    let mapSheetTileSize = mapSheet.width / 5;
 
     this.offscreenContext.fillStyle = "#000000";
     this.offscreenContext.fillRect(-WIDTH/2,-HEIGHT/2,this.width*TILESIZE+WIDTH,this.height*TILESIZE+HEIGHT)
 
     for(let i = 0; i < this.height; i++){
       for(let j = this.width-1; j >= 0; j--){
-        let currentTileValue = this.data[i][j].ground.id - SPRITEOFFSET;
-        // Calculate the row/column to grab the image from the sprite map
-        let spriteIndexRow = Math.floor(currentTileValue/(SPRITESHEETWIDTH))
-        let spriteIndexCol = currentTileValue % (SPRITESHEETWIDTH);
-        // Map is shifted TILESIZE/2 left and TILESIZE/4 up in order to draw players in the middle of tiles
-        this.offscreenContext.drawImage(mapSheet, TILESIZE*spriteIndexCol, TILESIZE*spriteIndexRow, TILESIZE, TILESIZE, j*TILESIZE - TILESIZE/2, i*TILESIZE - TILESIZE/4, TILESIZE, TILESIZE);
+        let currentTileValue = this.data[i][j].ground.id - GROUNDOFFSET;
+        if(currentTileValue >= 0){
+          // Calculate the row/column to grab the image from the sprite map
+          let spriteIndexRow = Math.floor(currentTileValue/(SPRITESHEETWIDTH))
+          let spriteIndexCol = currentTileValue % (SPRITESHEETWIDTH);
+          // Map is shifted TILESIZE/2 left and TILESIZE/4 up in order to draw players in the middle of tiles
+          this.offscreenContext.drawImage(mapSheet, mapSheetTileSize*spriteIndexCol, mapSheetTileSize*spriteIndexRow, mapSheetTileSize, mapSheetTileSize, j*TILESIZE - TILESIZE/2, i*TILESIZE - TILESIZE/4, mapSheetTileSize, mapSheetTileSize);
+        }
       }
     }
     this.initialized = true;

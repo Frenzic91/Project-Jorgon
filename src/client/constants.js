@@ -11,4 +11,7 @@ var ANIMATIONTIME = 100;
 const MAXSCALE = 3;
 const MINSCALE = 1;
 const SPRITESHEETWIDTH = 5;
-const SPRITEOFFSET = 10;
+
+//Offset index -- This is caused by the map editor (When sprites are moved to the server, this should be passed in)
+const GROUNDOFFSET = 10;
+const ENTITYOFFSET = 84;

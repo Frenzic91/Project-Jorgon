@@ -20,6 +20,7 @@ var ctxHUD = document.getElementById("ctxHUD").getContext("2d");
 
 var hud;
 var map;
+var entities;
 
 ctxEntities.scale(scale,scale);
 ctxGround.scale(scale,scale);
@@ -79,6 +80,7 @@ socket.on('initPlayer',function(data){
   drawTestMap();
   hud = new Hud(ctxHUD);
   map = new Map(ctxGround,worldJSON);
+  entities = new Entities(ctxEntities,worldJSON);
   loggedIn = true;
 });
 
@@ -183,17 +185,18 @@ document.onmousedown = function(event){
     var currentTileX = playerX / 64;
     var currentTileY = playerY / 64;
 
-    // 640 and 364 magic numbers to be replaced by constants
-    var distFromTargetInTilesX = Math.round((mouseX - 640) / 64);
-    var distFromTargetInTilesY = Math.round((mouseY - 364) / 64);
+    // Calculate clicked tile distance
+    var distFromTargetInTilesX = Math.round((mouseX - WIDTH/2) / 64);
+    var distFromTargetInTilesY = Math.round((mouseY - HEIGHT/2) / 64);
 
     var targetTileX = currentTileX + distFromTargetInTilesX;
     var targetTileY = currentTileY + distFromTargetInTilesY;
     console.log(targetTileX);
     console.log(targetTileY);
     //console.log(targetTileX, targetTileY)
-
-    socket.emit('attack', {attackingPlayer: playerID, tileX: targetTileX, tileY: targetTileY})
+    if(loggedIn){
+        socket.emit('attack', {attackingPlayer: playerID, tileX: targetTileX, tileY: targetTileY})
+    }
     //socket.emit('keyPress', {inputId:'attack', state:true});
     mouseClicked = true;
   }
@@ -295,13 +298,16 @@ setInterval(function() {
     ctxEntities.scale(scale,scale);
     ctxGround.scale(scale,scale);
 
-    if(isPlayerMoving){
-      map.drawGround(playerX, playerY);
-      ctxGround.restore();
-    }
-
     // Draw players
     ctxEntities.clearRect(playerX - WIDTH/2,playerY - HEIGHT/2,WIDTH,HEIGHT);
+
+    if(isPlayerMoving){
+      map.drawGround(playerList[playerID].x, playerList[playerID].y);
+      ctxGround.restore();
+      entities.drawEntities(playerList[playerID].x, playerList[playerID].y);
+    }
+
+
 
     let sortedList = sortPlayersByY();
 

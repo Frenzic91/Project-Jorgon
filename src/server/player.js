@@ -49,13 +49,30 @@ class Player extends Entity {
       // update target players health, static value for now
       console.log("TRYING TO ATTACK");
       this.target.hp -= 5;
+      if(this.target.hp <= 0){
+        this.target = undefined;
+      }
     }
   }
 
   update(tileMap) {
     //this.updateSpd();
     //set the default update function to super_update (for use in new update function)
-    this.updatePosition(tileMap)
+    if(this.isAlive()){
+      this.updatePosition(tileMap)
+    }
+  }
+
+  isAlive() {
+    if(this.hp > 0){
+      return true;
+    } else {
+      this.resetKeys();
+      this.hp = 100;
+      this.x = Math.floor(Math.random()*50)*64;
+      this.y = Math.floor(Math.random()*50)*64;
+      this.target = undefined;
+    }
   }
 
   updatePosition(tileMap){
@@ -93,6 +110,9 @@ class Player extends Entity {
       this.y -= this.moveAmount;
     }
     // not sure where to put this
+    tileIndex = 100 * yInTiles + xInTiles;
+    tileMap[tileIndex].occupyingPlayer = null;
+
     xInTiles = this.x / 64;
     yInTiles = this.y / 64;
 

@@ -2,7 +2,7 @@ var CT = require('./src/constants.js');
 var utils = require('./src/utils.js');
 var database = require('./src/server/db.js');
 var Player = require('./src/server/player.js');
-var worldJSON = require('./src/client/mapData.js');
+var worldJSON = require('./src/server/mapData.js');
 var Tile = require('./src/server/tile.js');
 
 //console.log(mapJSON);
@@ -18,23 +18,28 @@ var SOCKET_LIST = {};
 var playerList = {};
 var tileMap = [];
 
-for (let row in worldJSON.map) {
-	for (let col in worldJSON.map[row]) {
-    var tile = new Tile(col, row,
-      {
-        spriteId: worldJSON.map[row][col].ground.id,
-        collision: worldJSON.map[row][col].ground.collision
-      },
-      {
-        spriteId: worldJSON.map[row][col].entity.id,
-        collision: worldJSON.map[row][col].entity.collision,
-        occlusion: worldJSON.map[row][col].entity.occlusion
-      })
+function loadTileMap(callback) {
+  for (let row in worldJSON.map) {
+  	for (let col in worldJSON.map[row]) {
+      var tile = new Tile(col, row,
+        {
+          spriteId: worldJSON.map[row][col].ground.id,
+          collision: worldJSON.map[row][col].ground.collision
+        },
+        {
+          spriteId: worldJSON.map[row][col].entity.id,
+          collision: worldJSON.map[row][col].entity.collision,
+          occlusion: worldJSON.map[row][col].entity.occlusion
+        })
 
-    tileMap.push(tile)
-    //console.log(tile);
-	}
+      tileMap.push(tile)
+      //console.log(tile);
+  	}
+  }
+  callback();
 }
+
+
 
 console.log(tileMap);
 
@@ -115,7 +120,9 @@ io.sockets.on('connection', function(socket){
     if (targetTile.occupyingPlayer) {
       playerList[data.attackingPlayer].target = targetTile.occupyingPlayer;
     } else {
-      playerList[data.attackingPlayer].target = undefined;
+      if(playerList[data.attackingPlayer]){
+        playerList[data.attackingPlayer].target = undefined;
+      }
     }
   });
 })
@@ -134,7 +141,7 @@ var lastUpdate = Date.now();
 var frameCount = 0;
 var frames = [];
 
-mainUpdate();
+loadTileMap(mainUpdate);
 
 function mainUpdate() {
   let start = Date.now();
