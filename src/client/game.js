@@ -301,20 +301,19 @@ setInterval(function() {
     // Draw players
     ctxEntities.clearRect(playerX - WIDTH/2,playerY - HEIGHT/2,WIDTH,HEIGHT);
 
-    if(isPlayerMoving){
-      map.drawGround(playerList[playerID].x, playerList[playerID].y);
-      ctxGround.restore();
-      entities.drawEntities(playerList[playerID].x, playerList[playerID].y);
-    }
-
-
-
     let sortedList = sortPlayersByY();
 
     // Draw players in order from top to bottom of screen
     for(let i in sortedList){
       playerList[sortedList[i].key].draw();
     }
+
+    if(isPlayerMoving){
+      map.drawGround(playerList[playerID].x, playerList[playerID].y);
+      ctxGround.restore();
+      entities.drawEntities(playerList[playerID].x, playerList[playerID].y);
+    }
+
     ctxHUD.clearRect(0,0,WIDTH,HEIGHT);
     hud.drawHud();
 
