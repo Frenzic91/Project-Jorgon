@@ -34,7 +34,7 @@ class Map {
     this.initialized = true;
   }
 
-  drawGround(x,y) {
+  drawGround() {
     if(this.initialized){
       try {
       this.canvas.fillStyle = "#000000";
@@ -47,11 +47,6 @@ class Map {
     } else {
       this.initializeMap();
     }
-  }
-
-
-  drawEntities(canvas,x,y){
-
   }
 
 }

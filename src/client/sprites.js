@@ -8,10 +8,10 @@ var mapSprites = [
   },
   {
     type: "entities",
-    name: "horizons_3_3",
-    width: TILESIZE*3,
-    height: TILESIZE*3,
-    src: "client/images/horizons_3_3.png"
+    name: "horizons_4_4",
+    width: TILESIZE*4,
+    height: TILESIZE*4,
+    src: "client/images/horizons_4_4.png"
   }
 ];
 

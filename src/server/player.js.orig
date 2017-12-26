@@ -42,8 +42,13 @@ class Player extends Entity {
       console.log(Math.abs(this.x - this.target.x));
       console.log(Math.abs(Math.round(this.y) - Math.round(this.target.y)));
 
+<<<<<<< HEAD
+      return (Math.abs(Math.round(this.x/64) - Math.round(this.target.x/64)) <= this.equipment.weapon.range) &&
+              (Math.abs(Math.round(this.y/64) - Math.round(this.target.y/64)) <= this.equipment.weapon.range)
+=======
       return (Math.abs(Math.round(this.x) - Math.round(this.target.x)) <= 1) &&
               (Math.abs(Math.round(this.y) - Math.round(this.target.y)) <= 1)
+>>>>>>> coordChange
     }
     return false;
   }
@@ -55,9 +60,15 @@ class Player extends Entity {
       this.lastAttacked = Date.now();
 
       // update target players health, static value for now
+<<<<<<< HEAD
       console.log("Hit enemy for %d", this.equipment.weapon.damage);
-      this.target.takeDamage(this.equipment.weapon.damage);
+      this.target.hp -= this.equipment.weapon.damage;
+      if(this.target.hp <= 0){
+=======
+      console.log("TRYING TO ATTACK");
+      this.target.takeDamage(5);
       if(!this.target.isAlive()){
+>>>>>>> coordChange
         this.target = undefined;
       }
     }
@@ -108,6 +119,21 @@ class Player extends Entity {
     }
 
     if(this.x < CT.MINWIDTH){
+<<<<<<< HEAD
+      this.x += this.moveAmount;
+    } else if(this.x > CT.MAXWIDTH){
+      this.x -= this.moveAmount;
+    }
+
+    if(this.y < CT.MINHEIGHT){
+      this.y += this.moveAmount;
+    } else if(this.y > CT.MAXHEIGHT){
+      this.y -= this.moveAmount;
+    }
+    // not sure where to put this
+    tileIndex = 100 * yInTiles + xInTiles;
+    tileMap[tileIndex].occupyingPlayer = undefined;
+=======
       this.x = CT.MINWIDTH;
     } else if(this.x > CT.MAXWIDTH){
       this.x = CT.MAXWIDTH;
@@ -118,6 +144,7 @@ class Player extends Entity {
     } else if(this.y > CT.MAXHEIGHT){
       this.y = CT.MAXHEIGHT;
     }
+>>>>>>> coordChange
 
     var tileIndex = 100 * this.x + this.y;
     // If player moved, make old tile undefined, and update new tile.
