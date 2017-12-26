@@ -24,13 +24,11 @@ class Entities {
 
     for(let y = 0; y < this.height; y++){
       for(let x = this.width - 1; x >= 0; x--){
-        console.log(x,y);
         let currentTileValue = this.data[y][x].entity.id - ENTITYOFFSET;
         if(currentTileValue >= 0){
           // Calculate the row/column to grab the image from the sprite map
           let spriteIndexRow = Math.floor(currentTileValue/(SPRITESHEETWIDTH))
           let spriteIndexCol = currentTileValue % (SPRITESHEETWIDTH);
-          console.log("Drawing Tree");
           this.offscreenContextAll.drawImage(entitySheet, entitySheetTileSize*spriteIndexCol, entitySheetTileSize*spriteIndexRow, entitySheetTileSize, entitySheetTileSize, x*TILESIZE, (y-(spriteWidthTiles-1))*TILESIZE, entitySheetTileSize, entitySheetTileSize);
         }
       }

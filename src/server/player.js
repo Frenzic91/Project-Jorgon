@@ -18,6 +18,7 @@ class Player extends Entity {
     this.pendingMoveX = 0;
     this.pendingMoveY = 0;
     this.lastMoved = 0;
+    this.tileIndex = undefined;
 
     this.hp = 100;
     this.hpMax = 100;
@@ -135,6 +136,7 @@ class Player extends Entity {
     }
 
       tileMap[tileIndex].occupyingPlayer = this;
+      this.tileIndex = tileIndex;
   }
 
   //Update player speed based on player input (right, left, up, down)
@@ -274,7 +276,14 @@ class Player extends Entity {
   }
 
   // Triggers when a player socket disconnects
-  static onDisconnect(removePack, playerList, socket){
+  static onDisconnect(removePack, playerList, socket, tileMap){
+    // Remove player from tile when he disconnects
+    let tileIndex = playerList[socket.id].tileIndex;
+    if(tileMap[tileIndex]){
+      if(tileMap[tileIndex].occupyingPlayer == playerList[socket.id]){
+        tileMap[tileIndex].occupyingPlayer = undefined;
+      }
+    }
     removePack.players.push(socket.id);
     delete playerList[socket.id];
   }

@@ -107,7 +107,9 @@ io.sockets.on('connection', function(socket){
 
   socket.on('disconnect', function(){
     delete SOCKET_LIST[socket.id];
-    Player.onDisconnect(removePack, playerList, socket);
+    if(playerList[socket.id]){
+      Player.onDisconnect(removePack, playerList, socket, tileMap);
+    }
   });
 
   socket.on('attack', function(data) {
