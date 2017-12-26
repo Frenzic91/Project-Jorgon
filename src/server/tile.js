@@ -5,6 +5,7 @@ class Tile {
     this.x = x;
     this.y = y;
     this.occupyingPlayer = undefined;
+    this.collision = ground.collision || entity.collision;
     this.ground = {
       spriteId: ground.spriteId,
       hasCollision: ground.collision
@@ -16,6 +17,15 @@ class Tile {
     }
     this.itemStack = []
   }
+
+  hasCollision() {
+    if(this.occupyingPlayer || this.collision){
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 }
 
 module.exports = Tile;

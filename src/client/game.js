@@ -191,7 +191,8 @@ document.onmousedown = function(event){
 
     // Calculate clicked tile distance
     var distFromTargetInTilesX = Math.round((mouseX - WIDTH/2) / 64);
-    var distFromTargetInTilesY = Math.round((mouseY - HEIGHT/2) / 64);
+    // Offset TILESIZE/4 because map is offset
+    var distFromTargetInTilesY = Math.round((mouseY - HEIGHT/2 - TILESIZE/4) / 64);
 
     var targetTileX = currentTileX + distFromTargetInTilesX;
     var targetTileY = currentTileY + distFromTargetInTilesY;

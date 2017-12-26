@@ -42,8 +42,8 @@ class Player extends Entity {
       console.log(Math.abs(this.x - this.target.x));
       console.log(Math.abs(Math.round(this.y) - Math.round(this.target.y)));
 
-      return (Math.abs(Math.round(this.x) - Math.round(this.target.x)) <= 1) &&
-              (Math.abs(Math.round(this.y) - Math.round(this.target.y)) <= 1)
+      return (Math.abs(Math.round(this.x) - Math.round(this.target.x)) <= this.equipment.weapon.range) &&
+              (Math.abs(Math.round(this.y) - Math.round(this.target.y)) <= this.equipment.weapon.range)
     }
     return false;
   }
@@ -95,7 +95,7 @@ class Player extends Entity {
     //set the default updatePosition to super_updatePosition (for use in new updatePosition function)
     if(Date.now() - this.lastMoved > this.moveDelay){
       this.updateSpd();
-      this.lastMoved = Date.now();
+
       // use pendingMove if exists
       if(this.pendingMoveX !== 0){
         this.spdX = this.pendingMoveX;
@@ -103,7 +103,16 @@ class Player extends Entity {
       if(this.pendingMoveY !== 0){
         this.spdY = this.pendingMoveY;
       }
-      super.updatePosition();
+      //Checks collision
+      let newX = this.x + this.spdX;
+      let newY = this.y + this.spdY;
+      let newTileIndex = 100 * newY + newX;
+
+      if(!tileMap[newTileIndex].hasCollision()){
+        this.lastMoved = Date.now();
+        super.updatePosition();
+      }
+
       this.resetPendingMove();
     }
 
@@ -119,13 +128,13 @@ class Player extends Entity {
       this.y = CT.MAXHEIGHT;
     }
 
-    var tileIndex = 100 * this.x + this.y;
+    var tileIndex = 100 * this.y + this.x;
     // If player moved, make old tile undefined, and update new tile.
     if(tileIndexOld != tileIndex){
       tileMap[tileIndexOld].occupyingPlayer = undefined;
-      tileMap[tileIndex].occupyingPlayer = this;
     }
 
+      tileMap[tileIndex].occupyingPlayer = this;
   }
 
   //Update player speed based on player input (right, left, up, down)

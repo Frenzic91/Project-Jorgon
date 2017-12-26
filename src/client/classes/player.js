@@ -61,10 +61,8 @@ class Player {
       this.yOld = this.screenY;
     }
 
-    if(this.id === playerID){
-      this.drawHPBar();
-      this.hpBarOffset = 5;
-    }
+    this.drawHPBar();
+    this.hpBarOffset = 5;
 
     this.drawPlayer(this.isMoving(), PLAYERSPRITEWIDTH, PLAYERSPRITEHEIGHT);
 
