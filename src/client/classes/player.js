@@ -7,14 +7,16 @@ class Player {
   this.interp = MININTERP;
   this.x = initPack.x;
   this.y = initPack.y;
+  this.screenX = initPack.x * TILESIZE;
+  this.screenY = initPack.y * TILESIZE;
   this.hp = initPack.hp;
   this.hpMax = initPack.hpMax;
   this.score = initPack.score;
   this.mouseAngle = initPack.mouseAngle;
   this.moveDelay = initPack.moveDelay;
   this.moveAmount = initPack.moveAmount;
-  this.xOld = initPack.x;
-  this.yOld = initPack.y;
+  this.xOld = this.screenX;
+  this.yOld = this.screenY;
   this.stateTime = Date.now();
   this.runState = 0;
   this.hpBarOffset = 0;
@@ -24,8 +26,8 @@ class Player {
     let width = playerImg.player.width;
     let height = playerImg.player.height;
 
-    let deltaX = this.x - this.xOld;
-    let deltaY = this.y - this.yOld;
+    let deltaX = this.screenX - this.xOld;
+    let deltaY = this.screenY - this.yOld;
 
     let interpRate = 2.5*(200/this.moveDelay)
 
@@ -34,7 +36,7 @@ class Player {
     } else if (deltaX < -interpRate){
       this.xOld -= interpRate;
     } else {
-      this.xOld = this.x;
+      this.xOld = this.screenX;
     }
 
     if(deltaY > interpRate){
@@ -42,7 +44,7 @@ class Player {
     } else if (deltaY < -interpRate){
       this.yOld -= interpRate;
     } else {
-      this.yOld = this.y;
+      this.yOld = this.screenY;
     }
 
     //Does nothing atm - This was another form of interp
@@ -52,11 +54,11 @@ class Player {
 
     this.setDirection();
 
-    if(Math.abs(this.xOld - this.x) < 1){
-      this.xOld = this.x;
+    if(Math.abs(this.xOld - this.screenX) < 1){
+      this.xOld = this.screenX;
     }
-    if(Math.abs(this.yOld - this.y) < 1){
-      this.yOld = this.y;
+    if(Math.abs(this.yOld - this.screenY) < 1){
+      this.yOld = this.screenY;
     }
 
     if(this.id === playerID){
@@ -71,8 +73,8 @@ class Player {
 
   setDirection() {
     // down = 0, left = 1, right = 2, up = 3
-    let deltaX = this.x - this.xOld;
-    let deltaY = this.y - this.yOld;
+    let deltaX = this.screenX - this.xOld;
+    let deltaY = this.screenY - this.yOld;
     let isXLarger = Math.abs(deltaX) > Math.abs(deltaY);
     if(deltaX > 0 && isXLarger){
       this.direction = 2;
@@ -111,7 +113,7 @@ class Player {
   }
 
   isMoving() {
-    if(this.xOld !== this.x || this.yOld !== this.y){
+    if(this.xOld !== this.screenX || this.yOld !== this.screenY){
       return true;
     } else {
       return false;

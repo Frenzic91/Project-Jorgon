@@ -13,7 +13,7 @@ class Player extends Entity {
     this.pressingUp = false;
     this.pressingDown = false;
     this.moveDelay = 150;
-    this.moveAmount = 64;
+    this.moveAmount = 1;
     this.pendingMoveX = 0;
     this.pendingMoveY = 0;
     this.lastMoved = 0;
@@ -31,11 +31,11 @@ class Player extends Entity {
       console.log("calculating range, we have a target already")
       // calculate and return the smallest of the horizontal or vertical
       // distance between this player and the target
-      console.log(Math.abs(this.x/64 - this.target.x));
-      console.log(Math.abs(Math.round(this.y/64) - Math.round(this.target.y/64)));
+      console.log(Math.abs(this.x - this.target.x));
+      console.log(Math.abs(Math.round(this.y) - Math.round(this.target.y)));
 
-      return (Math.abs(Math.round(this.x/64) - Math.round(this.target.x/64)) <= 1) &&
-              (Math.abs(Math.round(this.y/64) - Math.round(this.target.y/64)) <= 1)
+      return (Math.abs(Math.round(this.x) - Math.round(this.target.x)) <= 1) &&
+              (Math.abs(Math.round(this.y) - Math.round(this.target.y)) <= 1)
     }
     return false;
   }
@@ -48,11 +48,15 @@ class Player extends Entity {
 
       // update target players health, static value for now
       console.log("TRYING TO ATTACK");
-      this.target.hp -= 5;
-      if(this.target.hp <= 0){
+      this.target.takeDamage(5);
+      if(!this.target.isAlive()){
         this.target = undefined;
       }
     }
+  }
+
+  takeDamage(amount){
+    this.hp -= amount;
   }
 
   update(tileMap) {
@@ -69,16 +73,16 @@ class Player extends Entity {
     } else {
       this.resetKeys();
       this.hp = 100;
-      this.x = Math.floor(Math.random()*50)*64;
-      this.y = Math.floor(Math.random()*50)*64;
+      this.x = Math.floor(Math.random()*50);
+      this.y = Math.floor(Math.random()*50);
       this.target = undefined;
     }
   }
 
   updatePosition(tileMap){
-    var xInTiles = this.x / 64;
-    var yInTiles = this.y / 64;
-    var tileIndex = 100 * yInTiles + xInTiles;
+    var xInTiles = this.x;
+    var yInTiles = this.y;
+    var tileIndexOld = 100 * yInTiles + xInTiles;
 
     //set the default updatePosition to super_updatePosition (for use in new updatePosition function)
     if(Date.now() - this.lastMoved > this.moveDelay){
@@ -94,32 +98,26 @@ class Player extends Entity {
       super.updatePosition();
       this.resetPendingMove();
     }
+
     if(this.x < CT.MINWIDTH){
-      tileMap[tileIndex].occupyingPlayer = undefined;
-      this.x += this.moveAmount;
+      this.x = CT.MINWIDTH;
     } else if(this.x > CT.MAXWIDTH){
-      tileMap[tileIndex].occupyingPlayer = undefined;
-      this.x -= this.moveAmount;
+      this.x = CT.MAXWIDTH;
     }
 
     if(this.y < CT.MINHEIGHT){
-      tileMap[tileIndex].occupyingPlayer = undefined;
-      this.y += this.moveAmount;
+      this.y = CT.MINHEIGHT;
     } else if(this.y > CT.MAXHEIGHT){
-      tileMap[tileIndex].occupyingPlayer = undefined;
-      this.y -= this.moveAmount;
+      this.y = CT.MAXHEIGHT;
     }
-    // not sure where to put this
-    tileIndex = 100 * yInTiles + xInTiles;
-    tileMap[tileIndex].occupyingPlayer = null;
 
-    xInTiles = this.x / 64;
-    yInTiles = this.y / 64;
+    var tileIndex = 100 * this.x + this.y;
+    // If player moved, make old tile undefined, and update new tile.
+    if(tileIndexOld != tileIndex){
+      tileMap[tileIndexOld].occupyingPlayer = undefined;
+      tileMap[tileIndex].occupyingPlayer = this;
+    }
 
-    tileIndex = 100 * yInTiles + xInTiles;
-
-    // need to add check if player already occupies tile
-    tileMap[tileIndex].occupyingPlayer = this;
   }
 
   //Update player speed based on player input (right, left, up, down)

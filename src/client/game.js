@@ -28,6 +28,8 @@ ctxGround.scale(scale,scale);
 var playerName = "";
 var playerX = 0;
 var playerY = 0;
+var playerXPixels = 0;
+var playerYPixels = 0;
 var playerID = 0;
 
 let xTrans = 0;
@@ -63,8 +65,8 @@ function drawTestMap(testMap){
 }
 
 function translateView(){
-  xTrans = WIDTH/(2) - playerX*scale;
-  yTrans = HEIGHT/(2) - playerY*scale;
+  xTrans = WIDTH/(2) - playerXPixels*scale;
+  yTrans = HEIGHT/(2) - playerYPixels*scale;
   ctxEntities.save();
   ctxGround.save();
   ctxEntities.translate(xTrans,yTrans);
@@ -101,9 +103,11 @@ socket.on('update', function(data){
     if(p){
       if(pack.x !== undefined){
         p.x = pack.x;
+        p.screenX = pack.x * 64;
       }
       if(pack.y !== undefined){
         p.y = pack.y;
+        p.screenY = pack.y * 64;
       }
       if(pack.hp !== undefined){
         p.hp = pack.hp;
@@ -182,8 +186,8 @@ document.onmousedown = function(event){
     //console.log(mouseX - 640);
     //console.log(mouseY - 364);
     // figure out which tile was clicked
-    var currentTileX = playerX / 64;
-    var currentTileY = playerY / 64;
+    var currentTileX = playerX;
+    var currentTileY = playerY;
 
     // Calculate clicked tile distance
     var distFromTargetInTilesX = Math.round((mouseX - WIDTH/2) / 64);
@@ -287,8 +291,10 @@ let fps = 0;
 setInterval(function() {
   // Update local player position
   if(loggedIn && isLoaded()){
-    playerX = playerList[playerID].xOld;
-    playerY = playerList[playerID].yOld;
+    playerXPixels = playerList[playerID].xOld;
+    playerYPixels = playerList[playerID].yOld;
+    playerX = playerList[playerID].x;
+    playerY = playerList[playerID].y;
     // Update aim
     if(updateCount >= 50){
       updateAngle();
@@ -299,7 +305,7 @@ setInterval(function() {
     ctxGround.scale(scale,scale);
 
     // Draw players
-    ctxEntities.clearRect(playerX - WIDTH/2,playerY - HEIGHT/2,WIDTH,HEIGHT);
+    ctxEntities.clearRect(playerXPixels - WIDTH/2,playerYPixels - HEIGHT/2,WIDTH,HEIGHT);
 
     let sortedList = sortPlayersByY();
 
@@ -308,11 +314,9 @@ setInterval(function() {
       playerList[sortedList[i].key].draw();
     }
 
-    if(isPlayerMoving){
-      map.drawGround(playerList[playerID].x, playerList[playerID].y);
-      ctxGround.restore();
-      entities.drawEntities(playerList[playerID].x, playerList[playerID].y);
-    }
+    map.drawGround();
+    ctxGround.restore();
+    entities.drawEntities(playerX, playerY);
 
     ctxHUD.clearRect(0,0,WIDTH,HEIGHT);
     hud.drawHud();

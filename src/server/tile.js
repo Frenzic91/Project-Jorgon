@@ -5,8 +5,6 @@ class Tile {
     this.x = x;
     this.y = y;
     this.occupyingPlayer = undefined;
-    this.width = CT.TILESIZE;
-    this.height = CT.TILESIZE;
     this.ground = {
       spriteId: ground.spriteId,
       hasCollision: ground.collision

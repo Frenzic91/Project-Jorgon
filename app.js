@@ -118,7 +118,10 @@ io.sockets.on('connection', function(socket){
     console.log(targetTile);
     // get the player that is on the tile (if any) and save as the attacking players
     if (targetTile.occupyingPlayer) {
-      playerList[data.attackingPlayer].target = targetTile.occupyingPlayer;
+      //Check so you can not attack yourself.
+      if(data.attackingPlayer != targetTile.occupyingPlayer.id){
+        playerList[data.attackingPlayer].target = targetTile.occupyingPlayer;
+      }
     } else {
       if(playerList[data.attackingPlayer]){
         playerList[data.attackingPlayer].target = undefined;

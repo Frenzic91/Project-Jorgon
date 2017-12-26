@@ -11,15 +11,11 @@ class Entities {
 
 
   //This needs to be updated - i.e draw all static entities to a virtual canvas like the map, but only redraw the ones that have occlusion)
-  initializeEntities(playerX, playerY){
-    let entitySheet = mapImg.entities.horizons_3_3;
+  initializeEntities(playerCordX, playerCordY){
+    let entitySheet = mapImg.entities.horizons_4_4;
     let entitySheetTileSize = entitySheet.width; // This will need to be updated -> entitySheet.width / 5
 
-    let playerCordX = playerX / 64;
-    let playerCordY = playerY / 64;
-
     let spriteWidthTiles = Math.floor(entitySheetTileSize/TILESIZE);
-
     let tileStartX = playerCordX - Math.ceil((WIDTH/64)/2) - spriteWidthTiles; //need to replace 3 with sprite width (this should be another value on the tile)
     let tileStartY = playerCordY - Math.ceil((HEIGHT/64)/2) - spriteWidthTiles; //need to replace 3 with sprite width (this should be another value on the tile)
 
@@ -47,7 +43,7 @@ class Entities {
               // Calculate the row/column to grab the image from the sprite map
               let spriteIndexRow = Math.floor(currentTileValue/(SPRITESHEETWIDTH))
               let spriteIndexCol = currentTileValue % (SPRITESHEETWIDTH);
-              this.offscreenContext.drawImage(entitySheet, entitySheetTileSize*spriteIndexCol, entitySheetTileSize*spriteIndexRow, entitySheetTileSize, entitySheetTileSize, virtualX*TILESIZE, (virtualY-2)*TILESIZE, entitySheetTileSize, entitySheetTileSize);
+              this.offscreenContext.drawImage(entitySheet, entitySheetTileSize*spriteIndexCol, entitySheetTileSize*spriteIndexRow, entitySheetTileSize, entitySheetTileSize, virtualX*TILESIZE, (virtualY-(spriteWidthTiles-1))*TILESIZE, entitySheetTileSize, entitySheetTileSize);
             }
           }
           virtualX--;
@@ -62,13 +58,11 @@ class Entities {
 
   drawEntities(playerX, playerY){
     this.initializeEntities(playerX, playerY);
-    let topLeftX = playerX - WIDTH/2;
-    topLeftX = topLeftX - (topLeftX % 64);
-    let topLeftY = playerY - HEIGHT/2;
-    topLeftY = topLeftY - (topLeftY % 64);
+    let topLeftX = playerX*TILESIZE - WIDTH/2;
+    let topLeftY = playerY*TILESIZE - HEIGHT/2;
     //this.canvas.drawImage(this.offscreenCanvas, 0, 0);
     //this.canvas.drawImage(this.offscreenCanvas, topLeftX - TILESIZE/2, topLeftY - TILESIZE/4);
-    this.canvas.drawImage(this.offscreenCanvas, topLeftX - 3*TILESIZE - TILESIZE/2, topLeftY - 3*TILESIZE - TILESIZE/4);
+    this.canvas.drawImage(this.offscreenCanvas, topLeftX - 4*TILESIZE - TILESIZE/2, topLeftY - 4*TILESIZE - TILESIZE/2);
 
   }
 
