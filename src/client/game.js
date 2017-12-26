@@ -83,6 +83,7 @@ socket.on('initPlayer',function(data){
   hud = new Hud(ctxHUD);
   map = new Map(ctxGround,worldJSON);
   entities = new Entities(ctxEntities,worldJSON);
+  entities.initializeAllEntities();
   loggedIn = true;
 });
 
