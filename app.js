@@ -115,29 +115,12 @@ io.sockets.on('connection', function(socket){
     console.log(100 * data.tileY + data.tileX);
     // look up the specified tileId from data in the tile playerArray
     var targetTile = tileMap[100 * Math.round(data.tileY) + Math.round(data.tileX)];
-<<<<<<< HEAD
-    // make sure attacking player still exists
-    if (playerList[data.attackingPlayer]) {
-      // make sure there is a player on the target tile that isnt the player who is trying to target
-      if (targetTile.occupyingPlayer && (data.attackingPlayer != targetTile.occupyingPlayer.id)) {
-        // the player on the target tile is already targetted
-        if (playerList[data.attackingPlayer].target && playerList[data.attackingPlayer].target.id === targetTile.occupyingPlayer.id) {
-          playerList[data.attackingPlayer].target = undefined;
-        } else {
-          playerList[data.attackingPlayer].target = targetTile.occupyingPlayer;
-        }
-      } else {
-=======
     console.log(targetTile);
     // get the player that is on the tile (if any) and save as the attacking players
     if (targetTile.occupyingPlayer) {
-      //Check so you can not attack yourself.
-      if(data.attackingPlayer != targetTile.occupyingPlayer.id){
-        playerList[data.attackingPlayer].target = targetTile.occupyingPlayer;
-      }
+      playerList[data.attackingPlayer].target = targetTile.occupyingPlayer;
     } else {
       if(playerList[data.attackingPlayer]){
->>>>>>> coordChange
         playerList[data.attackingPlayer].target = undefined;
       }
     }
