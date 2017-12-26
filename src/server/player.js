@@ -1,5 +1,6 @@
 var Entity = require('./entity.js');
 var CT = require('../constants.js');
+var Weapon = require('./weapon.js');
 
 // Player class (based on Entity) - We should pull this into a seperate file
 class Player extends Entity {
@@ -23,7 +24,14 @@ class Player extends Entity {
 
     this.target = undefined
     this.lastAttacked = 0;
-    this.attackDelay = 500;
+
+    this.inventory = [];
+    this.equipment = {"weapon": new Weapon({
+      "damage": 34,
+      "range": 2,
+      "attackDelay": 1000,
+      "levelReq": 0
+    })};
   }
 
   isTargetInRange() {
@@ -34,21 +42,21 @@ class Player extends Entity {
       console.log(Math.abs(this.x/64 - this.target.x));
       console.log(Math.abs(Math.round(this.y/64) - Math.round(this.target.y/64)));
 
-      return (Math.abs(Math.round(this.x/64) - Math.round(this.target.x/64)) <= 1) &&
-              (Math.abs(Math.round(this.y/64) - Math.round(this.target.y/64)) <= 1)
+      return (Math.abs(Math.round(this.x/64) - Math.round(this.target.x/64)) <= this.equipment.weapon.range) &&
+              (Math.abs(Math.round(this.y/64) - Math.round(this.target.y/64)) <= this.equipment.weapon.range)
     }
     return false;
   }
 
   attack() {
     // only melee attacks for now
-    if (this.isTargetInRange() && (Date.now() - this.lastAttacked > this.attackDelay)) {
+    if (this.isTargetInRange() && (Date.now() - this.lastAttacked > this.equipment.weapon.attackDelay)) {
       // set lastAttacked back to curret time
       this.lastAttacked = Date.now();
 
       // update target players health, static value for now
-      console.log("TRYING TO ATTACK");
-      this.target.hp -= 5;
+      console.log("Hit enemy for %d", this.equipment.weapon.damage);
+      this.target.hp -= this.equipment.weapon.damage;
       if(this.target.hp <= 0){
         this.target = undefined;
       }
@@ -95,23 +103,19 @@ class Player extends Entity {
       this.resetPendingMove();
     }
     if(this.x < CT.MINWIDTH){
-      tileMap[tileIndex].occupyingPlayer = undefined;
       this.x += this.moveAmount;
     } else if(this.x > CT.MAXWIDTH){
-      tileMap[tileIndex].occupyingPlayer = undefined;
       this.x -= this.moveAmount;
     }
 
     if(this.y < CT.MINHEIGHT){
-      tileMap[tileIndex].occupyingPlayer = undefined;
       this.y += this.moveAmount;
     } else if(this.y > CT.MAXHEIGHT){
-      tileMap[tileIndex].occupyingPlayer = undefined;
       this.y -= this.moveAmount;
     }
     // not sure where to put this
     tileIndex = 100 * yInTiles + xInTiles;
-    tileMap[tileIndex].occupyingPlayer = null;
+    tileMap[tileIndex].occupyingPlayer = undefined;
 
     xInTiles = this.x / 64;
     yInTiles = this.y / 64;
