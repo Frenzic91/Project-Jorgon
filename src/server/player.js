@@ -9,7 +9,6 @@ class Player extends Entity {
     this.id = id; // equivalent to socket ID
     this.name = playerData.username;
     this.number = "" + Math.floor(10 * Math.random()); // random array value - likely a better way to do this
-    this.mouseDownTileInfo = {x: -1, y: -1, isAnItemSelected: false, isAPlayerSelected: false}
     this.pressingRight = false;
     this.pressingLeft = false;
     this.pressingUp = false;

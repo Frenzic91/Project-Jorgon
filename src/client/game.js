@@ -39,6 +39,7 @@ let yTrans = 0;
 var mouseX = 0;
 var mouseY = 0;
 var mouseClicked = false;
+var mouseDownTileInfo = {x: -1, y: -1};
 
 var pressingUp = false;
 var pressingDown = false;
@@ -202,16 +203,16 @@ document.onmousedown = function(event){
   console.log(event);
   if(!chatFocused){
     // figure out which tile was clicked
-    var currentTileX = playerX;
-    var currentTileY = playerY;
+    let currentTileX = playerX;
+    let currentTileY = playerY;
 
     // Calculate clicked tile distance
-    var distFromTargetInTilesX = Math.round((mouseX - WIDTH/2) / 64);
+    let distFromTargetInTilesX = Math.round((mouseX - WIDTH/2) / 64);
     // Offset TILESIZE/4 because map is offset
-    var distFromTargetInTilesY = Math.round((mouseY - HEIGHT/2 - TILESIZE/4) / 64);
+    let distFromTargetInTilesY = Math.round((mouseY - HEIGHT/2 - TILESIZE/4) / 64);
 
-    var targetTileX = currentTileX + distFromTargetInTilesX;
-    var targetTileY = currentTileY + distFromTargetInTilesY;
+    let targetTileX = currentTileX + distFromTargetInTilesX;
+    let targetTileY = currentTileY + distFromTargetInTilesY;
 
     console.log(targetTileX);
     console.log(targetTileY);
@@ -222,8 +223,10 @@ document.onmousedown = function(event){
         console.log('Attack!');
         socket.emit('attack', {attackingPlayer: playerID, tileX: targetTileX, tileY: targetTileY});
       } else {
-        console.log('Left-click registered');
-        socket.emit('playerMouseDown', {clickingPlayer: playerID, tileX: targetTileX, tileY: targetTileY});
+        //console.log('Left-click registered');
+        //socket.emit('playerMouseDown', {clickingPlayer: playerID, tileX: targetTileX, tileY: targetTileY});
+        mouseDownTileInfo['x'] = targetTileX;
+        mouseDownTileInfo['y'] = targetTileY;
       }
     }
     //socket.emit('keyPress', {inputId:'attack', state:true});
@@ -236,19 +239,30 @@ document.onmouseup = function(event){
 
   // temporary copy pasta from onmousedown
   // figure out which tile was clicked
-  var currentTileX = playerX;
-  var currentTileY = playerY;
+  let currentTileX = playerX;
+  let currentTileY = playerY;
 
   // Calculate clicked tile distance
-  var distFromTargetInTilesX = Math.round((mouseX - WIDTH/2) / 64);
+  let distFromTargetInTilesX = Math.round((mouseX - WIDTH/2) / 64);
   // Offset TILESIZE/4 because map is offset
-  var distFromTargetInTilesY = Math.round((mouseY - HEIGHT/2 - TILESIZE/4) / 64);
+  let distFromTargetInTilesY = Math.round((mouseY - HEIGHT/2 - TILESIZE/4) / 64);
 
-  var targetTileX = currentTileX + distFromTargetInTilesX;
-  var targetTileY = currentTileY + distFromTargetInTilesY;
+  let targetTileX = currentTileX + distFromTargetInTilesX;
+  let targetTileY = currentTileY + distFromTargetInTilesY;
 
   if (loggedIn) {
-    socket.emit('playerMouseUp', {clickingPlayer: playerID, tileX: targetTileX, tileY: targetTileY});
+    //socket.emit('playerMouseUp', {clickingPlayer: playerID, tileX: targetTileX, tileY: targetTileY});
+    socket.emit('playerMouseUp', {
+      clickingPlayer: playerID,
+      fromTile: {
+        x: mouseDownTileInfo.x,
+        y: mouseDownTileInfo.y
+      },
+      toTile: {
+        x: targetTileX,
+        y: targetTileY
+      }
+    });
   }
 
   mouseClicked = false;

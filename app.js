@@ -129,63 +129,42 @@ io.sockets.on('connection', function(socket){
   });
 
   // also move to Player class
-  socket.on('playerMouseDown', function(data) {
-    var player = playerList[data.clickingPlayer];
-
-    player.mouseDownTileInfo['x'] = data.tileX;
-    player.mouseDownTileInfo['y'] = data.tileY;
-
-    // make sure player is beside item
-    if (Math.abs(player.x - data.tileX) <= 1 && Math.abs(player.y - data.tileY) <= 1) {
-      var mouseDownTile = tileMap[100 * data.tileY + data.tileX];
-
-      if (mouseDownTile.itemStack.length > 0) {
-        player.mouseDownTileInfo['isAnItemSelected'] = true;
-      } else if (mouseDownTile.occupyingPlayer) {
-        player.mouseDownTileInfo['isAPlayerSelected'] = true;
-      }
-
-      console.log('-------');
-      console.log(player.mouseDownTileInfo);
-    }
-  });
-
-  // also move to Player class
   socket.on('playerMouseUp', function(data) {
     var player = playerList[data.clickingPlayer];
-    var mouseUpTile = tileMap[100 * data.tileY + data.tileX];
+    var mouseDownTile = tileMap[100 * data.fromTile.y + data.fromTile.x];
+    var mouseUpTile = tileMap[100 * data.toTile.y + data.toTile.x];
 
-    if ((data.tileX != player.mouseDownTileInfo['x'] ||
-        data.tileY != player.mouseDownTileInfo['y']) &&
-        !mouseUpTile.hasCollision()) { // insert check if items can be thrown on tile (hasCollision good enough for now)
-          var mouseDownTile = tileMap[100 * player.mouseDownTileInfo['y'] + player.mouseDownTileInfo['x']];
-          if (player.mouseDownTileInfo['isAnItemSelected']) {
+    // check that tiles are valid
+    // ...
+
+    if ((data.toTile.x != data.fromTile.x ||
+        data.toTile.y != data.fromTile.y) &&
+        !mouseUpTile.hasCollision()       &&
+        (Math.abs(player.x - data.fromTile.x) <= 1 && Math.abs(player.y - data.fromTile.y) <= 1)) {
+
+          if (mouseDownTile.itemStack.length > 0) {
             // move the item from click tile to release tile
             mouseUpTile.itemStack.push(mouseDownTile.itemStack.pop());
-            player.mouseDownTileInfo['isAnItemSelected'] = false;
 
             io.emit('itemMoved', {
               fromTile: {
-                x: player.mouseDownTileInfo['x'],
-                y: player.mouseDownTileInfo['y']
+                x: data.fromTile.x,
+                y: data.fromTile.y
               },
               toTile: {
-                x: data.tileX,
-                y: data.tileY
+                x: data.toTile.x,
+                y: data.toTile.y
               }
             });
 
-          } else if (player.mouseDownTileInfo['isAPlayerSelected']) {
+          } else if (mouseDownTile.occupyingPlayer) {
             // move the player from click tile to release tile (todo)
-            player.mouseDownTileInfo['isAPlayerSelected'] = false;
           }
-    } else {
-      player.mouseDownTileInfo['isAnItemSelected'] = false;
-      player.mouseDownTileInfo['isAPlayerSelected'] = false;
     }
 
     console.log('~~~~~~');
-    console.log(data.tileX, data.tileY);
+    console.log(data.fromTile.x, data.fromTile.y);
+    console.log(data.toTile.x, data.toTile.y);
   });
 })
 
