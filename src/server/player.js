@@ -110,9 +110,11 @@ class Player extends Entity {
       let newY = this.y + this.spdY;
       let newTileIndex = 100 * newY + newX;
 
-      if(!tileMap[newTileIndex].hasCollision()){
-        this.lastMoved = Date.now();
-        super.updatePosition();
+      if(tileMap[newTileIndex]){
+        if(!tileMap[newTileIndex].hasCollision()){
+          this.lastMoved = Date.now();
+          super.updatePosition();
+        }
       }
 
       this.resetPendingMove();
@@ -199,7 +201,8 @@ class Player extends Entity {
       y: this.y,
       hp: this.hp,
       score: this.score,
-      mouseAngle: this.mouseAngle
+      mouseAngle: this.mouseAngle,
+      attackTarget: this.target ? this.target.id : undefined
     }
   }
 

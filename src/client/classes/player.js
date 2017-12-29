@@ -105,6 +105,12 @@ class Player {
   }
 
   drawName() {
+    // Show the player's name in red if he is the attack target
+    if(playerList[playerID].attackTarget == this.id){
+      ctxEntities.fillStyle = 'red';
+    } else {
+      ctxEntities.fillStyle = 'black';
+    }
     ctxEntities.textAlign="center"
     ctxEntities.font = "8pt Arial Black";
     ctxEntities.fillText(this.name, this.xOld, this.yOld - 30 - this.hpBarOffset);

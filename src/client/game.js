@@ -126,6 +126,7 @@ socket.on('update', function(data){
       if(pack.mouseAngle !== undefined){
         p.mouseAngle = pack.mouseAngle;
       }
+        p.attackTarget = pack.attackTarget;
     }
   }
 
