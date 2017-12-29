@@ -328,7 +328,7 @@ setInterval(function() {
     ctxGround.restore();
 
     ctxHUD.clearRect(0,0,WIDTH,HEIGHT);
-    hud.drawHud();
+    hud.drawHud(sortedList);
 
     fpsCount++;
     if(Date.now() - fpsTimer >= 1000){
