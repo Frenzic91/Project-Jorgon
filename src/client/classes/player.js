@@ -131,6 +131,7 @@ class Player {
     } else {
       index = 1;
     }
+
     if(this.runState === 0){
       ctxEntities.drawImage(playerImg.player.playerFull, index*57 || 57*0, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
 
@@ -154,6 +155,17 @@ class Player {
         this.runState = 0;
         this.stateTime = Date.now();
       }
+    }
+
+  }
+
+  drawOccludedPlayer(){
+    // If player is occluded, draw with 20% opacity
+    if(map.hasOcclusion(this.x,this.y)){
+      ctxEntities.globalAlpha = 0.2;
+      this.drawPlayer(this.isMoving(),PLAYERSPRITEWIDTH, PLAYERSPRITEHEIGHT);
+      // Reset opacity
+      ctxEntities.globalAlpha = 1;
     }
   }
 
