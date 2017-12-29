@@ -247,7 +247,9 @@ document.onmouseup = function(event){
   var targetTileX = currentTileX + distFromTargetInTilesX;
   var targetTileY = currentTileY + distFromTargetInTilesY;
 
-  socket.emit('playerMouseUp', {clickingPlayer: playerID, tileX: targetTileX, tileY: targetTileY});
+  if (loggedIn) {
+    socket.emit('playerMouseUp', {clickingPlayer: playerID, tileX: targetTileX, tileY: targetTileY});
+  }
 
   mouseClicked = false;
 }
