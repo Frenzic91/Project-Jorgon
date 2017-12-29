@@ -3,6 +3,7 @@ var socket = io();
 var scale = 1;
 
 var playerList = {};
+var tileData; // obtained from server on connect
 
 window.onbeforeunload = function() { return "You work will be lost."; };
 
@@ -94,6 +95,12 @@ socket.on('init', function(data){
     let player = new Player(data.players[i]);
     playerList[player.id] = player;
   }
+
+  // 'init' event is also being sent every server frame so check is needed until conflicting names changed
+  if (data.tileData) {
+    tileData = JSON.parse(data.tileData);
+    console.log(tileData);
+  }
 })
 
 //updated
@@ -130,6 +137,18 @@ socket.on('remove', function(data){
     delete playerList[data.players[i]];
   }
 })
+
+socket.on('itemMoved', function(data) {
+  console.log('an item was moved!');
+
+  var toTile = tileData[100 * data.toTile.y + data.toTile.x];
+  var fromTile = tileData[100 * data.fromTile.y + data.fromTile.x];
+
+  console.log(fromTile);
+  console.log(toTile);
+
+  toTile.itemStack.push(fromTile.itemStack.pop());
+});
 
 document.onkeydown = function(event){
   if(!chatFocused){
@@ -179,13 +198,8 @@ document.onkeyup = function(event){
 }
 
 document.onmousedown = function(event){
+  console.log(event);
   if(!chatFocused){
-    //console.log(playerX, playerY);
-    //console.log(mouseX, mouseY);
-    //let x = mouseX - WIDTH/2;
-    //let y = mouseY - HEIGHT/2;
-    //console.log(mouseX - 640);
-    //console.log(mouseY - 364);
     // figure out which tile was clicked
     var currentTileX = playerX;
     var currentTileY = playerY;
@@ -197,11 +211,19 @@ document.onmousedown = function(event){
 
     var targetTileX = currentTileX + distFromTargetInTilesX;
     var targetTileY = currentTileY + distFromTargetInTilesY;
+
     console.log(targetTileX);
     console.log(targetTileY);
-    //console.log(targetTileX, targetTileY)
+
+    // shift-clicking attacks for now
     if(loggedIn){
-        socket.emit('attack', {attackingPlayer: playerID, tileX: targetTileX, tileY: targetTileY})
+      if (event.shiftKey) {
+        console.log('Attack!');
+        socket.emit('attack', {attackingPlayer: playerID, tileX: targetTileX, tileY: targetTileY});
+      } else {
+        console.log('Left-click registered');
+        socket.emit('playerMouseDown', {clickingPlayer: playerID, tileX: targetTileX, tileY: targetTileY});
+      }
     }
     //socket.emit('keyPress', {inputId:'attack', state:true});
     mouseClicked = true;
@@ -210,6 +232,22 @@ document.onmousedown = function(event){
 
 document.onmouseup = function(event){
   //socket.emit('keyPress', {inputId: 'attack', state:false});
+
+  // temporary copy pasta from onmousedown
+  // figure out which tile was clicked
+  var currentTileX = playerX;
+  var currentTileY = playerY;
+
+  // Calculate clicked tile distance
+  var distFromTargetInTilesX = Math.round((mouseX - WIDTH/2) / 64);
+  // Offset TILESIZE/4 because map is offset
+  var distFromTargetInTilesY = Math.round((mouseY - HEIGHT/2 - TILESIZE/4) / 64);
+
+  var targetTileX = currentTileX + distFromTargetInTilesX;
+  var targetTileY = currentTileY + distFromTargetInTilesY;
+
+  socket.emit('playerMouseUp', {clickingPlayer: playerID, tileX: targetTileX, tileY: targetTileY});
+
   mouseClicked = false;
 }
 

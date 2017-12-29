@@ -9,6 +9,7 @@ class Player extends Entity {
     this.id = id; // equivalent to socket ID
     this.name = playerData.username;
     this.number = "" + Math.floor(10 * Math.random()); // random array value - likely a better way to do this
+    this.mouseDownTileInfo = {x: -1, y: -1, isAnItemSelected: false, isAPlayerSelected: false}
     this.pressingRight = false;
     this.pressingLeft = false;
     this.pressingUp = false;
@@ -207,7 +208,7 @@ class Player extends Entity {
   }
 
   // Triggers when a new player socket is created
-  static onConnect(playerList, initPack, socket, playerData){
+  static onConnect(playerList, initPack, socket, playerData, tileMap){
     let player = new Player(socket.id, playerData);
     //Initiate Player
     playerList[player.id] = player;
@@ -218,7 +219,7 @@ class Player extends Entity {
 
     Player.initPlayer(socket, player);
     //Initiate All other players
-    Player.init(socket, playerList);
+    Player.init(socket, playerList, tileMap);
 
     socket.on('keyPress', function(data){
       if(data.inputId === 'left'){
@@ -288,11 +289,12 @@ class Player extends Entity {
     delete playerList[socket.id];
   }
 
-  static init(socket, playerList){
+  static init(socket, playerList, tileMap){
     let players = Player.getAllInitPack(playerList);
 
     socket.emit('init', {
-      players:players
+      players: players,
+      tileData: JSON.stringify(tileMap)
     });
   }
 

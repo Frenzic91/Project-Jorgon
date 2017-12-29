@@ -4,7 +4,7 @@ var CT = require('../constants.js');
 class Entity {
   constructor(SpawnX = CT.DEFAULTSPAWNX, SpawnY = CT.DEFAULTSPAWNY) {
     this.x = SpawnX;
-    this.y = SpawnX;
+    this.y = SpawnY;
     this.spdX = 0;
     this.spdY = 0;
     this.id = "";

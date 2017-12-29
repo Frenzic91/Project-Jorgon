@@ -21,27 +21,20 @@ var tileMap = [];
 function loadTileMap(callback) {
   for (let row in worldJSON.map) {
   	for (let col in worldJSON.map[row]) {
-      var tile = new Tile(col, row,
-        {
-          spriteId: worldJSON.map[row][col].ground.id,
-          collision: worldJSON.map[row][col].ground.collision
-        },
-        {
-          spriteId: worldJSON.map[row][col].entity.id,
-          collision: worldJSON.map[row][col].entity.collision,
-          occlusion: worldJSON.map[row][col].entity.occlusion
-        })
+
+      var collision = worldJSON.map[row][col].ground.collision || worldJSON.map[row][col].entity.collision;
+      var tile = new Tile(col, row, collision);
+
+      // for testing
+      if (col == 27 && row == 28) {
+        tile.itemStack.push(17); // itemId == 17
+      }
 
       tileMap.push(tile)
-      //console.log(tile);
   	}
   }
   callback();
 }
-
-
-
-console.log(tileMap);
 
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/src/client/index.html');
@@ -61,7 +54,7 @@ io.sockets.on('connection', function(socket){
   socket.on('login', function(data){
     database.isValidPassword(data, function(status, res){
       if(status){
-        Player.onConnect(playerList, initPack, socket, res[0]);
+        Player.onConnect(playerList, initPack, socket, res[0], tileMap);
         socket.emit('loginResponse', {success:true});
       } else {
         socket.emit('loginResponse', {success:false});
@@ -112,6 +105,7 @@ io.sockets.on('connection', function(socket){
     }
   });
 
+  // move into Player class?
   socket.on('attack', function(data) {
     console.log(data);
     console.log(100 * data.tileY + data.tileX);
@@ -132,6 +126,66 @@ io.sockets.on('connection', function(socket){
         playerList[data.attackingPlayer].target = undefined;
       }
     }
+  });
+
+  // also move to Player class
+  socket.on('playerMouseDown', function(data) {
+    var player = playerList[data.clickingPlayer];
+
+    player.mouseDownTileInfo['x'] = data.tileX;
+    player.mouseDownTileInfo['y'] = data.tileY;
+
+    // make sure player is beside item
+    if (Math.abs(player.x - data.tileX) <= 1 && Math.abs(player.y - data.tileY) <= 1) {
+      var mouseDownTile = tileMap[100 * data.tileY + data.tileX];
+
+      if (mouseDownTile.itemStack.length > 0) {
+        player.mouseDownTileInfo['isAnItemSelected'] = true;
+      } else if (mouseDownTile.occupyingPlayer) {
+        player.mouseDownTileInfo['isAPlayerSelected'] = true;
+      }
+
+      console.log('-------');
+      console.log(player.mouseDownTileInfo);
+    }
+  });
+
+  // also move to Player class
+  socket.on('playerMouseUp', function(data) {
+    var player = playerList[data.clickingPlayer];
+    var mouseUpTile = tileMap[100 * data.tileY + data.tileX];
+
+    if ((data.tileX != player.mouseDownTileInfo['x'] ||
+        data.tileY != player.mouseDownTileInfo['y']) &&
+        !mouseUpTile.hasCollision()) { // insert check if items can be thrown on tile (hasCollision good enough for now)
+          var mouseDownTile = tileMap[100 * player.mouseDownTileInfo['y'] + player.mouseDownTileInfo['x']];
+          if (player.mouseDownTileInfo['isAnItemSelected']) {
+            // move the item from click tile to release tile
+            mouseUpTile.itemStack.push(mouseDownTile.itemStack.pop());
+            player.mouseDownTileInfo['isAnItemSelected'] = false;
+
+            io.emit('itemMoved', {
+              fromTile: {
+                x: player.mouseDownTileInfo['x'],
+                y: player.mouseDownTileInfo['y']
+              },
+              toTile: {
+                x: data.tileX,
+                y: data.tileY
+              }
+            });
+
+          } else if (player.mouseDownTileInfo['isAPlayerSelected']) {
+            // move the player from click tile to release tile (todo)
+            player.mouseDownTileInfo['isAPlayerSelected'] = false;
+          }
+    } else {
+      player.mouseDownTileInfo['isAnItemSelected'] = false;
+      player.mouseDownTileInfo['isAPlayerSelected'] = false;
+    }
+
+    console.log('~~~~~~');
+    console.log(data.tileX, data.tileY);
   });
 })
 
