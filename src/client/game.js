@@ -368,6 +368,8 @@ setInterval(function() {
     ctxEntities.clearRect(playerXPixels - WIDTH/2,playerYPixels - HEIGHT/2,WIDTH,HEIGHT);
 
     // Draw players in order from top to bottom of screen
+    entities.drawItems(playerX, playerY);
+
     let sortedList = sortPlayersByY();
     for(let i in sortedList){
       playerList[sortedList[i].key].draw();

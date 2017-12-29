@@ -41,9 +41,18 @@ var hudSprites = [
   }
 ];
 
+var itemSprites = [
+  {
+    type: "item",
+    name: "temp",
+    src: "client/images/tempItem.png"
+  }
+];
+
 var playerImg = loadImages(charSprites);
 var hudImg = loadImages(hudSprites);
 var mapImg = loadImages(mapSprites);
+var itemImg = loadImages(itemSprites);
 
 function loadImages(spriteArray){
   loadedImages = {};
