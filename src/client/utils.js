@@ -42,3 +42,7 @@ function rotateAndCache(image,angle) {
 
   return offscreenCanvas;
 }
+
+function getIndexFromCoords(x,y){
+  return y * map.width + x;
+}

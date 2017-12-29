@@ -164,7 +164,7 @@ class Player {
   drawOccludedPlayer(){
     // If player is occluded, draw with 20% opacity
     if(map.hasOcclusion(this.x,this.y)){
-      ctxEntities.globalAlpha = 0.2;
+      ctxEntities.globalAlpha = 0.1;
       this.drawPlayer(this.isMoving(),PLAYERSPRITEWIDTH, PLAYERSPRITEHEIGHT);
       // Reset opacity
       ctxEntities.globalAlpha = 1;
