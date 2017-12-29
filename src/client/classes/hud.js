@@ -2,7 +2,6 @@ class Hud {
   constructor(ctxHud){
     this.canvas = ctxHud;
     // Hud details
-
   }
 
   drawHud(sortedList) {

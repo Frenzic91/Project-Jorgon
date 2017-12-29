@@ -29,7 +29,7 @@ class Player {
     let deltaX = this.screenX - this.xOld;
     let deltaY = this.screenY - this.yOld;
 
-    let interpRate = 2.5*(200/this.moveDelay)
+    let interpRate = 2.5*(200/this.moveDelay)*((frameRate+20)/fps);
 
     if(deltaX > interpRate){
       this.xOld += interpRate;

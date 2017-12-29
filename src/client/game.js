@@ -329,10 +329,27 @@ let updateCount = 0;
 let fpsTimer = Date.now();
 let fpsCount = 0;
 let fps = 0;
+let debug = false;
+let debugFrames = [0,0,0,0,0,0];
+let debugCount = 100;
+let debugTimer;
 
 //Game update loop
 setInterval(function() {
   // Update local player position
+  if(debug && debugCount >= 100){
+    console.log("First pass player drawing took:" + debugFrames[0] + "ms across " + debugCount + " frames. Average time per frame = " + debugFrames[0]/debugCount + "ms." );
+    console.log("Drawing entities took:" + debugFrames[1] + "ms across " + debugCount + " frames. Average time per frame = " + debugFrames[1]/debugCount + "ms." );
+    console.log("Second pass player drawing took:" + debugFrames[2] + "ms across " + debugCount + " frames. Average time per frame = " + debugFrames[2]/debugCount + "ms." );
+    console.log("Drawing map took:" + debugFrames[3] + "ms across " + debugCount + " frames. Average time per frame = " + debugFrames[3]/debugCount + "ms." );
+    console.log("Drawing HUD took:" + debugFrames[4] + "ms across " + debugCount + " frames. Average time per frame = " + debugFrames[4]/debugCount + "ms." );
+    console.log("Total frame took:" + debugFrames[5] + "ms across " + debugCount + " frames. Average time per frame = " + debugFrames[5]/debugCount + "ms." );
+    debugFrames = [0,0,0,0,0,0];
+    debugCount = 0;
+  }
+  debugTimer = Date.now();
+  debugTotalTimer = Date.now();
+
   if(loggedIn && isLoaded()){
     playerXPixels = playerList[playerID].xOld;
     playerYPixels = playerList[playerID].yOld;
@@ -355,11 +372,24 @@ setInterval(function() {
     for(let i in sortedList){
       playerList[sortedList[i].key].draw();
     }
+    if(debug){
+      debugFrames[0] += (Date.now() - debugTimer);
+      debugTimer = Date.now();
+    }
+
     // Draw world entities (trees, etc.)
     entities.drawEntities(playerX, playerY);
+    if(debug){
+      debugFrames[1] += (Date.now() - debugTimer);
+      debugTimer = Date.now();
+    }
 
     for(let i in sortedList){
       playerList[sortedList[i].key].drawOccludedPlayer();
+    }
+    if(debug){
+      debugFrames[2] += (Date.now() - debugTimer);
+      debugTimer = Date.now();
     }
 
     ctxEntities.restore();
@@ -367,8 +397,17 @@ setInterval(function() {
     map.drawGround();
     ctxGround.restore();
 
-    ctxHUD.clearRect(0,0,WIDTH,HEIGHT);
+    if(debug){
+      debugFrames[3] += (Date.now() - debugTimer);
+      debugTimer = Date.now();
+    }
+
     hud.drawHud(sortedList);
+
+    if(debug){
+      debugFrames[4] += (Date.now() - debugTimer);
+      debugTimer = Date.now();
+    }
 
     fpsCount++;
     if(Date.now() - fpsTimer >= 1000){
@@ -377,6 +416,12 @@ setInterval(function() {
       fpsCount = 0;
       fpsTimer = Date.now();
     }
+
+    if(debug){
+      debugFrames[5] += (Date.now() - debugTotalTimer);
+      debugCount++;
+    }
+
   }
 
 }, 1000/frameRate);
