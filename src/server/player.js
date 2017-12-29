@@ -59,7 +59,7 @@ class Player extends Entity {
       // update target players health, static value for now
       console.log("Hit enemy for %d", this.equipment.weapon.damage);
       this.target.takeDamage(this.equipment.weapon.damage);
-      if(!this.target.isAlive()){
+      if(this.target.hp < 0){
         this.target = undefined;
       }
     }
@@ -72,12 +72,12 @@ class Player extends Entity {
   update(tileMap) {
     //this.updateSpd();
     //set the default update function to super_update (for use in new update function)
-    if(this.isAlive()){
+    if(this.isAlive(tileMap)){
       this.updatePosition(tileMap)
     }
   }
 
-  isAlive() {
+  isAlive(tileMap) {
     if(this.hp > 0){
       return true;
     } else {
@@ -85,7 +85,9 @@ class Player extends Entity {
       this.hp = 100;
       this.x = Math.floor(Math.random()*50);
       this.y = Math.floor(Math.random()*50);
+      Player.clearPlayerFromTile(tileMap, this);
       this.target = undefined;
+      return false;
     }
   }
 
@@ -282,14 +284,24 @@ class Player extends Entity {
   // Triggers when a player socket disconnects
   static onDisconnect(removePack, playerList, socket, tileMap){
     // Remove player from tile when he disconnects
-    let tileIndex = playerList[socket.id].tileIndex;
+    Player.clearPlayerFromTile(tileMap, playerList[socket.id]);
+    // let tileIndex = playerList[socket.id].tileIndex;
+    // if(tileMap[tileIndex]){
+    //   if(tileMap[tileIndex].occupyingPlayer == playerList[socket.id]){
+    //     tileMap[tileIndex].occupyingPlayer = undefined;
+    //   }
+    // }
+    removePack.players.push(socket.id);
+    delete playerList[socket.id];
+  }
+
+  static clearPlayerFromTile(tileMap, player){
+    let tileIndex = player.tileIndex;
     if(tileMap[tileIndex]){
-      if(tileMap[tileIndex].occupyingPlayer == playerList[socket.id]){
+      if(tileMap[tileIndex].occupyingPlayer == player){
         tileMap[tileIndex].occupyingPlayer = undefined;
       }
     }
-    removePack.players.push(socket.id);
-    delete playerList[socket.id];
   }
 
   static init(socket, playerList, tileMap){
