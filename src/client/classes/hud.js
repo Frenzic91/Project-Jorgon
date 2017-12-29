@@ -5,12 +5,14 @@ class Hud {
 
   }
 
-  drawHud() {
+  drawHud(sortedList) {
     this.canvas.clearRect(0,0,WIDTH,HEIGHT);
     this.drawHealth();
     this.drawMiniMap();
     this.drawFPS();
     this.drawCursor();
+    this.drawHealthBars(sortedList);
+    this.drawPlayerNames(sortedList);
   }
 
   drawCursor() {
@@ -82,4 +84,17 @@ class Hud {
     this.canvas.strokeStyle = '#000000';
     this.canvas.strokeText(fps,WIDTH - hudHPMargin , hudHPMargin);
   }
+
+  drawHealthBars(sortedList){
+    for(let i in sortedList){
+      playerList[sortedList[i].key].drawHPBar(this.canvas);
+    }
+  }
+
+  drawPlayerNames(sortedList){
+    for(let i in sortedList){
+      playerList[sortedList[i].key].drawName(this.canvas);
+    }
+  }
+
 }

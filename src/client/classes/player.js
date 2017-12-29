@@ -19,7 +19,7 @@ class Player {
   this.yOld = this.screenY;
   this.stateTime = Date.now();
   this.runState = 0;
-  this.hpBarOffset = 0;
+  this.hpBarOffset = 5;
   }
 
   draw() {
@@ -47,11 +47,6 @@ class Player {
       this.yOld = this.screenY;
     }
 
-    //Does nothing atm - This was another form of interp
-    // if(this.interp < MAXINTERP){
-    //   this.interp += 0.001;
-    // }
-
     this.setDirection();
 
     if(Math.abs(this.xOld - this.screenX) < 1){
@@ -61,12 +56,8 @@ class Player {
       this.yOld = this.screenY;
     }
 
-    this.drawHPBar();
-    this.hpBarOffset = 5;
-
     this.drawPlayer(this.isMoving(), PLAYERSPRITEWIDTH, PLAYERSPRITEHEIGHT);
 
-    this.drawName();
   }
 
   setDirection() {
@@ -88,32 +79,43 @@ class Player {
     }
   }
 
-  drawHPBar() {
-    ctxEntities.fillStyle = "#000000";
-    ctxEntities.fillRect(this.xOld - hpBarWidth/2,this.yOld - 32,30, 4);
+  drawHPBar(ctxHUD) {
+    // Replaced ctxEntities with ctxHUD
+    let offsetX = playerXPixels - WIDTH/2;
+    let offsetY = playerYPixels - HEIGHT/2;
+    let finalX = this.xOld - offsetX;
+    let finalY = this.yOld - offsetY;
+
+    ctxHUD.fillStyle = "#000000";
+    ctxHUD.fillRect(finalX - hpBarWidth/2,finalY - 32,30, 4);
     let hpWidth = hpBarWidth * this.hp/this.hpMax;
     if(this.hp === this.hpMax){
-      ctxEntities.fillStyle = "#0000FF";
+      ctxHUD.fillStyle = "#0000FF";
     } else{
       let hpPercent = this.hp/this.hpMax;
       let green = parseInt(Math.floor(255 * hpPercent));
       let red = 255 - green;
-      ctxEntities.fillStyle = getHexRGB(red, green, 0);
+      ctxHUD.fillStyle = getHexRGB(red, green, 0);
     }
-    ctxEntities.fillRect(this.xOld - hpBarWidth/2,this.yOld - 32,hpWidth, 4);
-    ctxEntities.fillStyle = "#000000";
+    ctxHUD.fillRect(finalX - hpBarWidth/2,finalY - 32,hpWidth, 4);
+    ctxHUD.fillStyle = "#000000";
   }
 
-  drawName() {
+  drawName(ctxHUD) {
+    // Replaced ctxEntities with ctxHUD
+    let offsetX = playerXPixels - WIDTH/2;
+    let offsetY = playerYPixels - HEIGHT/2;
+    let finalX = this.xOld - offsetX;
+    let finalY = this.yOld - offsetY;
     // Show the player's name in red if he is the attack target
     if(playerList[playerID].attackTarget == this.id){
-      ctxEntities.fillStyle = 'red';
+      ctxHUD.fillStyle = 'red';
     } else {
-      ctxEntities.fillStyle = 'black';
+      ctxHUD.fillStyle = 'black';
     }
-    ctxEntities.textAlign="center"
-    ctxEntities.font = "8pt Arial Black";
-    ctxEntities.fillText(this.name, this.xOld, this.yOld - 30 - this.hpBarOffset);
+    ctxHUD.textAlign="center"
+    ctxHUD.font = "8pt Arial Black";
+    ctxHUD.fillText(this.name, finalX, finalY - 30 - this.hpBarOffset);
   }
 
   isMoving() {
@@ -131,6 +133,7 @@ class Player {
     } else {
       index = 1;
     }
+
     if(this.runState === 0){
       ctxEntities.drawImage(playerImg.player.playerFull, index*57 || 57*0, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
 
@@ -154,6 +157,17 @@ class Player {
         this.runState = 0;
         this.stateTime = Date.now();
       }
+    }
+
+  }
+
+  drawOccludedPlayer(){
+    // If player is occluded, draw with 20% opacity
+    if(map.hasOcclusion(this.x,this.y)){
+      ctxEntities.globalAlpha = 0.2;
+      this.drawPlayer(this.isMoving(),PLAYERSPRITEWIDTH, PLAYERSPRITEHEIGHT);
+      // Reset opacity
+      ctxEntities.globalAlpha = 1;
     }
   }
 

@@ -345,24 +345,29 @@ setInterval(function() {
     ctxEntities.scale(scale,scale);
     ctxGround.scale(scale,scale);
 
-    // Draw players
+    // Clear players and objects (trees, etc.)
     ctxEntities.clearRect(playerXPixels - WIDTH/2,playerYPixels - HEIGHT/2,WIDTH,HEIGHT);
 
-    let sortedList = sortPlayersByY();
-
     // Draw players in order from top to bottom of screen
+    let sortedList = sortPlayersByY();
     for(let i in sortedList){
       playerList[sortedList[i].key].draw();
     }
+    // Draw world entities (trees, etc.)
+    entities.drawEntities(playerX, playerY);
+
+    for(let i in sortedList){
+      playerList[sortedList[i].key].drawOccludedPlayer();
+    }
+
+    ctxEntities.restore();
 
     map.drawGround();
     ctxGround.restore();
-    entities.drawEntities(playerX, playerY);
 
     ctxHUD.clearRect(0,0,WIDTH,HEIGHT);
-    hud.drawHud();
+    hud.drawHud(sortedList);
 
-    ctxEntities.restore();
     fpsCount++;
     if(Date.now() - fpsTimer >= 1000){
       let now = Date.now();

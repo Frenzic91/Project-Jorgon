@@ -49,4 +49,8 @@ class Map {
     }
   }
 
+  hasOcclusion(x,y){
+    return (this.data[y][x].entity.occlusion == 1) ? true : false;
+  }
+
 }
