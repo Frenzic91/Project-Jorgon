@@ -118,28 +118,33 @@ class Hud {
   drawInventory(){
 
     this.canvas.globalAlpha = 0.7;
+    // Background
     this.canvas.fillStyle = "#000000";
     this.canvas.fillRect(this.inventoryX, this.inventoryY, this.inventoryWidth, this.inventoryHeight);
+    // Inventory text
     this.canvas.fillStyle = "#FFFFFF";
     this.canvas.font = "16px Calibri";
     this.canvas.textAlign = "start";
     this.canvas.fillText("INVENTORY", this.inventoryX + 10, this.inventoryY + 10 + 8);
 
+    // Border
     this.canvas.lineWidth = 2;
     this.canvas.strokeStyle = "#EEEEEE";
     this.canvas.rect(this.inventoryX + this.inventoryGridOffset, this.inventoryY + this.inventoryGridOffset + 18, this.inventoryWidth - this.inventoryGridOffset*2, this.inventoryHeight - 18 - this.inventoryGridOffset*2);
     this.canvas.stroke();
+    // Grid
     this.canvas.lineWidth = 1;
     this.canvas.strokeStyle = "#111111";
     this.canvas.beginPath();
 
 
-
+    // Horizontal lines
     for(let i = 1; i < 4; i++){
       this.canvas.moveTo(this.inventoryX + this.inventoryGridOffset, this.inventoryY + this.inventoryGridOffset + 18 + i*TILESIZE);
       this.canvas.lineTo(this.inventoryX + this.inventoryGridOffset + this.inventoryWidth - this.inventoryGridOffset*2, this.inventoryY + this.inventoryGridOffset + 18 + i*TILESIZE);
     }
 
+    // Vertical lines
     for(let i = 1; i < 5; i++){
       this.canvas.moveTo(this.inventoryX + this.inventoryGridOffset + i*TILESIZE, this.inventoryY + this.inventoryGridOffset + 18);
       this.canvas.lineTo(this.inventoryX + this.inventoryGridOffset + i*TILESIZE, this.inventoryY + this.inventoryGridOffset + 18 + this.inventoryHeight - 18 - this.inventoryGridOffset*2);
@@ -230,7 +235,7 @@ class Hud {
         this.canvas.fillText("ITEM NAME",descriptionX + descriptionImageOffset, descriptionY + 2*descriptionImageOffset + 7 + TILESIZE);
 
         // Description - with wordwrap
-        let description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce varius lacus mattis ornare tristique. Duis molestie pellentesque augue, sagittis hendrerit velit egestas vitae. Phasellus ut sapien non purus interdum euismod.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce varius lacus mattis ornare tristique. Duis molestie pellentesque augue, sagittis hendrerit velit egestas vitae. Phasellus ut sapien non purus interdum euismod.";
+        let description = "Phasellus ut sapien non purus interdum euismod. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce varius lacus mattis ornare tristique. Duis molestie pellentesque augue, sagittis hendrerit velit egestas vitae. Phasellus ut sapien non purus interdum euismod.";
         let splitDescription = description.split(" ");
         let line = "";
         let lineCount = 0;

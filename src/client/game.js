@@ -231,10 +231,14 @@ document.onmousedown = function(event){
     let currentTileX = playerX;
     let currentTileY = playerY;
 
+    // Offset to account for interp
+    let offSetPixelsX = playerX * TILESIZE - playerXPixels;
+    let offSetPixelsY = playerY * TILESIZE - playerYPixels;
+
     // Calculate clicked tile distance
-    let distFromTargetInTilesX = Math.round((mouseX - WIDTH/2) / 64);
+    let distFromTargetInTilesX = Math.round((mouseX - offSetPixelsX - WIDTH/2) / 64);
     // Offset TILESIZE/4 because map is offset
-    let distFromTargetInTilesY = Math.round((mouseY - HEIGHT/2 - TILESIZE/4) / 64);
+    let distFromTargetInTilesY = Math.round((mouseY - offSetPixelsY - HEIGHT/2 - TILESIZE/4) / 64);
 
     let targetTileX = currentTileX + distFromTargetInTilesX;
     let targetTileY = currentTileY + distFromTargetInTilesY;
@@ -264,10 +268,14 @@ document.onmouseup = function(event){
   let currentTileX = playerX;
   let currentTileY = playerY;
 
+  // Offset to account for interp
+  let offSetPixelsX = playerX * TILESIZE - playerXPixels;
+  let offSetPixelsY = playerY * TILESIZE - playerYPixels;
+
   // Calculate clicked tile distance
-  let distFromTargetInTilesX = Math.round((mouseX - WIDTH/2) / 64);
+  let distFromTargetInTilesX = Math.round((mouseX - offSetPixelsX - WIDTH/2) / 64);
   // Offset TILESIZE/4 because map is offset
-  let distFromTargetInTilesY = Math.round((mouseY - HEIGHT/2 - TILESIZE/4) / 64);
+  let distFromTargetInTilesY = Math.round((mouseY - offSetPixelsY - HEIGHT/2 - TILESIZE/4) / 64);
 
   let targetTileX = currentTileX + distFromTargetInTilesX;
   let targetTileY = currentTileY + distFromTargetInTilesY;
