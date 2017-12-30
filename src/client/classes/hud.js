@@ -9,8 +9,9 @@ class Hud {
     this.inventoryX = WIDTH-this.inventoryWidth-this.inventoryOffset;
     this.inventoryY = this.inventoryOffset;
     this.inventoryColumns = 5;
-    this.itemDescriptionSizeX = 200;
-    this.itemDescriptionSizeY = 250;
+    this.itemTooltipSizeX = 200;
+    this.itemTooltipSizeY = 250;
+    this.itemDescriptionLineCharacterLimit = 35;
     // Hud details
   }
 
@@ -201,16 +202,22 @@ class Hud {
     let slot = this.getInventorySlot(mouseX,mouseY);
     if(slot !== undefined){
       if(inventory.items[slot]){
-        let descriptionX = this.inventoryX - this.itemDescriptionSizeX;
+        // top left corner of the description box
+        let descriptionX = this.inventoryX - this.itemTooltipSizeX;
         let descriptionY = this.inventoryY;
+        // the margin for the image
         let descriptionImageOffset = 10;
         this.canvas.globalAlpha = 0.7;
+        // background
         this.canvas.fillStyle = "#000000";
-        this.canvas.fillRect(descriptionX, descriptionY, this.itemDescriptionSizeX, this.itemDescriptionSizeY);
+        this.canvas.fillRect(descriptionX, descriptionY, this.itemTooltipSizeX, this.itemTooltipSizeY);
+        // image border
         this.canvas.lineWidth = 1;
         this.canvas.strokeStyle = "#CCCCCC";
         this.canvas.rect(descriptionX + descriptionImageOffset, descriptionY + descriptionImageOffset, TILESIZE, TILESIZE);
         this.canvas.stroke();
+
+        // ID, ATK, DEF
         this.canvas.fillStyle = "#FFFFFF";
         this.canvas.font = "14px Calibri";
         this.canvas.textAlign = "start";
@@ -219,36 +226,47 @@ class Hud {
         this.canvas.fillText("ATK: " + inventory.items[slot],descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + 3*descriptionImageOffset + 8);
         this.canvas.fillText("DEF: " + inventory.items[slot],descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + 5*descriptionImageOffset + 8);
 
+        // Item name
         this.canvas.fillText("ITEM NAME",descriptionX + descriptionImageOffset, descriptionY + 2*descriptionImageOffset + 7 + TILESIZE);
-        let description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce varius lacus mattis ornare tristique. Duis molestie pellentesque augue, sagittis hendrerit velit egestas vitae. Phasellus ut sapien non purus interdum euismod.";
+
+        // Description - with wordwrap
+        let description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce varius lacus mattis ornare tristique. Duis molestie pellentesque augue, sagittis hendrerit velit egestas vitae. Phasellus ut sapien non purus interdum euismod.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce varius lacus mattis ornare tristique. Duis molestie pellentesque augue, sagittis hendrerit velit egestas vitae. Phasellus ut sapien non purus interdum euismod.";
         let splitDescription = description.split(" ");
         let line = "";
         let lineCount = 0;
-        let lineCharacterLimit = 35;
+
         for(let i = 0; i < splitDescription.length; i++){
-          if(line.length + splitDescription[i].length < lineCharacterLimit){
+          // If the next word does not make the line go over the character limit, append it
+          if(line.length + splitDescription[i].length < this.itemDescriptionLineCharacterLimit){
             line += " " + splitDescription[i];
-          } else {
+          } else { // Otherwise, print the line
             this.canvas.fillText(line,
                                 descriptionX + descriptionImageOffset,
                                 descriptionY + 4*descriptionImageOffset + 2*lineCount*descriptionImageOffset + 7 + TILESIZE,
-                                this.itemDescriptionSizeX - 2*descriptionImageOffset);
+                                this.itemTooltipSizeX - 2*descriptionImageOffset);
             lineCount++;
+            // Start the next line with the current word
             line = splitDescription[i];
           }
+          // On the last loop iteration, print what is left in line, if anything
           if(i === (splitDescription.length - 1) && line.length > 0){
             this.canvas.fillText(line,
                                 descriptionX + descriptionImageOffset,
                                 descriptionY + 4*descriptionImageOffset + 2*lineCount*descriptionImageOffset + 7 + TILESIZE,
-                                this.itemDescriptionSizeX - 2*descriptionImageOffset);
+                                this.itemTooltipSizeX - 2*descriptionImageOffset);
+            lineCount++;
           }
         }
 
+        // Scale the tooltip height based on the description length
+        this.itemTooltipSizeY = 4*descriptionImageOffset + TILESIZE + 2*lineCount*descriptionImageOffset;
 
         this.canvas.globalAlpha = 1;
         this.canvas.drawImage(itemImg.item.temp,descriptionX + descriptionImageOffset, descriptionY + descriptionImageOffset);
       }
     }
   }
+
+
 
 }
