@@ -129,6 +129,8 @@ class Hud {
     this.canvas.strokeStyle = "#111111";
     this.canvas.beginPath();
 
+
+
     for(let i = 1; i < 4; i++){
       this.canvas.moveTo(this.inventoryX + this.inventoryGridOffset, this.inventoryY + this.inventoryGridOffset + 18 + i*TILESIZE);
       this.canvas.lineTo(this.inventoryX + this.inventoryGridOffset + this.inventoryWidth - this.inventoryGridOffset*2, this.inventoryY + this.inventoryGridOffset + 18 + i*TILESIZE);
@@ -141,34 +143,46 @@ class Hud {
 
     this.canvas.stroke();
 
-    this.drawInventoryItems();
+
 
     this.canvas.globalAlpha = 1;
+
+    this.drawInventoryItems();
   }
 
   drawInventoryItems(){
     for(let i = 0; i < inventory.items.length; i++){
-      console.log(inventory.items[i]);
       if(inventory.items[i]){
-        console.log("Drawing Item");
         let drawPosition = this.getInventorySlotXY(i);
         this.canvas.drawImage(itemImg.item.temp,this.inventoryX + drawPosition.x*TILESIZE + this.inventoryGridOffset, this.inventoryY + drawPosition.y*TILESIZE + this.inventoryGridOffset + 18);
       }
     }
   }
 
-  isMouseOverInventory(mouseX, mouseY){
-    if(mouseX > this.inventoryX && mouseX < (this.inventoryX + this.inventoryWidth) && mouseY > this.inventoryY && mouseY < (this.inventoryY + this.inventoryHeight)){
-      return true;
+  isMouseOverInventory(mouseX, mouseY) {
+    if(this.inventoryEnabled) {
+      if(mouseX > (this.inventoryX + this.inventoryGridOffset) &&
+        mouseX < (this.inventoryX + this.inventoryWidth - this.inventoryGridOffset) &&
+        mouseY > (this.inventoryY + this.inventoryGridOffset + 18) &&
+        mouseY < (this.inventoryY + this.inventoryHeight - this.inventoryGridOffset)) {
+        return true;
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
   }
 
   getInventorySlot(mouseX, mouseY){
-    let column = Math.floor((mouseX - this.inventoryX)/TILESIZE);
-    let row = Math.floor((mouseY - this.inventoryY)/TILESIZE);
-    return row*this.inventoryColumns + column;
+    if(this.isMouseOverInventory(mouseX,mouseY)){
+      let column = Math.floor((mouseX - this.inventoryX - this.inventoryGridOffset)/TILESIZE);
+      let row = Math.floor((mouseY - this.inventoryY - this.inventoryGridOffset - 18)/TILESIZE);
+      return row*this.inventoryColumns + column;
+    }
+    else {
+      return undefined;
+    }
   }
 
   getInventorySlotXY(index){

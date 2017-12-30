@@ -40,6 +40,7 @@ var mouseX = 0;
 var mouseY = 0;
 var mouseClicked = false;
 var mouseDownTileInfo = {x: -1, y: -1};
+var mouseDownInventorySlot = undefined;
 
 var pressingUp = false;
 var pressingDown = false;
@@ -144,18 +145,27 @@ socket.on('remove', function(data){
 })
 
 socket.on('itemMoved', function(data) {
-
   var fromTile = tileData[100 * data.fromTile.y + data.fromTile.x];
+
   if(data.toTile){
     var toTile = tileData[100 * data.toTile.y + data.toTile.x];
-    toTile.itemStack.push(fromTile.itemStack.pop());
-  } else {
+    if(data.fromTile.x && data.fromTile.y){
+      toTile.itemStack.push(fromTile.itemStack.pop());
+    } else {
+      toTile.itemStack.push(data.item);
+    }
+  } else if(fromTile.itemStack) {
     fromTile.itemStack.pop();
   }
 });
 
 socket.on('inventoryUpdate', function(data) {
-  inventory.items[data.slot] = data.item;
+  if(data.slotOne !== undefined){
+    inventory.items[data.slotOne] = data.itemOne;
+  }
+  if(data.slotTwo !== undefined){
+    inventory.items[data.slotTwo] = data.itemTwo;
+  }
 });
 
 document.onkeydown = function(event){
@@ -210,6 +220,8 @@ document.onkeyup = function(event){
 
 document.onmousedown = function(event){
   if(!chatFocused){
+
+    console.log(hud.getInventorySlot(mouseX, mouseY));
     // figure out which tile was clicked
     let currentTileX = playerX;
     let currentTileY = playerY;
@@ -231,6 +243,7 @@ document.onmousedown = function(event){
         //socket.emit('playerMouseDown', {clickingPlayer: playerID, tileX: targetTileX, tileY: targetTileY});
         mouseDownTileInfo['x'] = targetTileX;
         mouseDownTileInfo['y'] = targetTileY;
+        mouseDownInventorySlot = hud.getInventorySlot(mouseX,mouseY);
       }
     }
     //socket.emit('keyPress', {inputId:'attack', state:true});
@@ -258,21 +271,24 @@ document.onmouseup = function(event){
     //socket.emit('playerMouseUp', {clickingPlayer: playerID, tileX: targetTileX, tileY: targetTileY});
     // If player dragged an item over the inventory
     if(hud.inventoryEnabled && hud.isMouseOverInventory(mouseX, mouseY)){
+      console.log(mouseDownInventorySlot, hud.getInventorySlot(mouseX,mouseY));
       socket.emit('dragToInventory', {
         clickingPlayer: playerID,
         fromTile: {
           x: mouseDownTileInfo.x,
           y: mouseDownTileInfo.y
         },
+        fromInventorySlot: mouseDownInventorySlot,
         toInventorySlot: hud.getInventorySlot(mouseX,mouseY)
       });
     } else {
-      socket.emit('dragOnTile', {
+      socket.emit('dragToTile', {
         clickingPlayer: playerID,
         fromTile: {
           x: mouseDownTileInfo.x,
           y: mouseDownTileInfo.y
         },
+        fromInventorySlot: mouseDownInventorySlot,
         toTile: {
           x: targetTileX,
           y: targetTileY

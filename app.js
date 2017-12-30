@@ -107,37 +107,72 @@ io.sockets.on('connection', function(socket){
 
   // move into Player class?
   socket.on('attack', function(data) {
+    // If player is not logged in, do nothing.
+    var player = playerList[data.attackingPlayer];
+    if(!player){
+      return;
+    }
+
     console.log(data);
     console.log(100 * data.tileY + data.tileX);
     // look up the specified tileId from data in the tile playerArray
     var targetTile = tileMap[100 * Math.round(data.tileY) + Math.round(data.tileX)];
     console.log(targetTile);
     // make sure attacking player still exists
-    if (playerList[data.attackingPlayer]) {
+    if (player) {
       // make sure there is a player on the target tile that isnt the player who is trying to target
       if (targetTile.occupyingPlayer && (data.attackingPlayer != targetTile.occupyingPlayer.id)) {
         // the player on the target tile is already targetted
-        if (playerList[data.attackingPlayer].target && playerList[data.attackingPlayer].target.id === targetTile.occupyingPlayer.id) {
-          playerList[data.attackingPlayer].target = undefined;
+        if (player.target && playerList[data.attackingPlayer].target.id === targetTile.occupyingPlayer.id) {
+          player.target = undefined;
         } else {
-          playerList[data.attackingPlayer].target = targetTile.occupyingPlayer;
+          player.target = targetTile.occupyingPlayer;
         }
       } else {
-        playerList[data.attackingPlayer].target = undefined;
+        player.target = undefined;
       }
     }
   });
 
   // also move to Player class
-  socket.on('dragOnTile', function(data) {
+  socket.on('dragToTile', function(data) {
     var player = playerList[data.clickingPlayer];
     var mouseDownTile = tileMap[100 * data.fromTile.y + data.fromTile.x];
     var mouseUpTile = tileMap[100 * data.toTile.y + data.toTile.x];
+    var fromInventorySlot = data.fromInventorySlot;
+
+    // If player is not logged in, do nothing.
+    if(!player){
+      return;
+    }
 
     // check that tiles are valid
     // ...
+    if (player.inventory.items[fromInventorySlot] && !mouseUpTile.collision){
+      let temp = player.inventory.items[fromInventorySlot];
+      mouseUpTile.itemStack.push(player.inventory.items[fromInventorySlot]);
+      player.inventory.items[fromInventorySlot] = undefined;
 
-    if ((data.toTile.x != data.fromTile.x ||
+      io.emit('itemMoved', {
+        fromTile:{
+          x: undefined,
+          y: undefined
+        },
+        toTile: {
+          x: data.toTile.x,
+          y: data.toTile.y
+        },
+        item: temp
+      });
+
+      socket.emit('inventoryUpdate',{
+        slotOne: fromInventorySlot,
+        slotTwo: undefined,
+        itemOne: player.inventory.items[fromInventorySlot],
+        itemTwo: undefined
+      });
+
+    } else if ((data.toTile.x != data.fromTile.x ||
         data.toTile.y != data.fromTile.y) &&
         !mouseUpTile.collision            &&
         (Math.abs(player.x - data.fromTile.x) <= 1 && Math.abs(player.y - data.fromTile.y) <= 1)) {
@@ -177,12 +212,18 @@ io.sockets.on('connection', function(socket){
   socket.on('dragToInventory', function(data) {
     var player = playerList[data.clickingPlayer];
     var mouseDownTile = tileMap[100 * data.fromTile.y + data.fromTile.x];
+    var fromInventorySlot = data.fromInventorySlot;
+    var toInventorySlot = data.toInventorySlot;
     // check that tiles are valid
     // ...
-    if(!player.inventory.items[data.toInventorySlot] &&
-    (Math.abs(player.x - data.fromTile.x) <= 1 && Math.abs(player.y - data.fromTile.y) <= 1)){
+    if(player.inventory.items[fromInventorySlot]){
+      console.log("moving inventory item");
+      let temp = player.inventory.items[toInventorySlot];
+      player.inventory.items[toInventorySlot] = player.inventory.items[fromInventorySlot];
+      player.inventory.items[fromInventorySlot] = temp || undefined;
+    } else if((Math.abs(player.x - data.fromTile.x) <= 1 && Math.abs(player.y - data.fromTile.y) <= 1)){
       if (mouseDownTile.itemStack.length > 0){
-        player.inventory.items[data.toInventorySlot] = mouseDownTile.itemStack.pop();
+        player.inventory.items[toInventorySlot] = mouseDownTile.itemStack.pop();
 
         io.emit('itemMoved', {
           fromTile: {
@@ -191,18 +232,20 @@ io.sockets.on('connection', function(socket){
           },
           toTile: undefined
         });
-
-        socket.emit('inventoryUpdate',{
-          item: player.inventory.items[data.toInventorySlot],
-          slot: data.toInventorySlot
-        });
-
       }
     }
 
+    console.log(fromInventorySlot,toInventorySlot, player.inventory.items[fromInventorySlot], player.inventory.items[toInventorySlot]);
+    socket.emit('inventoryUpdate',{
+      slotOne: fromInventorySlot,
+      slotTwo: toInventorySlot,
+      itemOne: player.inventory.items[fromInventorySlot],
+      itemTwo: player.inventory.items[toInventorySlot]
+    });
+
     console.log('~~~~~~');
     console.log(data.fromTile.x, data.fromTile.y);
-    console.log(data.toInventorySlot);
+    console.log(toInventorySlot);
   });
 
 })
