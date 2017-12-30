@@ -149,9 +149,14 @@ socket.on('itemMoved', function(data) {
 
   if(data.toTile){
     var toTile = tileData[100 * data.toTile.y + data.toTile.x];
-    if(data.fromTile.x && data.fromTile.y){
+
+    if(data.fromTile.x && data.fromTile.y && !data.item){
       toTile.itemStack.push(fromTile.itemStack.pop());
     } else {
+      console.log("dropped item");
+      if(fromTile){
+        toTile.itemStack.pop();
+      }
       toTile.itemStack.push(data.item);
     }
   } else if(fromTile.itemStack) {

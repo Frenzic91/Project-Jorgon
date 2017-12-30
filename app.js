@@ -30,6 +30,11 @@ function loadTileMap(callback) {
         tile.itemStack.push(17); // itemId == 17
       }
 
+      // for testing
+      if (col == 28 && row == 28) {
+        tile.itemStack.push(17); // itemId == 17
+      }
+
       tileMap.push(tile)
   	}
   }
@@ -214,6 +219,12 @@ io.sockets.on('connection', function(socket){
     var mouseDownTile = tileMap[100 * data.fromTile.y + data.fromTile.x];
     var fromInventorySlot = data.fromInventorySlot;
     var toInventorySlot = data.toInventorySlot;
+
+    // If player is not logged in, do nothing.
+    if(!player){
+      return;
+    }
+
     // check that tiles are valid
     // ...
     if(player.inventory.items[fromInventorySlot]){
@@ -223,14 +234,24 @@ io.sockets.on('connection', function(socket){
       player.inventory.items[fromInventorySlot] = temp || undefined;
     } else if((Math.abs(player.x - data.fromTile.x) <= 1 && Math.abs(player.y - data.fromTile.y) <= 1)){
       if (mouseDownTile.itemStack.length > 0){
+        temp = player.inventory.items[toInventorySlot];
+
         player.inventory.items[toInventorySlot] = mouseDownTile.itemStack.pop();
+
+        if(temp){
+          mouseDownTile.itemStack.push(temp);
+        }
 
         io.emit('itemMoved', {
           fromTile: {
             x: data.fromTile.x,
             y: data.fromTile.y
           },
-          toTile: undefined
+          toTile: temp ? {
+            x: data.fromTile.x,
+            y: data.fromTile.y
+          } : undefined,
+          item: temp
         });
       }
     }
