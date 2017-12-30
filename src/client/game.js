@@ -84,6 +84,7 @@ socket.on('initPlayer',function(data){
   playerX = data.x;
   playerY = data.y;
   playerID = data.id;
+  inventory = data.inventory;
   drawTestMap();
   hud = new Hud(ctxHUD);
   map = new Map(ctxGround,worldJSON);
@@ -144,10 +145,17 @@ socket.on('remove', function(data){
 
 socket.on('itemMoved', function(data) {
 
-  var toTile = tileData[100 * data.toTile.y + data.toTile.x];
   var fromTile = tileData[100 * data.fromTile.y + data.fromTile.x];
+  if(data.toTile){
+    var toTile = tileData[100 * data.toTile.y + data.toTile.x];
+    toTile.itemStack.push(fromTile.itemStack.pop());
+  } else {
+    fromTile.itemStack.pop();
+  }
+});
 
-  toTile.itemStack.push(fromTile.itemStack.pop());
+socket.on('inventoryUpdate', function(data) {
+  inventory.items[data.slot] = data.item;
 });
 
 document.onkeydown = function(event){
@@ -194,6 +202,9 @@ document.onkeyup = function(event){
   }
   else if(event.keyCode === 13) { // Enter
     toggleChat();
+  }
+  else if(event.keyCode === 73) { // I
+    hud.toggleInventory();
   }
 }
 
@@ -245,17 +256,29 @@ document.onmouseup = function(event){
 
   if (loggedIn) {
     //socket.emit('playerMouseUp', {clickingPlayer: playerID, tileX: targetTileX, tileY: targetTileY});
-    socket.emit('playerMouseUp', {
-      clickingPlayer: playerID,
-      fromTile: {
-        x: mouseDownTileInfo.x,
-        y: mouseDownTileInfo.y
-      },
-      toTile: {
-        x: targetTileX,
-        y: targetTileY
-      }
-    });
+    // If player dragged an item over the inventory
+    if(hud.inventoryEnabled && hud.isMouseOverInventory(mouseX, mouseY)){
+      socket.emit('dragToInventory', {
+        clickingPlayer: playerID,
+        fromTile: {
+          x: mouseDownTileInfo.x,
+          y: mouseDownTileInfo.y
+        },
+        toInventorySlot: hud.getInventorySlot(mouseX,mouseY)
+      });
+    } else {
+      socket.emit('dragOnTile', {
+        clickingPlayer: playerID,
+        fromTile: {
+          x: mouseDownTileInfo.x,
+          y: mouseDownTileInfo.y
+        },
+        toTile: {
+          x: targetTileX,
+          y: targetTileY
+        }
+      });
+    }
   }
 
   mouseClicked = false;

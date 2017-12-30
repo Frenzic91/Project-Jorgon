@@ -1,6 +1,14 @@
 class Hud {
   constructor(ctxHud){
     this.canvas = ctxHud;
+    this.inventoryEnabled = false;
+    this.inventoryWidth = 340;
+    this.inventoryHeight = 294;
+    this.inventoryOffset = 50;
+    this.inventoryGridOffset = 10;
+    this.inventoryX = WIDTH-this.inventoryWidth-this.inventoryOffset;
+    this.inventoryY = this.inventoryOffset;
+    this.inventoryColumns = 5;
     // Hud details
   }
 
@@ -12,6 +20,9 @@ class Hud {
     //this.drawCursor();
     this.drawHealthBars(sortedList);
     this.drawPlayerNames(sortedList);
+    if(this.inventoryEnabled){
+      this.drawInventory();
+    }
   }
 
   drawCursor() {
@@ -94,6 +105,79 @@ class Hud {
     for(let i in sortedList){
       playerList[sortedList[i].key].drawName(this.canvas);
     }
+  }
+
+  toggleInventory(){
+    this.inventoryEnabled = !this.inventoryEnabled;
+  }
+
+  drawInventory(){
+
+    this.canvas.globalAlpha = 0.7;
+    this.canvas.fillStyle = "#000000";
+    this.canvas.fillRect(this.inventoryX, this.inventoryY, this.inventoryWidth, this.inventoryHeight);
+    this.canvas.fillStyle = "#FFFFFF";
+    this.canvas.font = "16px Calibri";
+    this.canvas.textAlign = "start";
+    this.canvas.fillText("INVENTORY", this.inventoryX + 10, this.inventoryY + 10 + 8);
+
+    this.canvas.lineWidth = 2;
+    this.canvas.strokeStyle = "#EEEEEE";
+    this.canvas.rect(this.inventoryX + this.inventoryGridOffset, this.inventoryY + this.inventoryGridOffset + 18, this.inventoryWidth - this.inventoryGridOffset*2, this.inventoryHeight - 18 - this.inventoryGridOffset*2);
+    this.canvas.stroke();
+    this.canvas.lineWidth = 1;
+    this.canvas.strokeStyle = "#111111";
+    this.canvas.beginPath();
+
+    for(let i = 1; i < 4; i++){
+      this.canvas.moveTo(this.inventoryX + this.inventoryGridOffset, this.inventoryY + this.inventoryGridOffset + 18 + i*TILESIZE);
+      this.canvas.lineTo(this.inventoryX + this.inventoryGridOffset + this.inventoryWidth - this.inventoryGridOffset*2, this.inventoryY + this.inventoryGridOffset + 18 + i*TILESIZE);
+    }
+
+    for(let i = 1; i < 5; i++){
+      this.canvas.moveTo(this.inventoryX + this.inventoryGridOffset + i*TILESIZE, this.inventoryY + this.inventoryGridOffset + 18);
+      this.canvas.lineTo(this.inventoryX + this.inventoryGridOffset + i*TILESIZE, this.inventoryY + this.inventoryGridOffset + 18 + this.inventoryHeight - 18 - this.inventoryGridOffset*2);
+    }
+
+    this.canvas.stroke();
+
+    this.drawInventoryItems();
+
+    this.canvas.globalAlpha = 1;
+  }
+
+  drawInventoryItems(){
+    for(let i = 0; i < inventory.items.length; i++){
+      console.log(inventory.items[i]);
+      if(inventory.items[i]){
+        console.log("Drawing Item");
+        let drawPosition = this.getInventorySlotXY(i);
+        this.canvas.drawImage(itemImg.item.temp,this.inventoryX + drawPosition.x*TILESIZE + this.inventoryGridOffset, this.inventoryY + drawPosition.y*TILESIZE + this.inventoryGridOffset + 18);
+      }
+    }
+  }
+
+  isMouseOverInventory(mouseX, mouseY){
+    if(mouseX > this.inventoryX && mouseX < (this.inventoryX + this.inventoryWidth) && mouseY > this.inventoryY && mouseY < (this.inventoryY + this.inventoryHeight)){
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  getInventorySlot(mouseX, mouseY){
+    let column = Math.floor((mouseX - this.inventoryX)/TILESIZE);
+    let row = Math.floor((mouseY - this.inventoryY)/TILESIZE);
+    return row*this.inventoryColumns + column;
+  }
+
+  getInventorySlotXY(index){
+    let y = Math.floor(index/this.inventoryColumns);
+    let x = (index - y*this.inventoryColumns);
+    return {
+      x: x,
+      y: y
+    };
   }
 
 }

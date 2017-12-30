@@ -129,7 +129,7 @@ io.sockets.on('connection', function(socket){
   });
 
   // also move to Player class
-  socket.on('playerMouseUp', function(data) {
+  socket.on('dragOnTile', function(data) {
     var player = playerList[data.clickingPlayer];
     var mouseDownTile = tileMap[100 * data.fromTile.y + data.fromTile.x];
     var mouseUpTile = tileMap[100 * data.toTile.y + data.toTile.x];
@@ -173,6 +173,38 @@ io.sockets.on('connection', function(socket){
     console.log(data.fromTile.x, data.fromTile.y);
     console.log(data.toTile.x, data.toTile.y);
   });
+
+  socket.on('dragToInventory', function(data) {
+    var player = playerList[data.clickingPlayer];
+    var mouseDownTile = tileMap[100 * data.fromTile.y + data.fromTile.x];
+    // check that tiles are valid
+    // ...
+    if(!player.inventory.items[data.toInventorySlot] &&
+    (Math.abs(player.x - data.fromTile.x) <= 1 && Math.abs(player.y - data.fromTile.y) <= 1)){
+      if (mouseDownTile.itemStack.length > 0){
+        player.inventory.items[data.toInventorySlot] = mouseDownTile.itemStack.pop();
+
+        io.emit('itemMoved', {
+          fromTile: {
+            x: data.fromTile.x,
+            y: data.fromTile.y
+          },
+          toTile: undefined
+        });
+
+        socket.emit('inventoryUpdate',{
+          item: player.inventory.items[data.toInventorySlot],
+          slot: data.toInventorySlot
+        });
+
+      }
+    }
+
+    console.log('~~~~~~');
+    console.log(data.fromTile.x, data.fromTile.y);
+    console.log(data.toInventorySlot);
+  });
+
 })
 
 server.listen(2000);
