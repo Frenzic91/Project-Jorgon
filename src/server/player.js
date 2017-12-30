@@ -28,8 +28,8 @@ class Player extends Entity {
 
     this.inventory = [];
     this.equipment = {"weapon": new Weapon({
-      "damage": 34,
-      "range": 2,
+      "damage": 20,
+      "range": 1,
       "attackDelay": 1000,
       "levelReq": 0
     })};
