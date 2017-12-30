@@ -139,7 +139,7 @@ io.sockets.on('connection', function(socket){
 
     if ((data.toTile.x != data.fromTile.x ||
         data.toTile.y != data.fromTile.y) &&
-        !mouseUpTile.hasCollision()       &&
+        !mouseUpTile.collision            &&
         (Math.abs(player.x - data.fromTile.x) <= 1 && Math.abs(player.y - data.fromTile.y) <= 1)) {
 
           if (mouseDownTile.itemStack.length > 0) {
@@ -157,8 +157,15 @@ io.sockets.on('connection', function(socket){
               }
             });
 
-          } else if (mouseDownTile.occupyingPlayer) {
+          } else if (mouseDownTile.occupyingPlayer && !mouseUpTile.hasCollision()) {
             // move the player from click tile to release tile (todo)
+            if (Math.abs(mouseDownTile.occupyingPlayer.x - data.toTile.x) <= 1 && Math.abs(mouseDownTile.occupyingPlayer.y - data.toTile.y) <= 1) {
+              mouseDownTile.occupyingPlayer.x = data.toTile.x;
+              mouseDownTile.occupyingPlayer.y = data.toTile.y;
+
+              mouseUpTile.occupyingPlayer = mouseDownTile.occupyingPlayer;
+              mouseDownTile.occupyingPlayer = undefined;
+            }
           }
     }
 
