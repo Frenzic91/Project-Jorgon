@@ -56,6 +56,9 @@ let width = 0;
 let height = 0;
 let imageHeight = 0;
 
+var minFPS = 999;
+var fpsDelay = Date.now();
+
 var hudHPWidth = 26;
 var hudHPLength = 62;
 var hudOutlineThickness = 2;
@@ -100,7 +103,6 @@ socket.on('init', function(data){
   // 'init' event is also being sent every server frame so check is needed until conflicting names changed
   if (data.tileData) {
     tileData = JSON.parse(data.tileData);
-    console.log(tileData);
   }
 })
 
@@ -141,13 +143,9 @@ socket.on('remove', function(data){
 })
 
 socket.on('itemMoved', function(data) {
-  console.log('an item was moved!');
 
   var toTile = tileData[100 * data.toTile.y + data.toTile.x];
   var fromTile = tileData[100 * data.fromTile.y + data.fromTile.x];
-
-  console.log(fromTile);
-  console.log(toTile);
 
   toTile.itemStack.push(fromTile.itemStack.pop());
 });
@@ -200,7 +198,6 @@ document.onkeyup = function(event){
 }
 
 document.onmousedown = function(event){
-  console.log(event);
   if(!chatFocused){
     // figure out which tile was clicked
     let currentTileX = playerX;
@@ -214,13 +211,9 @@ document.onmousedown = function(event){
     let targetTileX = currentTileX + distFromTargetInTilesX;
     let targetTileY = currentTileY + distFromTargetInTilesY;
 
-    console.log(targetTileX);
-    console.log(targetTileY);
-
     // shift-clicking attacks for now
     if(loggedIn){
       if (event.shiftKey) {
-        console.log('Attack!');
         socket.emit('attack', {attackingPlayer: playerID, tileX: targetTileX, tileY: targetTileY});
       } else {
         //console.log('Left-click registered');
@@ -338,7 +331,7 @@ function isLoaded(){
   }
 }
 
-let frameRate = 144;
+let frameRate = 100;
 let updateCount = 0;
 let fpsTimer = Date.now();
 let fpsCount = 0;
@@ -347,6 +340,7 @@ let debug = false;
 let debugFrames = [0,0,0,0,0,0];
 let debugCount = 100;
 let debugTimer;
+let frameDelay = Math.floor(1000/frameRate)
 
 //Game update loop
 setInterval(function() {
@@ -426,9 +420,14 @@ setInterval(function() {
     }
 
     fpsCount++;
-    if(Date.now() - fpsTimer >= 1000){
-      let now = Date.now();
-      fps = Math.floor(fpsCount/((now - fpsTimer)/1000));
+    let now = Date.now();
+    // if((now - fpsTimer) >= 1000){
+    //   fps = Math.floor(fpsCount/((now - fpsTimer)/1000));
+    //   fpsCount = 0;
+    //   fpsTimer = Date.now();
+    // }
+    if((now - fpsTimer) >= 1000){
+      fps = fpsCount;
       fpsCount = 0;
       fpsTimer = Date.now();
     }
@@ -440,4 +439,4 @@ setInterval(function() {
 
   }
 
-}, 1000/frameRate);
+}, frameDelay);

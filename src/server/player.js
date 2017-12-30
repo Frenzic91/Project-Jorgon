@@ -13,7 +13,7 @@ class Player extends Entity {
     this.pressingLeft = false;
     this.pressingUp = false;
     this.pressingDown = false;
-    this.moveDelay = 150;
+    this.moveDelay = 300;
     this.moveAmount = 1;
     this.pendingMoveX = 0;
     this.pendingMoveY = 0;
@@ -26,7 +26,11 @@ class Player extends Entity {
     this.target = undefined
     this.lastAttacked = 0;
 
-    this.inventory = [];
+    this.inventory = {
+      "size": 20,
+      "items": []
+    };
+
     this.equipment = {"weapon": new Weapon({
       "damage": 20,
       "range": 1,
@@ -57,8 +61,8 @@ class Player extends Entity {
 
       // update target players health, static value for now
       console.log("Hit enemy for %d", this.equipment.weapon.damage);
-      this.target.takeDamage(this.equipment.weapon.damage);
-      if(this.target.hp < 0){
+
+      if(this.target.takeDamage(this.equipment.weapon.damage)){
         this.target = undefined;
       }
     }
@@ -66,6 +70,11 @@ class Player extends Entity {
 
   takeDamage(amount){
     this.hp -= amount;
+    if(this.hp > 0){
+      return false;
+    } else {
+      return true;
+    }
   }
 
   update(tileMap) {
@@ -190,7 +199,8 @@ class Player extends Entity {
       score: this.score,
       mouseAngle: this.mouseAngle,
       moveDelay: this.moveDelay,
-      moveAmount: this.moveAmount
+      moveAmount: this.moveAmount,
+      inventory: this.inventory
     }
   }
 

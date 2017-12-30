@@ -29,7 +29,15 @@ class Player {
     let deltaX = this.screenX - this.xOld;
     let deltaY = this.screenY - this.yOld;
 
-    let interpRate = 2.5*(200/this.moveDelay)*((frameRate+20)/fps);
+
+
+    //let interpRate = 5*(200/this.moveDelay)*((frameRate)/fps);
+
+    let maxMovementTiles = 1000/this.moveDelay;
+    let maxMovementPixels = maxMovementTiles * TILESIZE;
+    let interpRate = maxMovementPixels/fps;
+
+
 
     if(deltaX > interpRate){
       this.xOld += interpRate;
@@ -48,13 +56,6 @@ class Player {
     }
 
     this.setDirection();
-
-    if(Math.abs(this.xOld - this.screenX) < 1){
-      this.xOld = this.screenX;
-    }
-    if(Math.abs(this.yOld - this.screenY) < 1){
-      this.yOld = this.screenY;
-    }
 
     this.drawPlayer(this.isMoving(), PLAYERSPRITEWIDTH, PLAYERSPRITEHEIGHT);
 

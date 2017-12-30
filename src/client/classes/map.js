@@ -37,8 +37,6 @@ class Map {
   drawGround() {
     if(this.initialized){
       try {
-      this.canvas.fillStyle = "#000000";
-      this.canvas.fillRect(-WIDTH/2,-HEIGHT/2,this.width*TILESIZE+WIDTH,this.height*TILESIZE+HEIGHT)
       this.canvas.drawImage(this.offscreenCanvas, 0, 0);
     } catch(err) {
         console.log("reinitializing MAP");

@@ -12,7 +12,7 @@ html, body, div, canvas {
 .gameWindow {
   margin: 0;
   padding: 0;
-  cursor: none;
+  cursor: url(images/hud/cursor_css.png), auto;
 }
 
 #chat-text, #chat-input, #chat-button{

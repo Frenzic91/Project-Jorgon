@@ -9,7 +9,7 @@ class Hud {
     this.drawHealth();
     this.drawMiniMap();
     this.drawFPS();
-    this.drawCursor();
+    //this.drawCursor();
     this.drawHealthBars(sortedList);
     this.drawPlayerNames(sortedList);
   }

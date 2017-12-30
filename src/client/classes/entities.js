@@ -36,12 +36,14 @@ class Entities {
 
   // New entity drawing method, uses the full rendered entity image to draw based on the player's location
   drawEntities(playerX, playerY){
+
     let offScreenDrawDistance = 4*TILESIZE;
     let topLeftX = playerX*TILESIZE - WIDTH/2 - offScreenDrawDistance/2;
     let topLeftY = playerY*TILESIZE - HEIGHT/2 - offScreenDrawDistance/2;
     //this.canvas.drawImage(this.offscreenCanvas, 0, 0);
     //this.canvas.drawImage(this.offscreenCanvas, topLeftX - TILESIZE/2, topLeftY - TILESIZE/4);
     //console.log(topLeftX, topLeftY);
+
     this.canvas.drawImage(this.offscreenCanvasAll, topLeftX, topLeftY, WIDTH + offScreenDrawDistance, HEIGHT + offScreenDrawDistance, topLeftX - TILESIZE/2, topLeftY - TILESIZE/4, WIDTH + offScreenDrawDistance, HEIGHT + offScreenDrawDistance);
 
   }
