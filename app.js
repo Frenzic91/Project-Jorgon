@@ -153,6 +153,7 @@ io.sockets.on('connection', function(socket){
 
     // check that tiles are valid
     // ...
+    // Item moved from player inventory to ground
     if (player.inventory.items[fromInventorySlot] && !mouseUpTile.collision){
       let temp = player.inventory.items[fromInventorySlot];
       mouseUpTile.itemStack.push(player.inventory.items[fromInventorySlot]);

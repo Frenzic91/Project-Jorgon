@@ -9,6 +9,8 @@ class Hud {
     this.inventoryX = WIDTH-this.inventoryWidth-this.inventoryOffset;
     this.inventoryY = this.inventoryOffset;
     this.inventoryColumns = 5;
+    this.itemDescriptionSizeX = 200;
+    this.itemDescriptionSizeY = 250;
     // Hud details
   }
 
@@ -22,6 +24,7 @@ class Hud {
     this.drawPlayerNames(sortedList);
     if(this.inventoryEnabled){
       this.drawInventory();
+      this.drawItemDescription();
     }
   }
 
@@ -192,6 +195,60 @@ class Hud {
       x: x,
       y: y
     };
+  }
+
+  drawItemDescription(){
+    let slot = this.getInventorySlot(mouseX,mouseY);
+    if(slot !== undefined){
+      if(inventory.items[slot]){
+        let descriptionX = this.inventoryX - this.itemDescriptionSizeX;
+        let descriptionY = this.inventoryY;
+        let descriptionImageOffset = 10;
+        this.canvas.globalAlpha = 0.7;
+        this.canvas.fillStyle = "#000000";
+        this.canvas.fillRect(descriptionX, descriptionY, this.itemDescriptionSizeX, this.itemDescriptionSizeY);
+        this.canvas.lineWidth = 1;
+        this.canvas.strokeStyle = "#CCCCCC";
+        this.canvas.rect(descriptionX + descriptionImageOffset, descriptionY + descriptionImageOffset, TILESIZE, TILESIZE);
+        this.canvas.stroke();
+        this.canvas.fillStyle = "#FFFFFF";
+        this.canvas.font = "14px Calibri";
+        this.canvas.textAlign = "start";
+
+        this.canvas.fillText("ID: " + inventory.items[slot],descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + descriptionImageOffset + 8);
+        this.canvas.fillText("ATK: " + inventory.items[slot],descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + 3*descriptionImageOffset + 8);
+        this.canvas.fillText("DEF: " + inventory.items[slot],descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + 5*descriptionImageOffset + 8);
+
+        this.canvas.fillText("ITEM NAME",descriptionX + descriptionImageOffset, descriptionY + 2*descriptionImageOffset + 7 + TILESIZE);
+        let description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce varius lacus mattis ornare tristique. Duis molestie pellentesque augue, sagittis hendrerit velit egestas vitae. Phasellus ut sapien non purus interdum euismod.";
+        let splitDescription = description.split(" ");
+        let line = "";
+        let lineCount = 0;
+        let lineCharacterLimit = 35;
+        for(let i = 0; i < splitDescription.length; i++){
+          if(line.length + splitDescription[i].length < lineCharacterLimit){
+            line += " " + splitDescription[i];
+          } else {
+            this.canvas.fillText(line,
+                                descriptionX + descriptionImageOffset,
+                                descriptionY + 4*descriptionImageOffset + 2*lineCount*descriptionImageOffset + 7 + TILESIZE,
+                                this.itemDescriptionSizeX - 2*descriptionImageOffset);
+            lineCount++;
+            line = splitDescription[i];
+          }
+          if(i === (splitDescription.length - 1) && line.length > 0){
+            this.canvas.fillText(line,
+                                descriptionX + descriptionImageOffset,
+                                descriptionY + 4*descriptionImageOffset + 2*lineCount*descriptionImageOffset + 7 + TILESIZE,
+                                this.itemDescriptionSizeX - 2*descriptionImageOffset);
+          }
+        }
+
+
+        this.canvas.globalAlpha = 1;
+        this.canvas.drawImage(itemImg.item.temp,descriptionX + descriptionImageOffset, descriptionY + descriptionImageOffset);
+      }
+    }
   }
 
 }

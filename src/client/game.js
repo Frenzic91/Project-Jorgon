@@ -286,7 +286,7 @@ document.onmouseup = function(event){
         fromInventorySlot: mouseDownInventorySlot,
         toInventorySlot: hud.getInventorySlot(mouseX,mouseY)
       });
-    } else {
+    } else { //If player dragged something to a tile (player or item)
       socket.emit('dragToTile', {
         clickingPlayer: playerID,
         fromTile: {
