@@ -163,7 +163,7 @@ class Hud {
     for(let i = 0; i < inventory.items.length; i++){
       if(inventory.items[i]){
         let drawPosition = this.getInventorySlotXY(i);
-        this.canvas.drawImage(itemImg.item.temp,this.inventoryX + drawPosition.x*TILESIZE + this.inventoryGridOffset, this.inventoryY + drawPosition.y*TILESIZE + this.inventoryGridOffset + 18);
+        this.canvas.drawImage(getImageByIndex(itemImg,"item","temp",0),this.inventoryX + drawPosition.x*TILESIZE + this.inventoryGridOffset, this.inventoryY + drawPosition.y*TILESIZE + this.inventoryGridOffset + 18);
       }
     }
   }
@@ -267,11 +267,10 @@ class Hud {
         this.itemTooltipSizeY = 4*descriptionImageOffset + TILESIZE + 2*lineCount*descriptionImageOffset;
 
         this.canvas.globalAlpha = 1;
-        this.canvas.drawImage(itemImg.item.temp,descriptionX + descriptionImageOffset, descriptionY + descriptionImageOffset);
+
+        this.canvas.drawImage(getImageByIndex(itemImg,"item","temp",0),descriptionX + descriptionImageOffset, descriptionY + descriptionImageOffset);
       }
     }
   }
-
-
 
 }

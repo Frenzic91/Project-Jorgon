@@ -46,6 +46,11 @@ var itemSprites = [
     type: "item",
     name: "temp",
     src: "client/images/tempItem.png"
+  },
+  {
+    type: "item",
+    name: "temp2",
+    src: "client/images/tempItem2.png"
   }
 ];
 
@@ -67,4 +72,26 @@ function loadImages(spriteArray){
     }
   }
   return loadedImages;
+}
+
+function getImageByIndex(array,type,name,index){
+  let offscreenCanvas = document.createElement('canvas');
+  let offscreenContext = offscreenCanvas.getContext('2d');
+  let column = index % SPRITESHEETWIDTH;
+  let row = index % SPRITESHEETWIDTH;
+
+  let spriteWidth = array[type][name].width;
+  let spriteHeight = array[type][name].height;
+
+  offscreenContext.drawImage(array[type][name], // Sprite sheet image
+                            column*spriteWidth, // Sprite sheet index X
+                            row*spriteHeight, // Sprite sheet index Y
+                            spriteWidth,
+                            spriteHeight,
+                            0, // draw the sprite on the virtual canvas at X = 0
+                            0, // draw the sprite on the virtual canvas at Y = 0
+                            spriteWidth,
+                            spriteHeight);
+
+  return offscreenCanvas;
 }
