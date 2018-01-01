@@ -9,6 +9,30 @@ html, body, div, canvas {
   user-select: none;
 }
 
+#signDiv {
+  margin: auto;
+  top: 25%;
+  width: 200px;
+  height: 120px;
+  border: 1px solid #000000;
+  background-color: #333333;
+}
+
+#signDiv-username, #signDiv-password {
+  display: block;
+  margin: auto;
+}
+
+#signDiv-username {
+  margin-top: 20px;
+}
+
+#loginButtons {
+  padding-top: 10px;
+  text-align: center;
+  background-color: #333333;
+}
+
 .gameWindow {
   margin: 0;
   padding: 0;
