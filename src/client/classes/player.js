@@ -81,14 +81,12 @@ class Player {
   }
 
   drawHPBar(ctxHUD) {
-    // Replaced ctxEntities with ctxHUD
-    let offsetX = playerXPixels - WIDTH/2;
-    let offsetY = playerYPixels - HEIGHT/2;
-    let finalX = this.xOld - offsetX;
-    let finalY = this.yOld - offsetY;
+    //let finalX = this.xOld - offsetX;
+    let finalX = (this.xOld - playerXPixels)*scale + WIDTH/2; // Accounts for zoom scale -- global variable
+    let finalY = (this.yOld - playerYPixels)*scale + HEIGHT/2; // Accounts for zoom scale -- global variable
 
     ctxHUD.fillStyle = "#000000";
-    ctxHUD.fillRect(finalX - hpBarWidth/2,finalY - 32,30, 4);
+    ctxHUD.fillRect(finalX - hpBarWidth*scale/2,finalY - 32*scale,hpBarWidth*scale, 4*scale);
     let hpWidth = hpBarWidth * this.hp/this.hpMax;
     if(this.hp === this.hpMax){
       ctxHUD.fillStyle = "#0000FF";
@@ -98,7 +96,7 @@ class Player {
       let red = 255 - green;
       ctxHUD.fillStyle = getHexRGB(red, green, 0);
     }
-    ctxHUD.fillRect(finalX - hpBarWidth/2,finalY - 32,hpWidth, 4);
+    ctxHUD.fillRect(finalX - hpBarWidth*scale/2,finalY - 32*scale,hpWidth*scale, 4*scale);
     ctxHUD.fillStyle = "#000000";
   }
 
@@ -106,8 +104,11 @@ class Player {
     // Replaced ctxEntities with ctxHUD
     let offsetX = playerXPixels - WIDTH/2;
     let offsetY = playerYPixels - HEIGHT/2;
-    let finalX = this.xOld - offsetX;
-    let finalY = this.yOld - offsetY;
+    let fontSizeBase = 8;
+    // let finalX = this.xOld - offsetX;
+    // let finalY = this.yOld - offsetY;
+    let finalX = (this.xOld - playerXPixels)*scale + WIDTH/2; // Accounts for zoom scale -- global variable
+    let finalY = (this.yOld - playerYPixels)*scale + HEIGHT/2; // Accounts for zoom scale -- global variable
     // Show the player's name in red if he is the attack target
     if(playerList[playerID].attackTarget == this.id){
       ctxHUD.fillStyle = 'red';
@@ -115,8 +116,8 @@ class Player {
       ctxHUD.fillStyle = 'black';
     }
     ctxHUD.textAlign="center"
-    ctxHUD.font = "8pt Arial Black";
-    ctxHUD.fillText(this.name, finalX, finalY - 30 - this.hpBarOffset);
+    ctxHUD.font = Math.ceil(fontSizeBase*scale)+"pt Arial Black";
+    ctxHUD.fillText(this.name, finalX, finalY - 30*scale - this.hpBarOffset*scale);
   }
 
   isMoving() {
