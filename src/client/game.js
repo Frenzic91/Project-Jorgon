@@ -263,7 +263,7 @@ document.onmousedown = function(event){
     if(loggedIn){
       if (event.shiftKey) {
         socket.emit('attack', {attackingPlayer: playerID, tileX: targetTileX, tileY: targetTileY});
-      } else if (event.altKey) {
+      } else if (event.button == 2) {
         if (hud.inventoryEnabled && hud.isMouseOverInventory(mouseX, mouseY)) {
           socket.emit('useItem', {playerID, itemUsedFromInventory: true, inventorySlot: hud.getInventorySlot(mouseX,mouseY)});
         } else { /* mouse over tile */
