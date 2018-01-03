@@ -21,8 +21,8 @@ class Player extends Entity {
     this.lastMoved = 0;
     this.tileIndex = undefined;
 
-    this.hp = 100;
-    this.hpMax = 100;
+    this.hp = 200;
+    this.hpMax = 200;
 
     this.target = undefined
     this.lastAttacked = 0;
@@ -42,6 +42,10 @@ class Player extends Entity {
 
   getHp() {
     return this.hp;
+  }
+
+  getMaxHp() {
+    return this.hpMax;
   }
 
   getInventoryItem(inventorySlot) {
@@ -65,7 +69,7 @@ class Player extends Entity {
   }
 
   setHp(hp) {
-    if (hp <= 100) {
+    if (0 > hp <= this.hpMax) {
       this.hp = hp;
     }
   }

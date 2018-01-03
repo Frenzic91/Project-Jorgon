@@ -22,9 +22,10 @@ var onUseFunctionTable = {
 
     if (player) {
       let playerHp = player.getHp() + healAmount;
+      let playerMaxHp = player.getMaxHp();
 
-      if (playerHp > 100) {
-        playerHp = 100;
+      if (playerHp > playerMaxHp) {
+        playerHp = playerMaxHp;
       }
 
       player.setHp(playerHp);
