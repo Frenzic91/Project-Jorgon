@@ -17,6 +17,9 @@ const MINWIDTH = 0;
 const MAXHEIGHT = 99;
 const MAXWIDTH = 99;
 
+const MAP_WIDTH = 100;
+const MAP_HEIGHT = 100;
+
 module.exports = {
   DEBUG,
   IMPACT_DISTANCE,
@@ -29,5 +32,7 @@ module.exports = {
   MINHEIGHT,
   MINWIDTH,
   MAXHEIGHT,
-  MAXWIDTH
+  MAXWIDTH,
+  MAP_WIDTH,
+  MAP_HEIGHT
 }

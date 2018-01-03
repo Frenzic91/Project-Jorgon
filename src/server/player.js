@@ -39,6 +39,36 @@ class Player extends Entity {
     })};
   }
 
+  getHp() {
+    return this.hp;
+  }
+
+  getInventoryItem(inventorySlot) {
+    if (inventorySlot >= 0 && inventorySlot < this.inventory.size) {
+      return this.inventory.items[inventorySlot];
+    }
+
+    return null;
+  }
+
+  removeInventoryItem(inventorySlot) {
+    if (inventorySlot >= 0 && inventorySlot < this.inventory.size) {
+      this.inventory.items[inventorySlot] = undefined;
+    }
+  }
+
+  setInventoryItem(inventorySlot, itemID) {
+    if (inventorySlot >= 0 && inventorySlot < this.inventory.size && itemID > 0) {
+      this.inventory.items[inventorySlot] = itemID;
+    }
+  }
+
+  setHp(hp) {
+    if (hp <= 100) {
+      this.hp = hp;
+    }
+  }
+
   isTargetInRange() {
     if (this.target) {
       console.log("calculating range, we have a target already")

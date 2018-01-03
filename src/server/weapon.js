@@ -1,4 +1,4 @@
-var Item = require('./item.js');
+var Item = require('./item.js').Item;
 
 class Weapon extends Item {
   constructor(properties) {

@@ -4,6 +4,8 @@ var database = require('./src/server/db.js');
 var Player = require('./src/server/player.js');
 var worldJSON = require('./src/server/mapData.js');
 var Tile = require('./src/server/tile.js');
+var Item = require('./src/server/item.js');
+var Game = require('./src/server/game.js');
 
 //console.log(mapJSON);
 
@@ -17,6 +19,12 @@ var io = require('socket.io')(server, {});
 var SOCKET_LIST = {};
 var playerList = {};
 var tileMap = [];
+
+var gameInstance = new Game();
+
+gameInstance.setPlayerList(playerList);
+gameInstance.setTileMap(tileMap);
+gameInstance.setSocketServer(io);
 
 function loadTileMap(callback) {
   for (let row in worldJSON.map) {
@@ -185,9 +193,9 @@ io.sockets.on('connection', function(socket){
 
           if (mouseDownTile.itemStack.length > 0) {
             // move the item from click tile to release tile
-            mouseUpTile.itemStack.push(mouseDownTile.itemStack.pop());
+            mouseUpTile.pushItem(mouseDownTile.popItem());
 
-            io.emit('itemMoved', {
+            /*io.emit('itemMoved', {
               fromTile: {
                 x: data.fromTile.x,
                 y: data.fromTile.y
@@ -197,6 +205,7 @@ io.sockets.on('connection', function(socket){
                 y: data.toTile.y
               }
             });
+            */
 
           } else if (mouseDownTile.occupyingPlayer && !mouseUpTile.hasCollision()) {
             // move the player from click tile to release tile (todo)
@@ -270,6 +279,19 @@ io.sockets.on('connection', function(socket){
     console.log(toInventorySlot);
   });
 
+  socket.on('useItem', function(data) {
+    let itemID;
+    let player = playerList[data.playerID];
+
+    if (data.itemUsedFromInventory) {
+      itemID = player.getInventoryItem(data.inventorySlot);
+    } else { // item used from tile
+      itemTile = tileMap[CT.MAP_WIDTH * data.targetTileY + data.targetTileX];
+      itemID = itemTile.getTopItem();
+    }
+
+    if (itemID) Item.onUseFunctionTable[itemID](data);
+  });
 })
 
 server.listen(2000);
@@ -294,7 +316,9 @@ function mainUpdate() {
   Player.execPlayerAttacks(playerList);
 
   var pack = {
-    players: Player.getPlayerPositions(playerList, tileMap)
+    players: Player.getPlayerPositions(playerList, tileMap),
+    creatures: gameInstance.getCreatureUpdates(),
+    tiles: gameInstance.getTileUpdates()
   }
 
   let fullPack = [
@@ -314,6 +338,7 @@ function mainUpdate() {
 
   Player.sendAllPlayersMulti(SOCKET_LIST, fullPack);
 
+  gameInstance.clearUpdatePacks();
   initPack.players = [];
   removePack.players = [];
 

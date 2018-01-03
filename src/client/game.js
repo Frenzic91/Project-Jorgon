@@ -135,6 +135,22 @@ socket.on('update', function(data){
     }
   }
 
+  // update tiles
+  for (let tileUpdatePacket in data.tiles) {
+    // why are these strings and the player info above isnt?
+    let x = parseInt(data.tiles[tileUpdatePacket].x);
+    let y = parseInt(data.tiles[tileUpdatePacket].y);
+
+    let updateTile = tileData[100 * y + x];
+
+    if (data.tiles[tileUpdatePacket].popItem) {
+      updateTile.itemStack.pop();
+    } else if (data.tiles[tileUpdatePacket].pushItem){
+      let itemID = data.tiles[tileUpdatePacket].itemID;
+      updateTile.itemStack.push(itemID);
+    }
+  }
+
 });
 
 //remove
@@ -247,6 +263,12 @@ document.onmousedown = function(event){
     if(loggedIn){
       if (event.shiftKey) {
         socket.emit('attack', {attackingPlayer: playerID, tileX: targetTileX, tileY: targetTileY});
+      } else if (event.altKey) {
+        if (hud.inventoryEnabled && hud.isMouseOverInventory(mouseX, mouseY)) {
+          socket.emit('useItem', {playerID, itemUsedFromInventory: true, inventorySlot: hud.getInventorySlot(mouseX,mouseY)});
+        } else { /* mouse over tile */
+          socket.emit('useItem', {playerID, itemUsedFromInventory: false, targetTileX, targetTileY})
+        }
       } else {
         //console.log('Left-click registered');
         //socket.emit('playerMouseDown', {clickingPlayer: playerID, tileX: targetTileX, tileY: targetTileY});
