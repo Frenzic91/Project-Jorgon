@@ -43,6 +43,11 @@ function loadTileMap(callback) {
         tile.itemStack.push(17); // itemId == 17
       }
 
+      // for testing
+      if (col == 29 && row == 28) {
+        tile.itemStack.push(18); // itemId == 18
+      }
+
       tileMap.push(tile)
   	}
   }

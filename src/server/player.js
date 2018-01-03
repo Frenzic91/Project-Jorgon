@@ -1,6 +1,7 @@
 var Entity = require('./entity.js');
 var CT = require('../constants.js');
 var Weapon = require('./weapon.js');
+var Utils = require('../utils.js');
 
 // Player class (based on Entity) - We should pull this into a seperate file
 class Player extends Entity {
@@ -28,11 +29,11 @@ class Player extends Entity {
 
     this.inventory = {
       "size": 20,
-      "items": []
+      "items": [18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18]
     };
 
     this.equipment = {"weapon": new Weapon({
-      "damage": 20,
+      "damage": 45,
       "range": 1,
       "attackDelay": 1000,
       "levelReq": 0
@@ -92,7 +93,7 @@ class Player extends Entity {
       // update target players health, static value for now
       console.log("Hit enemy for %d", this.equipment.weapon.damage);
 
-      if(this.target.takeDamage(this.equipment.weapon.damage)){
+      if(this.target.takeDamage(Utils.randNumBetween(5, this.equipment.weapon.damage))){
         this.target = undefined;
       }
     }
