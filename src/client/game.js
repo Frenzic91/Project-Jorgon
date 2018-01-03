@@ -265,9 +265,17 @@ document.onmousedown = function(event){
         socket.emit('attack', {attackingPlayer: playerID, tileX: targetTileX, tileY: targetTileY});
       } else if (event.button == 2) {
         if (hud.inventoryEnabled && hud.isMouseOverInventory(mouseX, mouseY)) {
-          socket.emit('useItem', {playerID, itemUsedFromInventory: true, inventorySlot: hud.getInventorySlot(mouseX,mouseY)});
+          let inventorySlot = hud.getInventorySlot(mouseX,mouseY);
+          socket.emit('useItem', {playerID, itemUsedFromInventory: true, inventorySlot});
+          if (inventory.items[inventorySlot] == 18) {
+            playerList[playerID].isCastingSpell = true;
+          }
         } else { /* mouse over tile */
-          socket.emit('useItem', {playerID, itemUsedFromInventory: false, targetTileX, targetTileY})
+          socket.emit('useItem', {playerID, itemUsedFromInventory: false, targetTileX, targetTileY});
+          let tile = tileData[MAP_WIDTH * targetTileY + targetTileX];
+          if (tile.itemStack[tile.itemStack.length - 1] == 18) {
+            playerList[playerID].isCastingSpell = true;
+          }
         }
       } else {
         //console.log('Left-click registered');
@@ -455,7 +463,14 @@ setInterval(function() {
     let sortedList = sortPlayersByY();
     for(let i in sortedList){
       playerList[sortedList[i].key].draw();
+      if (playerList[sortedList[i].key].isCastingSpell) {
+        playerList[sortedList[i].key].drawSpellEffectOnPlayer();
+      }
     }
+
+    // let initTime = Date.now();
+    // while (Date.now() - initTime < 500);
+
     if(debug){
       debugFrames[0] += (Date.now() - debugTimer);
       debugTimer = Date.now();

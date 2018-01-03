@@ -59,10 +59,19 @@ var itemSprites = [
   }
 ];
 
+var spellEffectSprites = [
+  {
+    type: "effect",
+    name: "healeffect",
+    src: "client/images/healeffect.png"
+  }
+];
+
 var playerImg = loadImages(charSprites);
 var hudImg = loadImages(hudSprites);
 var mapImg = loadImages(mapSprites);
 var itemImg = loadImages(itemSprites);
+var spellEffectImg = loadImages(spellEffectSprites);
 
 function loadImages(spriteArray){
   loadedImages = {};

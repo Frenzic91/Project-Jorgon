@@ -18,7 +18,10 @@ class Player {
   this.xOld = this.screenX;
   this.yOld = this.screenY;
   this.stateTime = Date.now();
+  this.spellStateTime = Date.now(); // temp
   this.runState = 0;
+  this.spellState = 0; // temp
+  this.isCastingSpell = false;
   this.hpBarOffset = 5;
   }
 
@@ -88,14 +91,12 @@ class Player {
     ctxHUD.fillStyle = "#000000";
     ctxHUD.fillRect(finalX - hpBarWidth*scale/2,finalY - 32*scale,hpBarWidth*scale, 4*scale);
     let hpWidth = hpBarWidth * this.hp/this.hpMax;
-    if(this.hp === this.hpMax){
-      ctxHUD.fillStyle = "#0000FF";
-    } else{
-      let hpPercent = this.hp/this.hpMax;
-      let green = parseInt(Math.floor(255 * hpPercent));
-      let red = 255 - green;
-      ctxHUD.fillStyle = getHexRGB(red, green, 0);
-    }
+
+    let hpPercent = this.hp/this.hpMax;
+    let green = parseInt(Math.floor(255 * hpPercent));
+    let red = 255 - green;
+    ctxHUD.fillStyle = getHexRGB(red, green, 0);
+
     ctxHUD.fillRect(finalX - hpBarWidth*scale/2,finalY - 32*scale,hpWidth*scale, 4*scale);
     ctxHUD.fillStyle = "#000000";
   }
@@ -170,6 +171,43 @@ class Player {
       this.drawPlayer(this.isMoving(),PLAYERSPRITEWIDTH, PLAYERSPRITEHEIGHT);
       // Reset opacity
       ctxEntities.globalAlpha = 1;
+    }
+  }
+
+  // temp
+  drawSpellEffectOnPlayer() {
+    if(this.spellState === 0){
+      ctxEntities.drawImage(spellEffectImg.effect.healeffect, 64 * 0, 0, 64, 64, this.xOld-width/2-32, this.yOld-height/2-32, 64, 64);
+
+      if(Date.now() - this.spellStateTime >= ANIMATIONTIME/1.5){
+        this.spellState = 1;
+        this.spellStateTime = Date.now();
+      }
+
+    } else if(this.spellState === 1){
+      ctxEntities.drawImage(spellEffectImg.effect.healeffect, 64 * 0, 0, 64, 64, this.xOld-width/2-32, this.yOld-height/2-32, 64, 64);
+
+      if(Date.now() - this.spellStateTime >= ANIMATIONTIME/1.5){
+        this.spellState = 2;
+        this.spellStateTime = Date.now();
+      }
+
+    } else if(this.spellState === 2) {
+      ctxEntities.drawImage(spellEffectImg.effect.healeffect, 64 * 1, 0, 64, 64, this.xOld-width/2-32, this.yOld-height/2-32, 64, 64);
+
+      if(Date.now() - this.spellStateTime >= ANIMATIONTIME/1.5){
+        this.spellState = 3;
+        this.spellStateTime = Date.now();
+      }
+
+    } else if(this.spellState === 3) {
+      ctxEntities.drawImage(spellEffectImg.effect.healeffect, 64 * 2, 0, 64, 64, this.xOld-width/2-32, this.yOld-height/2-32, 64, 64);
+
+      if(Date.now() - this.spellStateTime >= ANIMATIONTIME/1.5){
+        this.spellState = 0;
+        this.spellStateTime = Date.now();
+        this.isCastingSpell = false;
+      }
     }
   }
 

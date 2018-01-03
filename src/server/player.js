@@ -72,12 +72,6 @@ class Player extends Entity {
 
   isTargetInRange() {
     if (this.target) {
-      console.log("calculating range, we have a target already")
-      // calculate and return the smallest of the horizontal or vertical
-      // distance between this player and the target
-      console.log(Math.abs(this.x - this.target.x));
-      console.log(Math.abs(Math.round(this.y) - Math.round(this.target.y)));
-
       return (Math.abs(Math.round(this.x) - Math.round(this.target.x)) <= this.equipment.weapon.range) &&
               (Math.abs(Math.round(this.y) - Math.round(this.target.y)) <= this.equipment.weapon.range)
     }
@@ -89,9 +83,6 @@ class Player extends Entity {
     if (this.isTargetInRange() && (Date.now() - this.lastAttacked > this.equipment.weapon.attackDelay)) {
       // set lastAttacked back to curret time
       this.lastAttacked = Date.now();
-
-      // update target players health, static value for now
-      console.log("Hit enemy for %d", this.equipment.weapon.damage);
 
       if(this.target.takeDamage(Utils.randNumBetween(5, this.equipment.weapon.damage))){
         this.target = undefined;
