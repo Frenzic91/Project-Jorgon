@@ -303,6 +303,11 @@ io.sockets.on('connection', function(socket){
     let gameInstance = new Game()
     let player = gameInstance.getPlayerList()[socket.id];
 
+    // If player is not logged in, do nothing.
+    if(!player){
+      return;
+    }
+
     if (Utils.isValidCoord(data.toTile)) {
       let path = findPath(data.fromTile, data.toTile);
       player.setPath(path);
