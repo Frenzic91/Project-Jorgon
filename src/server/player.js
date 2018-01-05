@@ -20,6 +20,9 @@ class Player extends Entity {
     this.pendingMoveY = 0;
     this.lastMoved = 0;
     this.tileIndex = undefined;
+    this.path = undefined;
+    this.currentNodeInPath = undefined;
+    this.isPathfinding = false;
 
     this.hp = 200;
     this.hpMax = 200;
@@ -74,6 +77,26 @@ class Player extends Entity {
     }
   }
 
+  setPath(path) {
+    this.path = path;
+    this.currentNodeInPath = 0;
+    this.isPathfinding = true;
+  }
+
+  removePath() {
+    this.path = undefined;
+    this.currentNodeInPath = undefined;
+    this.isPathfinding = false;
+  }
+
+  movePlayer(pos) {
+    this.x = pos.x;
+    this.y = pos.y;
+
+    // add packet to player updates
+    // ...
+  }
+
   isTargetInRange() {
     if (this.target) {
       return (Math.abs(Math.round(this.x) - Math.round(this.target.x)) <= this.equipment.weapon.range) &&
@@ -116,7 +139,7 @@ class Player extends Entity {
       return true;
     } else {
       this.resetKeys();
-      this.hp = 100;
+      this.hp = this.hpMax;
       this.x = Math.floor(Math.random()*50);
       this.y = Math.floor(Math.random()*50);
       Player.clearPlayerFromTile(tileMap, this);
@@ -130,42 +153,59 @@ class Player extends Entity {
     var yInTiles = this.y;
     var tileIndexOld = 100 * yInTiles + xInTiles;
 
-    //set the default updatePosition to super_updatePosition (for use in new updatePosition function)
-    if(Date.now() - this.lastMoved > this.moveDelay){
-      this.updateSpd();
+    if (!this.isPathfinding) {
+      //set the default updatePosition to super_updatePosition (for use in new updatePosition function)
+      if(Date.now() - this.lastMoved > this.moveDelay){
+        this.updateSpd();
 
-      // use pendingMove if exists
-      if(this.pendingMoveX !== 0){
-        this.spdX = this.pendingMoveX;
-      }
-      if(this.pendingMoveY !== 0){
-        this.spdY = this.pendingMoveY;
-      }
-      //Checks collision
-      let newX = this.x + this.spdX;
-      let newY = this.y + this.spdY;
-      let newTileIndex = 100 * newY + newX;
-
-      if(tileMap[newTileIndex]){
-        if(!tileMap[newTileIndex].hasCollision()){
-          this.lastMoved = Date.now();
-          super.updatePosition();
+        // use pendingMove if exists
+        if(this.pendingMoveX !== 0){
+          this.spdX = this.pendingMoveX;
         }
+        if(this.pendingMoveY !== 0){
+          this.spdY = this.pendingMoveY;
+        }
+        //Checks collision
+        let newX = this.x + this.spdX;
+        let newY = this.y + this.spdY;
+        let newTileIndex = 100 * newY + newX;
+
+        if(tileMap[newTileIndex]){
+          if(!tileMap[newTileIndex].hasCollision()){
+            this.lastMoved = Date.now();
+            super.updatePosition();
+          }
+        }
+
+        this.resetPendingMove();
       }
 
-      this.resetPendingMove();
-    }
+      if(this.x < CT.MINWIDTH){
+        this.x = CT.MINWIDTH;
+      } else if(this.x > CT.MAXWIDTH){
+        this.x = CT.MAXWIDTH;
+      }
 
-    if(this.x < CT.MINWIDTH){
-      this.x = CT.MINWIDTH;
-    } else if(this.x > CT.MAXWIDTH){
-      this.x = CT.MAXWIDTH;
-    }
+      if(this.y < CT.MINHEIGHT){
+        this.y = CT.MINHEIGHT;
+      } else if(this.y > CT.MAXHEIGHT){
+        this.y = CT.MAXHEIGHT;
+      }
+    } else {
+      if (Date.now() - this.lastMoved > this.moveDelay) {
+        this.movePlayer({
+          x: this.path[this.currentNodeInPath].x,
+          y: this.path[this.currentNodeInPath].y
+        });
 
-    if(this.y < CT.MINHEIGHT){
-      this.y = CT.MINHEIGHT;
-    } else if(this.y > CT.MAXHEIGHT){
-      this.y = CT.MAXHEIGHT;
+        if (this.currentNodeInPath < this.path.length - 1){
+          this.currentNodeInPath += 1;
+        } else {
+          this.removePath();
+        }
+
+        this.lastMoved = Date.now();
+      }
     }
 
     var tileIndex = 100 * this.y + this.x;
@@ -174,8 +214,8 @@ class Player extends Entity {
       tileMap[tileIndexOld].occupyingPlayer = undefined;
     }
 
-      tileMap[tileIndex].occupyingPlayer = this;
-      this.tileIndex = tileIndex;
+    tileMap[tileIndex].occupyingPlayer = this;
+    this.tileIndex = tileIndex;
   }
 
   //Update player speed based on player input (right, left, up, down)
@@ -263,6 +303,7 @@ class Player extends Entity {
 
     socket.on('keyPress', function(data){
       if(data.inputId === 'left'){
+        this.isPathfinding = false;
         //Queues up the direction button so it triggers player movement -- if player is not moving
         if(!player.isMoving()){
           player.pendingMoveX = -player.moveAmount;
@@ -275,6 +316,7 @@ class Player extends Entity {
         player.pressingLeft = data.state;
       }
       else if(data.inputId === 'right'){
+        this.isPathfinding = false;
         //Queues up the direction button so it triggers player movement -- if player is not moving
         if(!player.isMoving()){
           player.pendingMoveX = player.moveAmount;
@@ -287,6 +329,7 @@ class Player extends Entity {
         player.pressingRight = data.state;
       }
       else if(data.inputId === 'up'){
+        this.isPathfinding = false;
         //Queues up the direction button so it triggers player movement -- if player is not moving
         if(!player.isMoving()){
           player.pendingMoveX = 0;
@@ -299,6 +342,7 @@ class Player extends Entity {
         player.pressingUp = data.state;
       }
       else if(data.inputId === 'down'){
+        this.isPathfinding = false;
         //Queues up the direction button so it triggers player movement -- if player is not moving
         if(!player.isMoving()){
           player.pendingMoveX = 0;

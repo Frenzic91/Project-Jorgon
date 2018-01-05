@@ -325,18 +325,28 @@ document.onmouseup = function(event){
         toInventorySlot: hud.getInventorySlot(mouseX,mouseY)
       });
     } else { //If player dragged something to a tile (player or item)
-      socket.emit('dragToTile', {
-        clickingPlayer: playerID,
-        fromTile: {
-          x: mouseDownTileInfo.x,
-          y: mouseDownTileInfo.y
-        },
-        fromInventorySlot: mouseDownInventorySlot,
-        toTile: {
-          x: targetTileX,
-          y: targetTileY
-        }
-      });
+      if (mouseDownTileInfo.x == targetTileX && mouseDownTileInfo.y == targetTileY) {
+        // pathfinding
+        socket.emit('moveToTile', {
+          playerID,
+          fromTile: {x: playerX, y: playerY},
+          toTile: {x: targetTileX, y: targetTileY}
+        });
+        
+      } else {
+        socket.emit('dragToTile', {
+          clickingPlayer: playerID,
+          fromTile: {
+            x: mouseDownTileInfo.x,
+            y: mouseDownTileInfo.y
+          },
+          fromInventorySlot: mouseDownInventorySlot,
+          toTile: {
+            x: targetTileX,
+            y: targetTileY
+          }
+        });
+      }
     }
   }
 

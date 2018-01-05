@@ -1,11 +1,12 @@
 var CT = require('./src/constants.js');
-var utils = require('./src/utils.js');
+var Utils = require('./src/utils.js');
 var database = require('./src/server/db.js');
 var Player = require('./src/server/player.js');
 var worldJSON = require('./src/server/mapData.js');
 var Tile = require('./src/server/tile.js');
 var Item = require('./src/server/item.js');
 var Game = require('./src/server/game.js');
+var findPath = require('./src/server/pathfinder.js');
 
 //console.log(mapJSON);
 
@@ -297,6 +298,16 @@ io.sockets.on('connection', function(socket){
 
     if (itemID) Item.onUseFunctionTable[itemID](data);
   });
+
+  socket.on('moveToTile', function(data) {
+    let gameInstance = new Game()
+    let player = gameInstance.getPlayerList()[socket.id];
+
+    if (Utils.isValidCoord(data.toTile)) {
+      let path = findPath(data.fromTile, data.toTile);
+      player.setPath(path);
+    }
+  });
 })
 
 server.listen(2000);
@@ -314,6 +325,8 @@ var frameCount = 0;
 var frames = [];
 
 loadTileMap(mainUpdate);
+
+console.log(findPath({x: 25, y: 27}, {x: 25, y: 25}));
 
 function mainUpdate() {
   let start = Date.now();
