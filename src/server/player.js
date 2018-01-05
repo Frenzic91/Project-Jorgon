@@ -2,6 +2,8 @@ var Entity = require('./entity.js');
 var CT = require('../constants.js');
 var Weapon = require('./weapon.js');
 var Utils = require('../utils.js');
+var Game = require('./game.js');
+var findPath = require('./pathfinder.js');
 
 // Player class (based on Entity) - We should pull this into a seperate file
 class Player extends Entity {
@@ -79,7 +81,7 @@ class Player extends Entity {
 
   setPath(path) {
     this.path = path;
-    this.currentNodeInPath = 0;
+    this.currentNodeInPath = 1;
     this.isPathfinding = true;
   }
 
@@ -193,18 +195,34 @@ class Player extends Entity {
       }
     } else {
       if (Date.now() - this.lastMoved > this.moveDelay) {
-        this.movePlayer({
-          x: this.path[this.currentNodeInPath].x,
-          y: this.path[this.currentNodeInPath].y
-        });
+        let tileMap = new Game().getTileMap();
+        let nextTile = tileMap[CT.MAP_WIDTH * this.path[this.currentNodeInPath].y + this.path[this.currentNodeInPath].x]
 
-        if (this.currentNodeInPath < this.path.length - 1){
-          this.currentNodeInPath += 1;
+        if (!nextTile.hasCollision()) {
+          this.movePlayer({
+            x: this.path[this.currentNodeInPath].x,
+            y: this.path[this.currentNodeInPath].y
+          });
+
+          if (this.currentNodeInPath < this.path.length - 1){
+            this.currentNodeInPath += 1;
+          } else {
+            this.removePath();
+          }
+
+          this.lastMoved = Date.now();
         } else {
-          this.removePath();
-        }
+          // recalculate path
+          let startCoord = {x: this.x, y: this.y};
+          let endCoord = {x: this.path[this.path.length - 1].x, y: this.path[this.path.length - 1].y};
 
-        this.lastMoved = Date.now();
+          if (Math.abs(endCoord.x - startCoord.x) <= 1 && Math.abs(endCoord.y - startCoord.y) <= 1) {
+            this.removePath();
+          } else {
+            let newPath = findPath(startCoord, endCoord);
+            this.setPath(newPath);
+          }
+        }
       }
     }
 
