@@ -32,7 +32,7 @@ function loadTileMap(callback) {
   	for (let col in worldJSON.map[row]) {
 
       var collision = worldJSON.map[row][col].ground.collision || worldJSON.map[row][col].entity.collision;
-      var tile = new Tile(col, row, collision);
+      var tile = new Tile(col, row, collision, []);
 
       // for testing
       if (col == 27 && row == 28) {
@@ -309,15 +309,25 @@ io.sockets.on('connection', function(socket){
   socket.on('moveToTile', function(data) {
     let gameInstance = new Game()
     let player = gameInstance.getPlayerList()[socket.id];
+    let tileMap = gameInstance.getTileMap();
 
     // If player is not logged in, do nothing.
     if(!player){
       return;
     }
 
-    if (Utils.isValidCoord(data.toTile)) {
-      let path = findPath(data.fromTile, data.toTile);
-      player.setPath(path);
+    // verify client data is properly formatted
+    if (typeof data.fromTile.x == 'number' &&
+        typeof data.fromTile.y == 'number' &&
+        typeof data.toTile.x == 'number'   &&
+        typeof data.toTile.y == 'number') {
+
+      if (Utils.isSameCoord(player, data.fromTile) && Utils.isValidCoord(data.toTile) &&
+          !tileMap[CT.MAP_WIDTH * data.toTile.y + data.toTile.x].hasCollision()) {
+
+        let path = findPath(data.fromTile, data.toTile);
+        player.setPath(path);
+      }
     }
   });
 })
@@ -338,9 +348,13 @@ var frames = [];
 
 loadTileMap(mainUpdate);
 
-console.log(findPath({x: 25, y: 27}, {x: 25, y: 25}));
-
 function mainUpdate() {
+
+  // let init = Date.now();
+  // let pahf = findPath({x: 25, y: 25}, {x: 125, y: 125});
+  // //console.log(pahf);
+  // console.log(Date.now() - init);
+
   let start = Date.now();
 
   Player.execPlayerAttacks(playerList);

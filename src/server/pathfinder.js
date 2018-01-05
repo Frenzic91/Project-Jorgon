@@ -15,8 +15,7 @@ class Node {
   }
 }
 
-function calcEuclideanDistance(startCoord, endCoord) { // end coord passed into findPath
-  // calc euclidean dist
+function calcEuclideanDistance(startCoord, endCoord) {
   return Math.sqrt(Math.pow((endCoord.x - startCoord.x), 2) + Math.pow((endCoord.y - startCoord.y), 2));
 }
 
@@ -45,6 +44,10 @@ function getNeighbourNodes(node) {
   }
 
   return neighbourNodes;
+}
+
+function getNeighbourNodesMock(node) {
+  return [new Node(node.x, node.y - 1), new Node(node.x, node.y + 1), new Node(node.x - 1, node.y), new Node(node.x + 1, node.y)];
 }
 
 // return array of Nodes that represent the determined path

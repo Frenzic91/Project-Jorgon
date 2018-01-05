@@ -3,7 +3,7 @@ var socket = io();
 var scale = 1;
 
 var playerList = {};
-var tileData; // obtained from server on connect
+var tileData = [];
 
 window.onbeforeunload = function() { return "You work will be lost."; };
 
@@ -104,7 +104,10 @@ socket.on('init', function(data){
 
   // 'init' event is also being sent every server frame so check is needed until conflicting names changed
   if (data.tileData) {
-    tileData = JSON.parse(data.tileData);
+    let tileDataRaw = JSON.parse(data.tileData);
+    for (let t in tileDataRaw) {
+      tileData.push(new Tile(tileDataRaw[t].x, tileDataRaw[t].y, tileDataRaw[t].collision, tileDataRaw[t].itemStack));
+    }
   }
 })
 
@@ -332,7 +335,7 @@ document.onmouseup = function(event){
           fromTile: {x: playerX, y: playerY},
           toTile: {x: targetTileX, y: targetTileY}
         });
-        
+
       } else {
         socket.emit('dragToTile', {
           clickingPlayer: playerID,

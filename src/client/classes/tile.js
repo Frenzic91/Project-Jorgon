@@ -1,7 +1,3 @@
-var CT = require('../constants.js');
-var Game = require('./game.js');
-var gameInstance = new Game();
-
 class Tile {
   constructor(x, y, collision, itemStack) {
     this.x = x;
@@ -27,25 +23,12 @@ class Tile {
 
   popItem() {
     if (this.itemStack.length > 0) {
-      gameInstance.pushTileUpdate({
-        x: this.x,
-        y: this.y,
-        popItem: true
-      });
-
       return this.itemStack.pop();
     }
   }
 
   pushItem(itemID) {
     if (itemID > 0) {
-      gameInstance.pushTileUpdate({
-        x: this.x,
-        y: this.y,
-        itemID: itemID,
-        pushItem: true
-      });
-
       this.itemStack.push(itemID);
     }
   }
@@ -57,7 +40,4 @@ class Tile {
       return false;
     }
   }
-
 }
-
-module.exports = Tile;
