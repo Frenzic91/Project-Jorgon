@@ -303,7 +303,7 @@ class Player extends Entity {
 
     socket.on('keyPress', function(data){
       if(data.inputId === 'left'){
-        this.isPathfinding = false;
+        player.removePath();
         //Queues up the direction button so it triggers player movement -- if player is not moving
         if(!player.isMoving()){
           player.pendingMoveX = -player.moveAmount;
@@ -316,7 +316,7 @@ class Player extends Entity {
         player.pressingLeft = data.state;
       }
       else if(data.inputId === 'right'){
-        this.isPathfinding = false;
+        player.removePath();
         //Queues up the direction button so it triggers player movement -- if player is not moving
         if(!player.isMoving()){
           player.pendingMoveX = player.moveAmount;
@@ -329,7 +329,7 @@ class Player extends Entity {
         player.pressingRight = data.state;
       }
       else if(data.inputId === 'up'){
-        this.isPathfinding = false;
+        player.removePath();
         //Queues up the direction button so it triggers player movement -- if player is not moving
         if(!player.isMoving()){
           player.pendingMoveX = 0;
@@ -342,7 +342,7 @@ class Player extends Entity {
         player.pressingUp = data.state;
       }
       else if(data.inputId === 'down'){
-        this.isPathfinding = false;
+        player.removePath();
         //Queues up the direction button so it triggers player movement -- if player is not moving
         if(!player.isMoving()){
           player.pendingMoveX = 0;
