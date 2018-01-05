@@ -98,7 +98,14 @@ io.sockets.on('connection', function(socket){
   });
 
   socket.on('sendMsgToServer', function(data){
-    var playerName = playerList[socket.id].name;
+    var player = playerList[socket.id];
+
+    if(!player){
+      return;
+    }
+
+    var playerName = player.name;
+
     Player.sendAllPlayers(SOCKET_LIST, 'addToChat', playerName + ': ' + data);
     console.log('sent ' + data + ' to all players');
   });
