@@ -63,7 +63,11 @@ var spellEffectSprites = [
   {
     type: "effect",
     name: "healeffect",
-    src: "client/images/healeffect.png"
+    src: "client/images/healeffect.png",
+    details: {
+      animationDuration: 200,
+      frameCount: 3
+    }
   }
 ];
 
@@ -81,6 +85,7 @@ function loadImages(spriteArray){
     loadedImages[spriteArray[i].type][spriteArray[i].name].src = spriteArray[i].src;
     loadedImages[spriteArray[i].type][spriteArray[i].name].spriteHeight = spriteArray[i].height || 64;
     loadedImages[spriteArray[i].type][spriteArray[i].name].spriteWidth = spriteArray[i].width || 64;
+    loadedImages[spriteArray[i].type][spriteArray[i].name].details = spriteArray[i].details || undefined;
     loadedImages[spriteArray[i].type][spriteArray[i].name].onload = function(){
       this.isLoaded = true;
     }
@@ -88,16 +93,18 @@ function loadImages(spriteArray){
   return loadedImages;
 }
 
-function getImageByIndex(array,type,name,index){
+function getImageByIndex(image,index){
   let offscreenCanvas = document.createElement('canvas');
   let offscreenContext = offscreenCanvas.getContext('2d');
-  let column = index % SPRITESHEETWIDTH;
-  let row = index % SPRITESHEETWIDTH;
+  let spriteSheetWidth = image.width;
+  let column = index % spriteSheetWidth;
+  let row = index / spriteSheetWidth;
 
-  let spriteWidth = array[type][name].width;
-  let spriteHeight = array[type][name].height;
+  let spriteWidth = image.spriteWidth;
+  let spriteHeight = image.spriteHeight;
 
-  offscreenContext.drawImage(array[type][name], // Sprite sheet image
+
+  offscreenContext.drawImage(image, // Sprite sheet image
                             column*spriteWidth, // Sprite sheet index X
                             row*spriteHeight, // Sprite sheet index Y
                             spriteWidth,

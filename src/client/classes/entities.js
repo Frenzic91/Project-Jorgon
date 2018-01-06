@@ -59,9 +59,9 @@ class Entities {
         for (let j = 0; j < tileData[i].itemStack.length; j++) {
           //console.log("bruh");
           if (tileData[i].itemStack[j] == 17)
-            this.canvas.drawImage(getImageByIndex(itemImg,"item","temp",0), tileData[i].x * TILESIZE - TILESIZE/2, tileData[i].y * TILESIZE - TILESIZE/4);
+            this.canvas.drawImage(getImageByIndex(itemImg["item"]["temp"],0), tileData[i].x * TILESIZE - TILESIZE/2, tileData[i].y * TILESIZE - TILESIZE/4);
           if (tileData[i].itemStack[j] == 18)
-            this.canvas.drawImage(getImageByIndex(itemImg,"item","rune",0), tileData[i].x * TILESIZE - TILESIZE/2, tileData[i].y * TILESIZE - TILESIZE/4);
+            this.canvas.drawImage(getImageByIndex(itemImg["item"]["rune"],0), tileData[i].x * TILESIZE - TILESIZE/2, tileData[i].y * TILESIZE - TILESIZE/4);
         }
       }
     }
