@@ -6,6 +6,7 @@ class Game {
       // global game state
       this.playerList;
       this.tileMap;
+      this.socketList;
 
       // socket server reference
       this.io;
@@ -33,6 +34,10 @@ class Game {
 
   getSocketServer() {
     return this.io;
+  }
+
+  getSocketList() {
+    return this.socketList;
   }
 
   getPlayerUpdates() {
@@ -64,6 +69,12 @@ class Game {
   setSocketServer(io) {
     if (!this.io) {
       this.io = io;
+    }
+  }
+
+  setSocketList(socketList) {
+    if (!this.socketList) {
+      this.socketList = socketList;
     }
   }
 

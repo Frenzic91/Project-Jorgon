@@ -1,4 +1,4 @@
-var utils = require('../utils.js');
+var Utils = require('../utils.js');
 var CT = require('../constants.js');
 
 class Entity {

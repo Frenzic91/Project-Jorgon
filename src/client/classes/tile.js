@@ -1,8 +1,8 @@
 class Tile {
-  constructor(x, y, collision, itemStack) {
+  constructor(x, y, occupyingPlayer, collision, itemStack) {
     this.x = x;
     this.y = y;
-    this.occupyingPlayer = undefined;
+    this.occupyingPlayer = occupyingPlayer;
     this.collision = collision;
     this.itemStack = itemStack;
   }

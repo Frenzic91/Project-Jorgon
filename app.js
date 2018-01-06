@@ -26,6 +26,7 @@ var gameInstance = new Game();
 gameInstance.setPlayerList(playerList);
 gameInstance.setTileMap(tileMap);
 gameInstance.setSocketServer(io);
+gameInstance.setSocketList(SOCKET_LIST);
 
 function loadTileMap(callback) {
   for (let row in worldJSON.map) {
@@ -226,8 +227,10 @@ io.sockets.on('connection', function(socket){
               mouseDownTile.occupyingPlayer.x = data.toTile.x;
               mouseDownTile.occupyingPlayer.y = data.toTile.y;
 
-              mouseUpTile.occupyingPlayer = mouseDownTile.occupyingPlayer;
-              mouseDownTile.occupyingPlayer = undefined;
+              //mouseUpTile.occupyingPlayer = mouseDownTile.occupyingPlayer;
+              //mouseDownTile.occupyingPlayer = undefined;
+              mouseUpTile.setOccupyingPlayer(mouseDownTile.getOccupyingPlayer());
+              mouseDownTile.removeOccupyingPlayer();
             }
           }
     }
@@ -309,26 +312,33 @@ io.sockets.on('connection', function(socket){
   socket.on('moveToTile', function(data) {
     let gameInstance = new Game()
     let player = gameInstance.getPlayerList()[socket.id];
-    let tileMap = gameInstance.getTileMap();
+    //let tileMap = gameInstance.getTileMap();
 
     // If player is not logged in, do nothing.
     if(!player){
       return;
     }
 
+    // veryify that the start and end points of the path are valid, and that each
+    // node in the path can be reached and is next to its parent node
+    // ...
+
+    //console.log(data.path);
+    player.setPath(data.path);
+
     // verify client data is properly formatted
-    if (typeof data.fromTile.x == 'number' &&
-        typeof data.fromTile.y == 'number' &&
-        typeof data.toTile.x == 'number'   &&
-        typeof data.toTile.y == 'number') {
-
-      if (Utils.isSameCoord(player, data.fromTile) && Utils.isValidCoord(data.toTile) &&
-          !tileMap[CT.MAP_WIDTH * data.toTile.y + data.toTile.x].hasCollision()) {
-
-        let path = findPath(data.fromTile, data.toTile);
-        player.setPath(path);
-      }
-    }
+    // if (typeof data.fromTile.x == 'number' &&
+    //     typeof data.fromTile.y == 'number' &&
+    //     typeof data.toTile.x == 'number'   &&
+    //     typeof data.toTile.y == 'number') {
+    //
+    //   if (Utils.isSameCoord(player, data.fromTile) && Utils.isValidCoord(data.toTile) &&
+    //       !tileMap[CT.MAP_WIDTH * data.toTile.y + data.toTile.x].hasCollision()) {
+    //
+    //     let path = findPath(data.fromTile, data.toTile);
+    //     player.setPath(path);
+    //   }
+    // }
   });
 })
 

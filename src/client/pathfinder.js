@@ -1,6 +1,3 @@
-let CT = require('../constants.js');
-let Game = require('./game.js');
-
 const MAX_DIST = 999999999; // arbitrary large number
 
 class Node {
@@ -21,23 +18,20 @@ function getNeighbourNodes(node) {
   let neighbourNodes = [];
   // check the 4 cardinal directions, create node for the ones that are walkable
 
-  let gameInstance = new Game();
-  let tileMap = gameInstance.getTileMap();
-
   // up
-  if ((node.y - 1 >= 0) && !tileMap[CT.MAP_WIDTH * (node.y - 1) + node.x].hasCollision()) {
+  if ((node.y - 1 >= 0) && !tileData[MAP_WIDTH * (node.y - 1) + node.x].hasCollision()) {
     neighbourNodes.push(new Node(node.x, node.y - 1));
   }
   // down
-  if ((node.y + 1 < CT.MAP_HEIGHT) && !tileMap[CT.MAP_WIDTH * (node.y + 1) + node.x].hasCollision()) {
+  if ((node.y + 1 < MAP_HEIGHT) && !tileData[MAP_WIDTH * (node.y + 1) + node.x].hasCollision()) {
     neighbourNodes.push(new Node(node.x, node.y + 1));
   }
   // left
-  if ((node.x - 1 >= 0) && !tileMap[CT.MAP_WIDTH * node.y + (node.x - 1)].hasCollision()) {
+  if ((node.x - 1 >= 0) && !tileData[MAP_WIDTH * node.y + (node.x - 1)].hasCollision()) {
     neighbourNodes.push(new Node(node.x - 1, node.y));
   }
   // right
-  if ((node.x + 1 < CT.MAP_WIDTH) && !tileMap[CT.MAP_WIDTH * node.y + (node.x + 1)].hasCollision()) {
+  if ((node.x + 1 < MAP_WIDTH) && !tileData[MAP_WIDTH * node.y + (node.x + 1)].hasCollision()) {
     neighbourNodes.push(new Node(node.x + 1, node.y));
   }
 
@@ -127,5 +121,3 @@ function findPath(startCoord, endCoord) {
 
   return null; // path not found
 }
-
-module.exports = findPath;

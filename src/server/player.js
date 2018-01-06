@@ -81,7 +81,7 @@ class Player extends Entity {
 
   setPath(path) {
     this.path = path;
-    this.currentNodeInPath = 1;
+    this.currentNodeInPath = 0;
     this.isPathfinding = true;
   }
 
@@ -198,7 +198,7 @@ class Player extends Entity {
         let tileMap = new Game().getTileMap();
         let nextTile = tileMap[CT.MAP_WIDTH * this.path[this.currentNodeInPath].y + this.path[this.currentNodeInPath].x]
 
-        if (!nextTile.hasCollision()) {
+        if (this.currentNodeInPath == 0 || !nextTile.hasCollision()) {
           this.movePlayer({
             x: this.path[this.currentNodeInPath].x,
             y: this.path[this.currentNodeInPath].y
@@ -219,8 +219,11 @@ class Player extends Entity {
           if (Math.abs(endCoord.x - startCoord.x) <= 1 && Math.abs(endCoord.y - startCoord.y) <= 1) {
             this.removePath();
           } else {
-            let newPath = findPath(startCoord, endCoord);
-            this.setPath(newPath);
+            //let newPath = findPath(startCoord, endCoord);
+            //this.setPath(newPath);
+            let socket = new Game().getSocketList()[this.id];
+            socket.emit('recalculatePath', {startCoord: {x: this.x, y: this.y}, endCoord});
+            //socket.emit('recalculatePath', {endCoord});
           }
         }
       }
@@ -230,12 +233,17 @@ class Player extends Entity {
     // If player moved, make old tile undefined, and update new tile.
     if(tileIndexOld != tileIndex){
       tileMap[tileIndexOld].removeOccupyingPlayer();
+      tileMap[tileIndex].setOccupyingPlayer(this);
+      this.tileIndex = tileIndex;
       //tileMap[tileIndexOld].occupyingPlayer = undefined;
+    } else {
+      if (tileMap[tileIndex].getOccupyingPlayer() == undefined) {
+        tileMap[tileIndex].setOccupyingPlayer(this);
+      }
     }
 
-    tileMap[tileIndex].setOccupyingPlayer(this);
-    //tileMap[tileIndex].occupyingPlayer = this;
-    this.tileIndex = tileIndex;
+    //tileMap[tileIndex].setOccupyingPlayer(this);
+    //this.tileIndex = tileIndex;
   }
 
   //Update player speed based on player input (right, left, up, down)

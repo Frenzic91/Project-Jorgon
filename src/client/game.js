@@ -106,7 +106,7 @@ socket.on('init', function(data){
   if (data.tileData) {
     let tileDataRaw = JSON.parse(data.tileData);
     for (let t in tileDataRaw) {
-      tileData.push(new Tile(tileDataRaw[t].x, tileDataRaw[t].y, tileDataRaw[t].collision, tileDataRaw[t].itemStack));
+      tileData.push(new Tile(tileDataRaw[t].x, tileDataRaw[t].y, tileDataRaw[t].occupyingPlayer, tileDataRaw[t].collision, tileDataRaw[t].itemStack));
     }
   }
 })
@@ -197,6 +197,16 @@ socket.on('inventoryUpdate', function(data) {
   }
 });
 
+socket.on('recalculatePath', function(data) {
+  //let path = findPath({x: playerX, y: playerY}, data.endCoord);
+  let path = findPath(data.startCoord, data.endCoord);
+  console.log(path);
+  socket.emit('moveToTile', {
+    playerID,
+    path
+  });
+});
+
 document.onkeydown = function(event){
   if(!chatFocused){
     if(event.keyCode === 68) { // d
@@ -250,7 +260,7 @@ document.onkeyup = function(event){
 document.onmousedown = function(event){
   if(!chatFocused){
 
-    console.log(hud.getInventorySlot(mouseX, mouseY));
+    //console.log(hud.getInventorySlot(mouseX, mouseY));
     // figure out which tile was clicked
     let currentTileX = playerX;
     let currentTileY = playerY;
@@ -335,12 +345,18 @@ document.onmouseup = function(event){
     } else { //If player dragged something to a tile (player or item)
       if (mouseDownTileInfo.x == targetTileX && mouseDownTileInfo.y == targetTileY) {
         // pathfinding
-        socket.emit('moveToTile', {
-          playerID,
-          fromTile: {x: playerX, y: playerY},
-          toTile: {x: targetTileX, y: targetTileY}
-        });
-
+        // socket.emit('moveToTile', {
+        //   playerID,
+        //   fromTile: {x: playerX, y: playerY},
+        //   toTile: {x: targetTileX, y: targetTileY}
+        // });
+        if  (!tileData[MAP_WIDTH * targetTileY + targetTileX].hasCollision()) {
+          let path = findPath({x: playerX, y: playerY}, {x: targetTileX, y: targetTileY});
+          socket.emit('moveToTile', {
+            playerID,
+            path
+          });
+        }
       } else {
         socket.emit('dragToTile', {
           clickingPlayer: playerID,
