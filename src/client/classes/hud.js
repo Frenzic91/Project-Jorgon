@@ -164,9 +164,9 @@ class Hud {
       if(inventory.items[i]){
         let drawPosition = this.getInventorySlotXY(i);
         if (inventory.items[i] == 17)
-          this.canvas.drawImage(getImageByIndex(itemImg,"item","temp",0),this.inventoryX + drawPosition.x*TILESIZE + this.inventoryGridOffset, this.inventoryY + drawPosition.y*TILESIZE + this.inventoryGridOffset + 18);
+          this.canvas.drawImage(getImageByIndex(itemImg["item"]["temp"],0),this.inventoryX + drawPosition.x*TILESIZE + this.inventoryGridOffset, this.inventoryY + drawPosition.y*TILESIZE + this.inventoryGridOffset + 18);
         if (inventory.items[i] == 18)
-          this.canvas.drawImage(getImageByIndex(itemImg,"item","rune",0),this.inventoryX + drawPosition.x*TILESIZE + this.inventoryGridOffset, this.inventoryY + drawPosition.y*TILESIZE + this.inventoryGridOffset + 18);
+          this.canvas.drawImage(getImageByIndex(itemImg["item"]["rune"],0),this.inventoryX + drawPosition.x*TILESIZE + this.inventoryGridOffset, this.inventoryY + drawPosition.y*TILESIZE + this.inventoryGridOffset + 18);
       }
     }
   }
@@ -271,7 +271,7 @@ class Hud {
 
         this.canvas.globalAlpha = 1;
 
-        this.canvas.drawImage(getImageByIndex(itemImg,"item","temp",0),descriptionX + descriptionImageOffset, descriptionY + descriptionImageOffset);
+        this.canvas.drawImage(getImageByIndex(itemImg["item"]["temp"],0),descriptionX + descriptionImageOffset, descriptionY + descriptionImageOffset);
       }
     }
   }

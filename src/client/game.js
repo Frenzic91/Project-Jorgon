@@ -4,6 +4,7 @@ var scale = 1;
 
 var playerList = {};
 var tileData = [];
+var animations = [];
 
 window.onbeforeunload = function() { return "You work will be lost."; };
 
@@ -498,7 +499,12 @@ setInterval(function() {
     for(let i in sortedList){
       playerList[sortedList[i].key].draw();
       if (playerList[sortedList[i].key].isCastingSpell) {
-        playerList[sortedList[i].key].drawSpellEffectOnPlayer();
+        //playerList[sortedList[i].key].drawSpellEffectOnPlayer();
+        let newAnimation = new Animation(spellEffectImg.effect.healeffect, playerList[sortedList[i].key], ctxEntities);
+        console.log(newAnimation);
+        animations.push(newAnimation);
+        console.log(animations);
+        playerList[sortedList[i].key].isCastingSpell = false;
       }
     }
 
@@ -516,6 +522,8 @@ setInterval(function() {
       debugFrames[1] += (Date.now() - debugTimer);
       debugTimer = Date.now();
     }
+
+    Animation.updateAnimations();
 
     for(let i in sortedList){
       playerList[sortedList[i].key].drawOccludedPlayer();

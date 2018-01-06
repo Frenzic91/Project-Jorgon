@@ -10,14 +10,9 @@ function randNumBetween(a, b) {
 
 function isValidCoord(coord) {
   let tileMap = new Game().getTileMap();
-  let tile = tileMap[100 * coord.y + coord.x];
-  console.log(tile);
-
-  return tile ? true : false;
+  return !tileMap[100 * coord.y + coord.x].hasCollision();
 }
 
-function isSameCoord(coord1, coord2) {
-  return coord1.x == coord2.x && coord1.y == coord2.y;
-}
 
-module.exports = {isNumeric, randNumBetween, isValidCoord, isSameCoord}
+
+module.exports = {isNumeric, randNumBetween, isValidCoord}
