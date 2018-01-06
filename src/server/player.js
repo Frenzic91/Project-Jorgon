@@ -229,10 +229,12 @@ class Player extends Entity {
     var tileIndex = 100 * this.y + this.x;
     // If player moved, make old tile undefined, and update new tile.
     if(tileIndexOld != tileIndex){
-      tileMap[tileIndexOld].occupyingPlayer = undefined;
+      tileMap[tileIndexOld].removeOccupyingPlayer();
+      //tileMap[tileIndexOld].occupyingPlayer = undefined;
     }
 
-    tileMap[tileIndex].occupyingPlayer = this;
+    tileMap[tileIndex].setOccupyingPlayer(this);
+    //tileMap[tileIndex].occupyingPlayer = this;
     this.tileIndex = tileIndex;
   }
 

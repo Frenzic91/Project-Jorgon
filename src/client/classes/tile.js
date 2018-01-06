@@ -21,6 +21,10 @@ class Tile {
     this.occupyingPlayer = player;
   }
 
+  removeOccupyingPlayer() {
+    this.occupyingPlayer = undefined;
+  }
+
   popItem() {
     if (this.itemStack.length > 0) {
       return this.itemStack.pop();

@@ -147,10 +147,15 @@ socket.on('update', function(data){
     let updateTile = tileData[100 * y + x];
 
     if (data.tiles[tileUpdatePacket].popItem) {
-      updateTile.itemStack.pop();
+      updateTile.popItem();
     } else if (data.tiles[tileUpdatePacket].pushItem){
       let itemID = data.tiles[tileUpdatePacket].itemID;
-      updateTile.itemStack.push(itemID);
+      updateTile.pushItem(itemID);
+    } else if (data.tiles[tileUpdatePacket].setOccupyingPlayer) {
+      let occupyingPlayer = playerList[data.tiles[tileUpdatePacket].playerID];
+      updateTile.setOccupyingPlayer(occupyingPlayer);
+    } else if (data.tiles[tileUpdatePacket].removeOccupyingPlayer)  {
+      updateTile.removeOccupyingPlayer();
     }
   }
 

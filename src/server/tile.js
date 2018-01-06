@@ -23,6 +23,23 @@ class Tile {
 
   setOccupyingPlayer(player) {
     this.occupyingPlayer = player;
+
+    gameInstance.pushTileUpdate({
+      x: this.x,
+      y: this.y,
+      playerID: this.occupyingPlayer.id,
+      setOccupyingPlayer: true
+    });
+  }
+
+  removeOccupyingPlayer() {
+    this.occupyingPlayer = undefined;
+
+    gameInstance.pushTileUpdate({
+      x: this.x,
+      y: this.y,
+      removeOccupyingPlayer: true
+    });
   }
 
   popItem() {
