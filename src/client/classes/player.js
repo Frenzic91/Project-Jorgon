@@ -174,42 +174,5 @@ class Player {
     }
   }
 
-  // temp
-  drawSpellEffectOnPlayer() {
-    if(this.spellState === 0){
-      ctxEntities.drawImage(spellEffectImg.effect.healeffect, 64 * 0, 0, 64, 64, this.xOld-width/2-32, this.yOld-height/2-32, 64, 64);
-
-      if(Date.now() - this.spellStateTime >= ANIMATIONTIME/1.5){
-        this.spellState = 1;
-        this.spellStateTime = Date.now();
-      }
-
-    } else if(this.spellState === 1){
-      ctxEntities.drawImage(spellEffectImg.effect.healeffect, 64 * 0, 0, 64, 64, this.xOld-width/2-32, this.yOld-height/2-32, 64, 64);
-
-      if(Date.now() - this.spellStateTime >= ANIMATIONTIME/1.5){
-        this.spellState = 2;
-        this.spellStateTime = Date.now();
-      }
-
-    } else if(this.spellState === 2) {
-      ctxEntities.drawImage(spellEffectImg.effect.healeffect, 64 * 1, 0, 64, 64, this.xOld-width/2-32, this.yOld-height/2-32, 64, 64);
-
-      if(Date.now() - this.spellStateTime >= ANIMATIONTIME/1.5){
-        this.spellState = 3;
-        this.spellStateTime = Date.now();
-      }
-
-    } else if(this.spellState === 3) {
-      ctxEntities.drawImage(spellEffectImg.effect.healeffect, 64 * 2, 0, 64, 64, this.xOld-width/2-32, this.yOld-height/2-32, 64, 64);
-
-      if(Date.now() - this.spellStateTime >= ANIMATIONTIME/1.5){
-        this.spellState = 0;
-        this.spellStateTime = Date.now();
-        this.isCastingSpell = false;
-      }
-    }
-  }
-
 
 }
