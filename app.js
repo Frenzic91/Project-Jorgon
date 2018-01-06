@@ -299,6 +299,10 @@ io.sockets.on('connection', function(socket){
     let itemID;
     let player = playerList[data.playerID];
 
+    if(!player){
+      return;
+    }
+
     if (data.itemUsedFromInventory) {
       itemID = player.getInventoryItem(data.inventorySlot);
     } else { // item used from tile
