@@ -25,6 +25,7 @@ class Player extends Entity {
     this.path = undefined;
     this.currentNodeInPath = undefined;
     this.isPathfinding = false;
+    this.recalculatedPath = false;
 
     this.hp = 200;
     this.hpMax = 200;
@@ -211,6 +212,8 @@ class Player extends Entity {
           }
 
           this.lastMoved = Date.now();
+
+          this.recalculatePath = false;
         } else {
           // recalculate path
           let startCoord = {x: this.x, y: this.y};
@@ -222,7 +225,11 @@ class Player extends Entity {
             //let newPath = findPath(startCoord, endCoord);
             //this.setPath(newPath);
             let socket = new Game().getSocketList()[this.id];
-            socket.emit('recalculatePath', {startCoord: {x: this.x, y: this.y}, endCoord});
+            if (!this.recalculatePath) {
+              console.log('recalculate event sent');
+              socket.emit('recalculatePath', {startCoord: {x: this.x, y: this.y}, endCoord});
+            }
+            this.recalculatePath = true;
             //socket.emit('recalculatePath', {endCoord});
           }
         }
