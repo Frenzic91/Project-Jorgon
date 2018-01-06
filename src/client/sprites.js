@@ -66,6 +66,8 @@ var spellEffectSprites = [
     src: "client/images/healeffect.png",
     details: {
       animationDuration: 200,
+      offsetX: TILESIZE/2,
+      offsetY: TILESIZE/2,
       frameCount: 3
     }
   }

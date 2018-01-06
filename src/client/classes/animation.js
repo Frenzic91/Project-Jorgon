@@ -17,7 +17,7 @@ class Animation {
   update(){
       let drawX = this.target.xOld || (this.target.x * TILESIZE);
       let drawY = this.target.yOld || (this.target.y * TILESIZE);
-      this.canvas.drawImage(getImageByIndex(this.image,this.animationState),drawX - TILESIZE/2,drawY - TILESIZE/2);
+      this.canvas.drawImage(getImageByIndex(this.image,this.animationState),drawX - this.image.details.offsetX,drawY - this.image.details.offsetY);
       if((Date.now() - this.lastFrameTime) > this.frameDuration){
         this.animationState++;
         this.lastFrameTime = Date.now();
