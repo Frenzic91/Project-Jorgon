@@ -257,6 +257,9 @@ document.onkeyup = function(event){
   else if(event.keyCode === 73) { // I
     hud.toggleInventory();
   }
+  else if(event.keyCode === 67) { // I
+    hud.toggleEquipment();
+  }
 }
 
 document.onmousedown = function(event){

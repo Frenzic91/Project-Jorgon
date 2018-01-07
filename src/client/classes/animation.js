@@ -24,7 +24,7 @@ class Animation {
         this.animationState++;
         this.lastFrameTime = Date.now();
       }
-      if(this.loop && (this.animationState >= (this.animationIndex*this.frameCount + this.frameCount))){
+      if(this.loop && (this.animationState >= (this.animationIndex*this.frameCount + this.frameCount))){ // If animation loops, reset it
         this.animationState = this.animationIndex * this.frameCount;
       }
       return (this.animationState >= this.frameCount); // If animation is complete

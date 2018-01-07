@@ -34,6 +34,17 @@ var charSprites = [
       offsetY: TILESIZE + TILESIZE/4,
       frameCount: 14
     }
+  },
+  {
+    type: "player",
+    name: "blenderIdle",
+    src: "client/images/blender_player_idle.png",
+    width: TILESIZE*2,
+    height: TILESIZE*2,
+    details: {
+      offsetX: TILESIZE/2,
+      offsetY: TILESIZE + TILESIZE/4
+    }
   }
 ];
 
@@ -52,6 +63,13 @@ var hudSprites = [
     type: "crosshair",
     name: "cursorClick",
     src: "client/images/hud/cursor2_click.png"
+  },
+  {
+    type: "interface",
+    name: "equipmentbackground",
+    src: "client/images/character_bg.png",
+    width: 340,
+    height: 340
   }
 ];
 
@@ -112,12 +130,16 @@ function loadImages(spriteArray){
 function getImageByIndex(image,index){
   let offscreenCanvas = document.createElement('canvas');
   let offscreenContext = offscreenCanvas.getContext('2d');
-  let spriteCountWidth = image.width / image.spriteWidth;
-  let column = index % spriteCountWidth;
-  let row = Math.floor(index / spriteCountWidth);
 
   let spriteWidth = image.spriteWidth;
   let spriteHeight = image.spriteHeight;
+
+  let spriteCountWidth = image.width / spriteWidth;
+  let column = index % spriteCountWidth;
+  let row = Math.floor(index / spriteCountWidth);
+
+  offscreenCanvas.width = spriteWidth;
+  offscreenCanvas.height = spriteHeight;
 
 
   offscreenContext.drawImage(image, // Sprite sheet image

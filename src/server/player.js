@@ -34,7 +34,7 @@ class Player extends Entity {
     this.lastAttacked = 0;
 
     this.inventory = {
-      "size": 20,
+      "size": 80,
       "items": [18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18]
     };
 

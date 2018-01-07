@@ -23,6 +23,7 @@ class Player {
   this.spellState = 0; // temp
   this.isCastingSpell = false;
   this.hpBarOffset = 5;
+  this.stopTime = 0;
   this.animation;
 
   }
@@ -149,6 +150,7 @@ class Player {
 
   isMoving() {
     if(this.xOld !== this.screenX || this.yOld !== this.screenY){
+      this.stopTime = Date.now(); // Performance improvement here (calls Date.now every time) -- this is here so running animation doesnt blink.
       return true;
     } else {
       return false;
@@ -182,7 +184,7 @@ class Player {
   //   // } else if(this.runState === 2) {
   //   //   ctxEntities.drawImage(playerImg.player.playerFull, index*57 || 57*2, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
   //   //
-  //   //   if(Date.now() - this.stateTime >= ANIMATIONTIME){
+  //   //   if(Date.now() - this.stateTime >= ANIMATIONTIME){w
   //   //     this.runState = 0;
   //   //     this.stateTime = Date.now();
   //   //   }
@@ -191,7 +193,12 @@ class Player {
   // }
 
   drawPlayer() {
-    this.animation.update();
+    if(this.isMoving() || (Date.now() - this.stopTime) < 100){ // Performance improvement here (calls Date.now every time)
+      this.animation.update();
+    } else {
+      ctxEntities.drawImage(getImageByIndex(playerImg["player"]["blenderIdle"],this.direction),this.xOld - playerImg.player.blenderIdle.details.offsetX,this.yOld - playerImg.player.blenderIdle.details.offsetY);
+    }
+
   }
 
   drawOccludedPlayer(){

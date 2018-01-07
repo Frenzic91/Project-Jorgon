@@ -8,11 +8,21 @@ class Hud {
     this.inventoryGridOffset = 10;
     this.inventoryX = WIDTH-this.inventoryWidth-this.inventoryOffset;
     this.inventoryY = this.inventoryOffset;
-    this.inventoryColumns = 5;
+    this.inventoryColumns = 10;
     this.itemTooltipSizeX = 200;
     this.itemTooltipSizeY = 250;
     this.itemDescriptionLineCharacterLimit = 35;
     // Hud details
+
+    this.equipmentEnabled = false;
+    this.equipmentX = this.inventoryX;
+    this.equipmentY = this.inventoryY;
+    this.equipmentWidth = 340;
+    this.equipmentHeight = 340;
+    this.equipmentOffset = 50;
+    this.equipmentSlots = [];
+    this.initEquipment();
+
   }
 
   drawHud(sortedList) {
@@ -23,10 +33,16 @@ class Hud {
     //this.drawCursor();
     this.drawHealthBars(sortedList);
     this.drawPlayerNames(sortedList);
+
     if(this.inventoryEnabled){
       this.drawInventory();
       this.drawItemDescription();
     }
+
+    if(this.equipmentEnabled){
+      this.drawEquipment();
+    }
+
   }
 
   drawCursor() {
@@ -127,11 +143,6 @@ class Hud {
     this.canvas.textAlign = "start";
     this.canvas.fillText("INVENTORY", this.inventoryX + 10, this.inventoryY + 10 + 8);
 
-    // Border
-    this.canvas.lineWidth = 2;
-    this.canvas.strokeStyle = "#EEEEEE";
-    this.canvas.rect(this.inventoryX + this.inventoryGridOffset, this.inventoryY + this.inventoryGridOffset + 18, this.inventoryWidth - this.inventoryGridOffset*2, this.inventoryHeight - 18 - this.inventoryGridOffset*2);
-    this.canvas.stroke();
     // Grid
     this.canvas.lineWidth = 1;
     this.canvas.strokeStyle = "#111111";
@@ -139,18 +150,26 @@ class Hud {
 
 
     // Horizontal lines
-    for(let i = 1; i < 4; i++){
-      this.canvas.moveTo(this.inventoryX + this.inventoryGridOffset, this.inventoryY + this.inventoryGridOffset + 18 + i*TILESIZE);
-      this.canvas.lineTo(this.inventoryX + this.inventoryGridOffset + this.inventoryWidth - this.inventoryGridOffset*2, this.inventoryY + this.inventoryGridOffset + 18 + i*TILESIZE);
+    for(let i = 1; i < (this.inventoryColumns - 1); i++){
+      this.canvas.moveTo(this.inventoryX + this.inventoryGridOffset, this.inventoryY + this.inventoryGridOffset + 18 + i*TILESIZE/2);
+      this.canvas.lineTo(this.inventoryX + this.inventoryGridOffset + this.inventoryWidth - this.inventoryGridOffset*2, this.inventoryY + this.inventoryGridOffset + 18 + i*TILESIZE/2);
     }
 
     // Vertical lines
-    for(let i = 1; i < 5; i++){
-      this.canvas.moveTo(this.inventoryX + this.inventoryGridOffset + i*TILESIZE, this.inventoryY + this.inventoryGridOffset + 18);
-      this.canvas.lineTo(this.inventoryX + this.inventoryGridOffset + i*TILESIZE, this.inventoryY + this.inventoryGridOffset + 18 + this.inventoryHeight - 18 - this.inventoryGridOffset*2);
+    for(let i = 1; i < this.inventoryColumns; i++){
+      this.canvas.moveTo(this.inventoryX + this.inventoryGridOffset + i*TILESIZE/2, this.inventoryY + this.inventoryGridOffset + 18);
+      this.canvas.lineTo(this.inventoryX + this.inventoryGridOffset + i*TILESIZE/2, this.inventoryY + this.inventoryGridOffset + 18 + this.inventoryHeight - 18 - this.inventoryGridOffset*2);
     }
 
     this.canvas.stroke();
+
+    // Border
+    this.canvas.beginPath();
+    this.canvas.lineWidth = 2;
+    this.canvas.strokeStyle = "#666666";
+    this.canvas.rect(this.inventoryX + this.inventoryGridOffset, this.inventoryY + this.inventoryGridOffset + 18, this.inventoryWidth - this.inventoryGridOffset*2, this.inventoryHeight - 18 - this.inventoryGridOffset*2);
+    this.canvas.stroke();
+
 
 
 
@@ -164,9 +183,9 @@ class Hud {
       if(inventory.items[i]){
         let drawPosition = this.getInventorySlotXY(i);
         if (inventory.items[i] == 17)
-          this.canvas.drawImage(getImageByIndex(itemImg["item"]["temp"],0),this.inventoryX + drawPosition.x*TILESIZE + this.inventoryGridOffset, this.inventoryY + drawPosition.y*TILESIZE + this.inventoryGridOffset + 18);
+          this.canvas.drawImage(getImageByIndex(itemImg["item"]["temp"],0),this.inventoryX + drawPosition.x*TILESIZE/2 + this.inventoryGridOffset, this.inventoryY + drawPosition.y*TILESIZE/2 + this.inventoryGridOffset + 18, TILESIZE/2, TILESIZE/2);
         if (inventory.items[i] == 18)
-          this.canvas.drawImage(getImageByIndex(itemImg["item"]["rune"],0),this.inventoryX + drawPosition.x*TILESIZE + this.inventoryGridOffset, this.inventoryY + drawPosition.y*TILESIZE + this.inventoryGridOffset + 18);
+          this.canvas.drawImage(getImageByIndex(itemImg["item"]["rune"],0),this.inventoryX + drawPosition.x*TILESIZE/2 + this.inventoryGridOffset, this.inventoryY + drawPosition.y*TILESIZE/2 + this.inventoryGridOffset + 18, TILESIZE/2, TILESIZE/2);
       }
     }
   }
@@ -188,8 +207,8 @@ class Hud {
 
   getInventorySlot(mouseX, mouseY){
     if(this.isMouseOverInventory(mouseX,mouseY)){
-      let column = Math.floor((mouseX - this.inventoryX - this.inventoryGridOffset)/TILESIZE);
-      let row = Math.floor((mouseY - this.inventoryY - this.inventoryGridOffset - 18)/TILESIZE);
+      let column = Math.floor((mouseX - this.inventoryX - this.inventoryGridOffset)/(TILESIZE/2));
+      let row = Math.floor((mouseY - this.inventoryY - this.inventoryGridOffset - 18)/(TILESIZE/2));
       return row*this.inventoryColumns + column;
     }
     else {
@@ -220,6 +239,7 @@ class Hud {
         this.canvas.fillStyle = "#000000";
         this.canvas.fillRect(descriptionX, descriptionY, this.itemTooltipSizeX, this.itemTooltipSizeY);
         // image border
+        this.canvas.beginPath();
         this.canvas.lineWidth = 1;
         this.canvas.strokeStyle = "#CCCCCC";
         this.canvas.rect(descriptionX + descriptionImageOffset, descriptionY + descriptionImageOffset, TILESIZE, TILESIZE);
@@ -274,6 +294,101 @@ class Hud {
         this.canvas.drawImage(getImageByIndex(itemImg["item"]["temp"],0),descriptionX + descriptionImageOffset, descriptionY + descriptionImageOffset);
       }
     }
+  }
+
+  initEquipment(){
+    // Helmet
+    let helmetSlot = {
+      x: this.inventoryX + this.equipmentWidth/2,
+      y: this.equipmentY + 72
+    };
+    this.equipmentSlots.push(helmetSlot);
+
+    // Chest
+    let chestSlot = {
+      x: this.inventoryX + this.equipmentWidth/2,
+      y: this.equipmentY + 120
+    };
+    this.equipmentSlots.push(chestSlot);
+
+    // Pants
+    let pantsSlot = {
+      x: this.inventoryX + this.equipmentWidth/2,
+      y: this.equipmentY + 195
+    };
+    this.equipmentSlots.push(pantsSlot);
+
+    // Boots
+    let bootsSlot = {
+      x: this.inventoryX + this.equipmentWidth/2,
+      y: this.equipmentY + 310
+    };
+    this.equipmentSlots.push(bootsSlot);
+
+    // Gloves
+    let gloveSlot = {
+      x: this.inventoryX + 227,
+      y: this.equipmentY + 155
+    };
+    this.equipmentSlots.push(gloveSlot);
+
+    // Shoulders Hand
+    let shouldersSlot = {
+      x: this.inventoryX + 132,
+      y: this.equipmentY + 105
+    };
+    this.equipmentSlots.push(shouldersSlot);
+
+    // Left Hand
+    let leftHandSlot = {
+      x: this.inventoryX + 110,
+      y: this.equipmentY + 200
+    };
+    this.equipmentSlots.push(leftHandSlot);
+
+    // Right Hand
+    let rightHandSlot = {
+      x: this.inventoryX + 230,
+      y: this.equipmentY + 200
+    };
+    this.equipmentSlots.push(rightHandSlot);
+  }
+
+  toggleEquipment(){
+    this.equipmentEnabled = !this.equipmentEnabled;
+    if(this.equipmentEnabled){
+      this.inventoryY += this.equipmentHeight;
+    } else {
+      this.inventoryY -= this.equipmentHeight;
+    }
+  }
+
+  drawEquipment(){
+    this.canvas.globalAlpha = 0.7;
+    this.equipmentY = this.inventoryY - this.equipmentHeight;
+    // Background
+    this.canvas.fillStyle = "#000000";
+    this.canvas.fillRect(this.inventoryX, this.equipmentY, this.equipmentWidth, this.equipmentHeight);
+    this.canvas.drawImage(getImageByIndex(hudImg["interface"]["equipmentbackground"],0), this.inventoryX, this.equipmentY);
+    // Equipment text
+    this.canvas.fillStyle = "#FFFFFF";
+    this.canvas.font = "16px Calibri";
+    this.canvas.textAlign = "start";
+    this.canvas.fillText("EQUIPMENT", this.inventoryX + 10, this.equipmentY + 10 + 8);
+
+    // Equipment slots
+    this.canvas.beginPath();
+    this.canvas.lineWidth = 1;
+    this.canvas.strokeStyle = "#EEEEEE";
+
+    for(let i = 0; i < this.equipmentSlots.length; i++){
+      this.canvas.rect(this.equipmentSlots[i].x - TILESIZE/4, this.equipmentSlots[i].y - TILESIZE/4, TILESIZE/2, TILESIZE/2);
+    }
+
+
+    this.canvas.stroke();
+    this.canvas.globalAlpha = 1;
+
   }
 
 }
