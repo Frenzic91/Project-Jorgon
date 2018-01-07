@@ -100,6 +100,7 @@ socket.on('init', function(data){
   // { player:}w
   for(let i = 0; i < data.players.length; i++){
     let player = new Player(data.players[i]);
+    player.animation = new Animation(playerImg.player.blenderPlayer,player,ctxEntities,0,true);
     playerList[player.id] = player;
   }
 
@@ -522,6 +523,8 @@ setInterval(function() {
     }
 
     Animation.updateAnimations();
+
+
 
     for(let i in sortedList){
       playerList[sortedList[i].key].drawOccludedPlayer();

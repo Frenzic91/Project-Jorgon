@@ -20,6 +20,20 @@ var charSprites = [
     type: "player",
     name: "playerFull",
     src: "client/images/player_full_57.png"
+  },
+  {
+    type: "player",
+    name: "blenderPlayer",
+    src: "client/images/blender_player.png",
+    width: TILESIZE*2,
+    height: TILESIZE*2,
+    details: {
+      animationDuration: 500,
+      animationCount: 4,
+      offsetX: TILESIZE/2,
+      offsetY: TILESIZE + TILESIZE/4,
+      frameCount: 14
+    }
   }
 ];
 
@@ -98,9 +112,9 @@ function loadImages(spriteArray){
 function getImageByIndex(image,index){
   let offscreenCanvas = document.createElement('canvas');
   let offscreenContext = offscreenCanvas.getContext('2d');
-  let spriteSheetWidth = image.width;
-  let column = index % spriteSheetWidth;
-  let row = index / spriteSheetWidth;
+  let spriteCountWidth = image.width / image.spriteWidth;
+  let column = index % spriteCountWidth;
+  let row = Math.floor(index / spriteCountWidth);
 
   let spriteWidth = image.spriteWidth;
   let spriteHeight = image.spriteHeight;

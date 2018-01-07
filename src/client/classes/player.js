@@ -23,6 +23,8 @@ class Player {
   this.spellState = 0; // temp
   this.isCastingSpell = false;
   this.hpBarOffset = 5;
+  this.animation;
+
   }
 
   draw() {
@@ -64,23 +66,47 @@ class Player {
 
   }
 
+  // setDirection() {
+  //   // down = 0, left = 1, right = 2, up = 3
+  //   let deltaX = this.screenX - this.xOld;
+  //   let deltaY = this.screenY - this.yOld;
+  //   let isXLarger = Math.abs(deltaX) > Math.abs(deltaY);
+  //   if(deltaX > 0 && isXLarger){
+  //     this.direction = 2;
+  //   } else if(deltaX < 0 && isXLarger) {
+  //     this.direction = 1;
+  //   } else if(deltaY > 0){
+  //     this.direction = 0;
+  //   } else if(deltaY < 0){
+  //     this.direction = 3;
+  //   } else {
+  //     //reset Movement Interp
+  //     this.interp = MININTERP;
+  //   }
+  // }
+
   setDirection() {
     // down = 0, left = 1, right = 2, up = 3
     let deltaX = this.screenX - this.xOld;
     let deltaY = this.screenY - this.yOld;
     let isXLarger = Math.abs(deltaX) > Math.abs(deltaY);
     if(deltaX > 0 && isXLarger){
-      this.direction = 2;
+      this.direction = 3;
     } else if(deltaX < 0 && isXLarger) {
       this.direction = 1;
     } else if(deltaY > 0){
       this.direction = 0;
     } else if(deltaY < 0){
-      this.direction = 3;
+      this.direction = 2;
     } else {
       //reset Movement Interp
       this.interp = MININTERP;
     }
+
+    if(this.animation.animationIndex !== this.direction){
+      this.animation.setAnimationIndex(this.direction);
+    }
+
   }
 
   drawHPBar(ctxHUD) {
@@ -129,39 +155,43 @@ class Player {
     }
   }
 
-  drawPlayer(isMoving, width, height) {
-    let index;
-    if(isMoving){
-      index = undefined;
-    } else {
-      index = 1;
-    }
+  // drawPlayer(isMoving, width, height) {
+  //   let index;
+  //   if(isMoving){
+  //     index = undefined;
+  //   } else {
+  //     index = 1;
+  //   }
+  //
+  //   // if(this.runState === 0){
+  //   //   ctxEntities.drawImage(playerImg.player.playerFull, index*57 || 57*0, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
+  //   //
+  //   //   if(Date.now() - this.stateTime >= ANIMATIONTIME){
+  //   //     this.runState = 1;
+  //   //     this.stateTime = Date.now();
+  //   //   }
+  //   //
+  //   // } else if(this.runState === 1) {
+  //   //   ctxEntities.drawImage(playerImg.player.playerFull, index*57 || 57*1, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
+  //   //
+  //   //   if(Date.now() - this.stateTime >= ANIMATIONTIME/2){
+  //   //     this.runState = 2;
+  //   //     this.stateTime = Date.now();
+  //   //   }
+  //   //
+  //   // } else if(this.runState === 2) {
+  //   //   ctxEntities.drawImage(playerImg.player.playerFull, index*57 || 57*2, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
+  //   //
+  //   //   if(Date.now() - this.stateTime >= ANIMATIONTIME){
+  //   //     this.runState = 0;
+  //   //     this.stateTime = Date.now();
+  //   //   }
+  //   // }
+  //
+  // }
 
-    if(this.runState === 0){
-      ctxEntities.drawImage(playerImg.player.playerFull, index*57 || 57*0, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
-
-      if(Date.now() - this.stateTime >= ANIMATIONTIME){
-        this.runState = 1;
-        this.stateTime = Date.now();
-      }
-
-    } else if(this.runState === 1) {
-      ctxEntities.drawImage(playerImg.player.playerFull, index*57 || 57*1, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
-
-      if(Date.now() - this.stateTime >= ANIMATIONTIME/2){
-        this.runState = 2;
-        this.stateTime = Date.now();
-      }
-
-    } else if(this.runState === 2) {
-      ctxEntities.drawImage(playerImg.player.playerFull, index*57 || 57*2, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
-
-      if(Date.now() - this.stateTime >= ANIMATIONTIME){
-        this.runState = 0;
-        this.stateTime = Date.now();
-      }
-    }
-
+  drawPlayer() {
+    this.animation.update();
   }
 
   drawOccludedPlayer(){
