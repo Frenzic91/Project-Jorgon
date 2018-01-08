@@ -5,8 +5,8 @@ class Node {
     this.x = x;
     this.y = y;
     this.parentNode = null;
-    this.distFromStart = MAX_DIST;
-    this.distToEnd = undefined;
+    this.f = MAX_DIST;
+    this.g = undefined;
   }
 }
 
@@ -67,9 +67,12 @@ function findNodeInSet(thisNode, set) {
 }
 
 function findPath(startCoord, endCoord) {
+  let timeElapsed = 0;
+  let start = Date.now();
+
   let currentNode = new Node(startCoord.x, startCoord.y);
-  currentNode.distFromStart = 0;
-  currentNode.distToEnd = calcEuclideanDistance(startCoord, endCoord);
+  currentNode.f = 0;
+  currentNode.g = currentNode.f + calcEuclideanDistance(startCoord, endCoord);
 
   let openSet = [];
   let closedSet = [];
@@ -80,7 +83,7 @@ function findPath(startCoord, endCoord) {
     // find the next highest priority node to expand
     let highestPriorityNode = openSet[0];
     for (let node in openSet) {
-      if (openSet[node].distToEnd < highestPriorityNode.distToEnd) {
+      if (openSet[node].g < highestPriorityNode.g) {
         highestPriorityNode = openSet[node];
       }
     }
@@ -106,17 +109,24 @@ function findPath(startCoord, endCoord) {
         openSet.push(currentNeighbour);
       }
 
-      let newDistFromStart = currentNode.distFromStart + 1; // all nodes are only 1 tile apart
-      if (newDistFromStart >= currentNeighbour.distFromStart) {
+      let newDistFromStart = currentNode.f + 1; // all nodes are only 1 tile apart
+      if (newDistFromStart >= currentNeighbour.f) {
         continue;
       }
 
       currentNeighbour.parentNode = currentNode;
-      currentNeighbour.distFromStart = newDistFromStart;
-      currentNeighbour.distToEnd = calcEuclideanDistance(
+      currentNeighbour.f = newDistFromStart;
+      currentNeighbour.g = currentNeighbour.f + calcEuclideanDistance(
         {x: currentNeighbour.x, y: currentNeighbour.y},
         {x: endCoord.x, y: endCoord.y});
     }
+
+    timeElapsed += Date.now() - start
+    if (timeElapsed > 50) { // taking too long to find path, likely doesnt exist
+      console.log("Sorry, not possible.");
+      return null;
+    }
+    start = Date.now();
   }
 
   return null; // path not found

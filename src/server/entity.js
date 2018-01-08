@@ -1,5 +1,7 @@
 var Utils = require('../utils.js');
 var CT = require('../constants.js');
+let Game = require('./game.js');
+let gameInstance = new Game();
 
 class Entity {
   constructor(SpawnX = CT.DEFAULTSPAWNX, SpawnY = CT.DEFAULTSPAWNY) {
@@ -8,6 +10,13 @@ class Entity {
     this.spdX = 0;
     this.spdY = 0;
     this.id = "";
+  }
+
+  moveTo(pos) {
+    if (Utils.isValidMapPosition(pos)) {
+      this.x = pos.x;
+      this.y = pos.y
+    }
   }
 
   updatePosition() {
@@ -19,8 +28,13 @@ class Entity {
     this.updatePosition();
   }
 
+  // euclidean
   getDistance(point) {
     return Math.sqrt(Math.pow(this.x-point.x,2) + Math.pow(this.y-point.y,2));
+  }
+
+  getManhattanDistanceTo(pos) {
+    return (Math.abs(this.x - pos.x), Math.abs(this.y - pos.y));
   }
 }
 

@@ -3,6 +3,7 @@ var socket = io();
 var scale = 1;
 
 var playerList = {};
+var creatureList = [];
 var tileData = [];
 var animations = [];
 
@@ -109,6 +110,14 @@ socket.on('init', function(data){
     for (let t in tileDataRaw) {
       tileData.push(new Tile(tileDataRaw[t].x, tileDataRaw[t].y, tileDataRaw[t].occupyingPlayer, tileDataRaw[t].collision, tileDataRaw[t].itemStack));
     }
+  }
+
+  if (data.creatures) {
+    let creatureDataRaw = JSON.parse(data.creatures);
+    for(let i = 0; i < creatureDataRaw.length; i++){
+      creatureList.push(creatureDataRaw[i]);
+    }
+    console.log(creatureList);
   }
 })
 
@@ -506,6 +515,9 @@ setInterval(function() {
       }
     }
 
+    for (let c in creatureList) {
+      ctxEntities.drawImage(playerImg.player.playerFull, index*57 || 57*0, 57*this.direction, 57, 57, creatureList[c].x*64-width/2, creatureList[c].y*64-height/2, 57, 57);
+    }
     // let initTime = Date.now();
     // while (Date.now() - initTime < 500);
 

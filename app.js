@@ -2,6 +2,7 @@ var CT = require('./src/constants.js');
 var Utils = require('./src/utils.js');
 var database = require('./src/server/db.js');
 var Player = require('./src/server/player.js');
+var Creature = require('./src/server/creature.js');
 var worldJSON = require('./src/server/mapData.js');
 var Tile = require('./src/server/tile.js');
 var Item = require('./src/server/item.js');
@@ -19,11 +20,17 @@ var io = require('socket.io')(server, {});
 
 var SOCKET_LIST = {};
 var playerList = {};
+var creatureList = {};
 var tileMap = [];
+
+let testCreature = new Creature();
+let testCreatureID = testCreature.number;
+creatureList[testCreatureID] = testCreature;
 
 var gameInstance = new Game();
 
 gameInstance.setPlayerList(playerList);
+gameInstance.setCreatureList(creatureList);
 gameInstance.setTileMap(tileMap);
 gameInstance.setSocketServer(io);
 gameInstance.setSocketList(SOCKET_LIST);
@@ -178,20 +185,8 @@ io.sockets.on('connection', function(socket){
     // Item moved from player inventory to ground
     if (player.inventory.items[fromInventorySlot] && !mouseUpTile.collision){
       let temp = player.inventory.items[fromInventorySlot];
-      mouseUpTile.itemStack.push(player.inventory.items[fromInventorySlot]);
+      mouseUpTile.pushItem(player.inventory.items[fromInventorySlot]);
       player.inventory.items[fromInventorySlot] = undefined;
-
-      io.emit('itemMoved', {
-        fromTile:{
-          x: undefined,
-          y: undefined
-        },
-        toTile: {
-          x: data.toTile.x,
-          y: data.toTile.y
-        },
-        item: temp
-      });
 
       socket.emit('inventoryUpdate',{
         slotOne: fromInventorySlot,
@@ -209,18 +204,6 @@ io.sockets.on('connection', function(socket){
             // move the item from click tile to release tile
             mouseUpTile.pushItem(mouseDownTile.popItem());
 
-            /*io.emit('itemMoved', {
-              fromTile: {
-                x: data.fromTile.x,
-                y: data.fromTile.y
-              },
-              toTile: {
-                x: data.toTile.x,
-                y: data.toTile.y
-              }
-            });
-            */
-
           } else if (mouseDownTile.occupyingPlayer && !mouseUpTile.hasCollision()) {
             // move the player from click tile to release tile (todo)
             if (Math.abs(mouseDownTile.occupyingPlayer.x - data.toTile.x) <= 1 && Math.abs(mouseDownTile.occupyingPlayer.y - data.toTile.y) <= 1) {
@@ -234,10 +217,6 @@ io.sockets.on('connection', function(socket){
             }
           }
     }
-
-    console.log('~~~~~~');
-    console.log(data.fromTile.x, data.fromTile.y);
-    console.log(data.toTile.x, data.toTile.y);
   });
 
   socket.on('dragToInventory', function(data) {
@@ -289,10 +268,6 @@ io.sockets.on('connection', function(socket){
       itemOne: player.inventory.items[fromInventorySlot],
       itemTwo: player.inventory.items[toInventorySlot]
     });
-
-    console.log('~~~~~~');
-    console.log(data.fromTile.x, data.fromTile.y);
-    console.log(toInventorySlot);
   });
 
   socket.on('useItem', function(data) {
@@ -316,33 +291,16 @@ io.sockets.on('connection', function(socket){
   socket.on('moveToTile', function(data) {
     let gameInstance = new Game()
     let player = gameInstance.getPlayerList()[socket.id];
-    //let tileMap = gameInstance.getTileMap();
 
-    // If player is not logged in, do nothing.
     if(!player){
       return;
     }
 
-    // veryify that the start and end points of the path are valid, and that each
-    // node in the path can be reached and is next to its parent node
-    // ...
+    // verify that the path is valid
+    if (data.path) {
+      player.setPath(data.path);
+    }
 
-    //console.log(data.path);
-    player.setPath(data.path);
-
-    // verify client data is properly formatted
-    // if (typeof data.fromTile.x == 'number' &&
-    //     typeof data.fromTile.y == 'number' &&
-    //     typeof data.toTile.x == 'number'   &&
-    //     typeof data.toTile.y == 'number') {
-    //
-    //   if (Utils.isSameCoord(player, data.fromTile) && Utils.isValidCoord(data.toTile) &&
-    //       !tileMap[CT.MAP_WIDTH * data.toTile.y + data.toTile.x].hasCollision()) {
-    //
-    //     let path = findPath(data.fromTile, data.toTile);
-    //     player.setPath(path);
-    //   }
-    // }
   });
 })
 
@@ -372,6 +330,7 @@ function mainUpdate() {
   let start = Date.now();
 
   Player.execPlayerAttacks(playerList);
+  Creature.simulateAll();
 
   var pack = {
     players: Player.getPlayerPositions(playerList, tileMap),

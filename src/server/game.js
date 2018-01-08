@@ -5,6 +5,7 @@ class Game {
     if (!gameInstance) {
       // global game state
       this.playerList;
+      this.creatureList;
       this.tileMap;
       this.socketList;
 
@@ -26,6 +27,10 @@ class Game {
 
   getPlayerList() {
     return this.playerList;
+  }
+
+  getCreatureList() {
+    return this.creatureList;
   }
 
   getTileMap() {
@@ -57,6 +62,12 @@ class Game {
   setPlayerList(playerList) {
     if (!this.playerList) {
       this.playerList = playerList;
+    }
+  }
+
+  setCreatureList(creatureList) {
+    if (!this.creatureList) {
+      this.creatureList = creatureList;
     }
   }
 

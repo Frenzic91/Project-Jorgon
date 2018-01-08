@@ -92,14 +92,6 @@ class Player extends Entity {
     this.isPathfinding = false;
   }
 
-  movePlayer(pos) {
-    this.x = pos.x;
-    this.y = pos.y;
-
-    // add packet to player updates
-    // ...
-  }
-
   isTargetInRange() {
     if (this.target) {
       return (Math.abs(Math.round(this.x) - Math.round(this.target.x)) <= this.equipment.weapon.range) &&
@@ -200,18 +192,22 @@ class Player extends Entity {
         let nextTile = tileMap[CT.MAP_WIDTH * this.path[this.currentNodeInPath].y + this.path[this.currentNodeInPath].x]
 
         if (this.currentNodeInPath == 0 || !nextTile.hasCollision()) {
-          this.movePlayer({
+          this.moveTo({
             x: this.path[this.currentNodeInPath].x,
             y: this.path[this.currentNodeInPath].y
           });
+
+          if (this.currentNodeInPath == 0 && !this.recalculatePath) {
+            this.lastMoved = -999; // get rid of delay for 0th step of path
+          } else {
+            this.lastMoved = Date.now();
+          }
 
           if (this.currentNodeInPath < this.path.length - 1){
             this.currentNodeInPath += 1;
           } else {
             this.removePath();
           }
-
-          this.lastMoved = Date.now();
 
           this.recalculatePath = false;
         } else {
@@ -226,10 +222,10 @@ class Player extends Entity {
             //this.setPath(newPath);
             let socket = new Game().getSocketList()[this.id];
             if (!this.recalculatePath) {
-              console.log('recalculate event sent');
               socket.emit('recalculatePath', {startCoord: {x: this.x, y: this.y}, endCoord});
             }
             this.recalculatePath = true;
+            this.lastMoved = Date.now(); // attempted to move but was blocked
             //socket.emit('recalculatePath', {endCoord});
           }
         }
@@ -420,9 +416,11 @@ class Player extends Entity {
 
   static init(socket, playerList, tileMap){
     let players = Player.getAllInitPack(playerList);
+    let creatureList = new Game().getCreatureList();
 
     socket.emit('init', {
       players: players,
+      creatures: JSON.stringify(creatureList),
       tileData: JSON.stringify(tileMap)
     });
   }
