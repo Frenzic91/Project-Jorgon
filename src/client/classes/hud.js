@@ -11,7 +11,7 @@ class Hud {
     this.inventoryColumns = 10;
     this.itemTooltipSizeX = 200;
     this.itemTooltipSizeY = 250;
-    this.itemDescriptionLineCharacterLimit = 35;
+    this.itemDescriptionLineCharacterLimit = 30;
     // Hud details
 
     this.equipmentEnabled = false;
@@ -182,10 +182,8 @@ class Hud {
     for(let i = 0; i < inventory.items.length; i++){
       if(inventory.items[i]){
         let drawPosition = this.getInventorySlotXY(i);
-        if (inventory.items[i].id == 17)
-          this.canvas.drawImage(getImageByIndex(itemImg["item"]["temp"],0),this.inventoryX + drawPosition.x*TILESIZE/2 + this.inventoryGridOffset, this.inventoryY + drawPosition.y*TILESIZE/2 + this.inventoryGridOffset + 18, TILESIZE/2, TILESIZE/2);
-        if (inventory.items[i].id == 18)
-          this.canvas.drawImage(getImageByIndex(itemImg["item"]["rune"],0),this.inventoryX + drawPosition.x*TILESIZE/2 + this.inventoryGridOffset, this.inventoryY + drawPosition.y*TILESIZE/2 + this.inventoryGridOffset + 18, TILESIZE/2, TILESIZE/2);
+          this.canvas.drawImage(getImageByIndex(itemImg["item"][inventory.items[i].id],0),this.inventoryX + drawPosition.x*TILESIZE/2 + this.inventoryGridOffset, this.inventoryY + drawPosition.y*TILESIZE/2 + this.inventoryGridOffset + 18, TILESIZE/2, TILESIZE/2);
+
       }
     }
   }
@@ -250,15 +248,18 @@ class Hud {
         this.canvas.font = "14px Calibri";
         this.canvas.textAlign = "start";
 
-        this.canvas.fillText("ID: " + inventory.items[slot],descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + descriptionImageOffset + 8);
-        this.canvas.fillText("ATK: " + inventory.items[slot],descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + 3*descriptionImageOffset + 8);
-        this.canvas.fillText("DEF: " + inventory.items[slot],descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + 5*descriptionImageOffset + 8);
+        this.canvas.fillText("ID: " + inventory.items[slot].id,descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + descriptionImageOffset + 8);
+        if(inventory.items[slot].atk)
+        this.canvas.fillText("ATK: " + inventory.items[slot].atk,descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + 3*descriptionImageOffset + 8);
+        if(inventory.items[slot].def)
+        this.canvas.fillText("DEF: " + inventory.items[slot].def,descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + 5*descriptionImageOffset + 8);
 
         // Item name
-        this.canvas.fillText("ITEM NAME",descriptionX + descriptionImageOffset, descriptionY + 2*descriptionImageOffset + 7 + TILESIZE);
+        this.canvas.fillText(inventory.items[slot].name,descriptionX + descriptionImageOffset, descriptionY + 2*descriptionImageOffset + 7 + TILESIZE);
 
         // Description - with wordwrap
-        let description = "Phasellus ut sapien non purus interdum euismod. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce varius lacus mattis ornare tristique. Duis molestie pellentesque augue, sagittis hendrerit velit egestas vitae. Phasellus ut sapien non purus interdum euismod.";
+        //let description = "Phasellus ut sapien non purus interdum euismod. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce varius lacus mattis ornare tristique. Duis molestie pellentesque augue, sagittis hendrerit velit egestas vitae. Phasellus ut sapien non purus interdum euismod.";
+        let description = inventory.items[slot].description
         let splitDescription = description.split(" ");
         let line = "";
         let lineCount = 0;
@@ -291,7 +292,7 @@ class Hud {
 
         this.canvas.globalAlpha = 1;
 
-        this.canvas.drawImage(getImageByIndex(itemImg["item"]["temp"],0),descriptionX + descriptionImageOffset, descriptionY + descriptionImageOffset);
+        this.canvas.drawImage(getImageByIndex(itemImg["item"][inventory.items[slot].id],0),descriptionX + descriptionImageOffset, descriptionY + descriptionImageOffset);
       }
     }
   }

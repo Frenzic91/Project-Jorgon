@@ -76,17 +76,17 @@ var hudSprites = [
 var itemSprites = [
   {
     type: "item",
-    name: "temp",
+    name: "17",
     src: "client/images/tempItem.png"
   },
   {
     type: "item",
-    name: "temp2",
+    name: "19",
     src: "client/images/tempItem2.png"
   },
   {
     type: "item",
-    name: "rune",
+    name: "18",
     src: "client/images/rune.png"
   }
 ];
