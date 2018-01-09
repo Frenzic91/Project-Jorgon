@@ -182,9 +182,9 @@ class Hud {
     for(let i = 0; i < inventory.items.length; i++){
       if(inventory.items[i]){
         let drawPosition = this.getInventorySlotXY(i);
-        if (inventory.items[i] == 17)
+        if (inventory.items[i].id == 17)
           this.canvas.drawImage(getImageByIndex(itemImg["item"]["temp"],0),this.inventoryX + drawPosition.x*TILESIZE/2 + this.inventoryGridOffset, this.inventoryY + drawPosition.y*TILESIZE/2 + this.inventoryGridOffset + 18, TILESIZE/2, TILESIZE/2);
-        if (inventory.items[i] == 18)
+        if (inventory.items[i].id == 18)
           this.canvas.drawImage(getImageByIndex(itemImg["item"]["rune"],0),this.inventoryX + drawPosition.x*TILESIZE/2 + this.inventoryGridOffset, this.inventoryY + drawPosition.y*TILESIZE/2 + this.inventoryGridOffset + 18, TILESIZE/2, TILESIZE/2);
       }
     }

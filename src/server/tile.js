@@ -54,16 +54,16 @@ class Tile {
     }
   }
 
-  pushItem(itemID) {
-    if (itemID > 0) {
+  pushItem(item) {
+    if (item) {
       gameInstance.pushTileUpdate({
         x: this.x,
         y: this.y,
-        itemID: itemID,
+        item: item,
         pushItem: true
       });
 
-      this.itemStack.push(itemID);
+      this.itemStack.push(item);
     }
   }
 

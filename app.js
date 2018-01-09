@@ -5,9 +5,11 @@ var Player = require('./src/server/player.js');
 var Creature = require('./src/server/creature.js');
 var worldJSON = require('./src/server/mapData.js');
 var Tile = require('./src/server/tile.js');
-var Item = require('./src/server/item.js');
+var ItemJS = require('./src/server/item.js');
+var Item = ItemJS.Item;
 var Game = require('./src/server/game.js');
 var findPath = require('./src/server/pathfinder.js');
+
 
 //console.log(mapJSON);
 
@@ -44,17 +46,17 @@ function loadTileMap(callback) {
 
       // for testing
       if (col == 27 && row == 28) {
-        tile.itemStack.push(17); // itemId == 17
+        tile.itemStack.push(new Item(17)); // itemId == 17
       }
 
       // for testing
       if (col == 28 && row == 28) {
-        tile.itemStack.push(17); // itemId == 17
+        tile.itemStack.push(new Item(17)); // itemId == 17
       }
 
       // for testing
       if (col == 29 && row == 28) {
-        tile.itemStack.push(18); // itemId == 18
+        tile.itemStack.push(new Item(18)); // itemId == 18
       }
 
       tileMap.push(tile)
@@ -285,7 +287,7 @@ io.sockets.on('connection', function(socket){
       itemID = itemTile.getTopItem();
     }
 
-    if (itemID) Item.onUseFunctionTable[itemID](data);
+    if (itemID) ItemJS.onUseFunctionTable[itemID.id](data);
   });
 
   socket.on('moveToTile', function(data) {
