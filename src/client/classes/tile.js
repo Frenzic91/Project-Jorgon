@@ -31,9 +31,9 @@ class Tile {
     }
   }
 
-  pushItem(itemID) {
-    if (itemID > 0) {
-      this.itemStack.push(itemID);
+  pushItem(item) {
+    if (item) {
+      this.itemStack.push(item);
     }
   }
 
