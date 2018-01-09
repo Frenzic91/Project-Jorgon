@@ -1,12 +1,23 @@
 var Game = require('./game.js');
 var Utils = require('../utils.js');
 var CT = require('../constants.js');
+var itemData = require('./itemData.js');
 
 var gameInstance = new Game();
 
 class Item {
-  constructor() {
+  constructor(itemID) {
+    console.log(itemData[itemID]);
+    console.log(itemID);
+    this.id = itemID;
+    this.name = itemData[itemID].name;
+    this.type = itemData[itemID].type;
+    this.subtype = itemData[itemID].subtype;
+    this.description = itemData[itemID].description;
+    this.atk = itemData[itemID].atk || undefined;
+    this.def = itemData[itemID].def || undefined;
   }
+
 }
 
 // the <data> parameter of each function originates on the client

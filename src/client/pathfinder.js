@@ -122,7 +122,7 @@ function findPath(startCoord, endCoord) {
     }
 
     timeElapsed += Date.now() - start
-    if (timeElapsed > 50) { // taking too long to find path, likely doesnt exist
+    if (timeElapsed > 500) { // taking too long to find path, likely doesnt exist
       console.log("Sorry, not possible.");
       return null;
     }

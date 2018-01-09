@@ -1,12 +1,13 @@
 var Item = require('./item.js').Item;
+var itemData = require('./itemData.js');
 
 class Weapon extends Item {
-  constructor(properties) {
-    super();
-    this.damage = properties.damage;
-    this.range = properties.range;
-    this.attackDelay = properties.attackDelay;
-    this.levelReq = properties.levelReq;
+  constructor(itemID) {
+    super(itemID);
+    this.atk = itemData[itemID].atk;
+    this.range = itemData[itemID].range;
+    this.attackDelay = itemData[itemID].attackDelay;
+    this.levelReq = itemData[itemID].levelReq;
   }
 }
 
