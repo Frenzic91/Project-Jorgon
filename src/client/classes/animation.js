@@ -40,10 +40,10 @@ class Animation {
   }
 
   setAnimationIndex(index){
-    console.log("setting animation index");
+    //console.log("setting animation index");
     this.animationIndex = index;
     this.animationState = this.animationIndex * this.frameCount;
-    console.log(this.animationState);
+    //console.log(this.animationState);
   }
 
 }
