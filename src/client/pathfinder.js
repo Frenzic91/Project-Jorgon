@@ -10,8 +10,31 @@ class Node {
   }
 }
 
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
 function calcEuclideanDistance(startCoord, endCoord) {
   return Math.sqrt(Math.pow((endCoord.x - startCoord.x), 2) + Math.pow((endCoord.y - startCoord.y), 2));
+}
+
+function calcManhattanDistance(startCoord, endCoord) {
+  return (endCoord.x - startCoord.x) + (endCoord.y - startCoord.y);
 }
 
 function getNeighbourNodes(node) {
@@ -92,6 +115,7 @@ function findPath(startCoord, endCoord) {
 
     // reached the end
     if (currentNode.x == endCoord.x && currentNode.y == endCoord.y) {
+      console.log(timeElapsed);
       return reconstructPath(currentNode);
     }
 
@@ -101,7 +125,7 @@ function findPath(startCoord, endCoord) {
       closedSet.push(openSet.splice(index, 1)[0]);
     }
 
-    let neighbours = getNeighbourNodes(currentNode);
+    let neighbours = shuffle(getNeighbourNodes(currentNode));
 
     for (n in neighbours) {
       let currentNeighbour = neighbours[n];
