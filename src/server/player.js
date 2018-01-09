@@ -4,6 +4,8 @@ var Weapon = require('./weapon.js');
 var Utils = require('../utils.js');
 var Game = require('./game.js');
 var findPath = require('./pathfinder.js');
+var ItemJS = require('./item.js');
+var Item = ItemJS.Item;
 
 // Player class (based on Entity) - We should pull this into a seperate file
 class Player extends Entity {
@@ -35,15 +37,11 @@ class Player extends Entity {
 
     this.inventory = {
       "size": 80,
-      "items": [18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18]
+      "items": [new Item(18), new Item(18), new Item(18), new Item(18), new Item(18), new Item(18), new Item(18), new Item(18),
+                new Item(18), new Item(18), new Item(18), new Item(18), new Item(18), new Item(18), new Item(18)]
     };
 
-    this.equipment = {"weapon": new Weapon({
-      "damage": 45,
-      "range": 1,
-      "attackDelay": 1000,
-      "levelReq": 0
-    })};
+    this.equipment = {"weapon": new Weapon(16)};
   }
 
   getHp() {
@@ -106,7 +104,7 @@ class Player extends Entity {
       // set lastAttacked back to curret time
       this.lastAttacked = Date.now();
 
-      if(this.target.takeDamage(Utils.randNumBetween(5, this.equipment.weapon.damage))){
+      if(this.target.takeDamage(Utils.randNumBetween(5, this.equipment.weapon.atk))){
         this.target = undefined;
       }
     }

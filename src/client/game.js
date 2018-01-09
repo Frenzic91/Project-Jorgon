@@ -160,8 +160,8 @@ socket.on('update', function(data){
     if (data.tiles[tileUpdatePacket].popItem) {
       updateTile.popItem();
     } else if (data.tiles[tileUpdatePacket].pushItem){
-      let itemID = data.tiles[tileUpdatePacket].itemID;
-      updateTile.pushItem(itemID);
+      let item = data.tiles[tileUpdatePacket].item;
+      updateTile.pushItem(item);
     } else if (data.tiles[tileUpdatePacket].setOccupyingPlayer) {
       let occupyingPlayer = playerList[data.tiles[tileUpdatePacket].playerID];
       updateTile.setOccupyingPlayer(occupyingPlayer);
@@ -299,13 +299,13 @@ document.onmousedown = function(event){
         if (hud.inventoryEnabled && hud.isMouseOverInventory(mouseX, mouseY)) {
           let inventorySlot = hud.getInventorySlot(mouseX,mouseY);
           socket.emit('useItem', {playerID, itemUsedFromInventory: true, inventorySlot});
-          if (inventory.items[inventorySlot] == 18) {
+          if (inventory.items[inventorySlot].id == 18) {
             playerList[playerID].isCastingSpell = true;
           }
         } else { /* mouse over tile */
           socket.emit('useItem', {playerID, itemUsedFromInventory: false, targetTileX, targetTileY});
           let tile = tileData[MAP_WIDTH * targetTileY + targetTileX];
-          if (tile.itemStack[tile.itemStack.length - 1] == 18) {
+          if (tile.itemStack[tile.itemStack.length - 1].id == 18) {
             playerList[playerID].isCastingSpell = true;
           }
         }
