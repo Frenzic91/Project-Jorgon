@@ -393,6 +393,7 @@ document.onmouseup = function(event){
             y: mouseDownTileInfo.y
           },
           fromInventorySlot: mouseDownInventorySlot,
+          fromEquipmentSlot: mouseDownEquipmentSlot,
           toTile: {
             x: targetTileX,
             y: targetTileY

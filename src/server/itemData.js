@@ -20,7 +20,7 @@ var itemData = {
     "atk": 12,
     "def": 20,
     "levelReq": 1,
-    "description": "An armor fit for a king. Many have spoken about it, but very few have seen its shine."
+    "description": "An armor fit for a king. Many have spoken about it, but very few have seen it's shine."
   },
   18: {
     "type": 3,

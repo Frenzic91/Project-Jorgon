@@ -428,6 +428,20 @@ class Hud {
     this.canvas.stroke();
     this.canvas.globalAlpha = 1;
 
+    this.drawEquipmentItems();
+  }
+
+  drawEquipmentItems(){
+    for(let i = 0; i < this.equipmentSlots.length; i++){
+      let item = equipment[this.equipmentSlots[i].type]
+      if(item){
+        let drawPosition = {
+          x: this.equipmentSlots[i].x - TILESIZE/4,
+          y: this.equipmentSlots[i].y - TILESIZE/4
+        }
+          this.canvas.drawImage(getImageByIndex(itemImg["item"][item.id],0),drawPosition.x, drawPosition.y, TILESIZE/2, TILESIZE/2);
+      }
+    }
   }
 
 }
