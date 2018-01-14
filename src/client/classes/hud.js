@@ -36,11 +36,12 @@ class Hud {
 
     if(this.inventoryEnabled){
       this.drawInventory();
-      this.drawItemDescription();
+      this.drawItemDescription(inventory.items[this.getInventorySlot(mouseX,mouseY)],this.inventoryX-this.itemTooltipSizeX,this.inventoryY);
     }
 
     if(this.equipmentEnabled){
       this.drawEquipment();
+      this.drawItemDescription(equipment[this.getEquipmentSlot(mouseX,mouseY)],this.equipmentX-this.itemTooltipSizeX,this.equipmentY);
     }
 
   }
@@ -223,77 +224,147 @@ class Hud {
     };
   }
 
-  drawItemDescription(){
-    let slot = this.getInventorySlot(mouseX,mouseY);
-    if(slot !== undefined){
-      if(inventory.items[slot]){
-        // top left corner of the description box
-        let descriptionX = this.inventoryX - this.itemTooltipSizeX;
-        let descriptionY = this.inventoryY;
-        // the margin for the image
-        let descriptionImageOffset = 10;
-        this.canvas.globalAlpha = 0.7;
-        // background
-        this.canvas.fillStyle = "#000000";
-        this.canvas.fillRect(descriptionX, descriptionY, this.itemTooltipSizeX, this.itemTooltipSizeY);
-        // image border
-        this.canvas.beginPath();
-        this.canvas.lineWidth = 1;
-        this.canvas.strokeStyle = "#CCCCCC";
-        this.canvas.rect(descriptionX + descriptionImageOffset, descriptionY + descriptionImageOffset, TILESIZE, TILESIZE);
-        this.canvas.stroke();
+  // drawItemDescription(item,x,y){
+  //   if(item !== undefined){
+  //     if(inventory.items[slot]){
+  //       // top left corner of the description box
+  //       let descriptionX = this.inventoryX - this.itemTooltipSizeX;
+  //       let descriptionY = this.inventoryY;
+  //       // the margin for the image
+  //       let descriptionImageOffset = 10;
+  //       this.canvas.globalAlpha = 0.7;
+  //       // background
+  //       this.canvas.fillStyle = "#000000";
+  //       this.canvas.fillRect(descriptionX, descriptionY, this.itemTooltipSizeX, this.itemTooltipSizeY);
+  //       // image border
+  //       this.canvas.beginPath();
+  //       this.canvas.lineWidth = 1;
+  //       this.canvas.strokeStyle = "#CCCCCC";
+  //       this.canvas.rect(descriptionX + descriptionImageOffset, descriptionY + descriptionImageOffset, TILESIZE, TILESIZE);
+  //       this.canvas.stroke();
+  //
+  //       // ID, ATK, DEF
+  //       this.canvas.fillStyle = "#FFFFFF";
+  //       this.canvas.font = "14px Calibri";
+  //       this.canvas.textAlign = "start";
+  //
+  //       this.canvas.fillText("ID: " + inventory.items[slot].id,descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + descriptionImageOffset + 8);
+  //       if(inventory.items[slot].atk)
+  //       this.canvas.fillText("ATK: " + inventory.items[slot].atk,descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + 3*descriptionImageOffset + 8);
+  //       if(inventory.items[slot].def)
+  //       this.canvas.fillText("DEF: " + inventory.items[slot].def,descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + 5*descriptionImageOffset + 8);
+  //
+  //       // Item name
+  //       this.canvas.fillText(inventory.items[slot].name,descriptionX + descriptionImageOffset, descriptionY + 2*descriptionImageOffset + 7 + TILESIZE);
+  //
+  //       // Description - with wordwrap
+  //       //let description = "Phasellus ut sapien non purus interdum euismod. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce varius lacus mattis ornare tristique. Duis molestie pellentesque augue, sagittis hendrerit velit egestas vitae. Phasellus ut sapien non purus interdum euismod.";
+  //       let description = inventory.items[slot].description
+  //       let splitDescription = description.split(" ");
+  //       let line = "";
+  //       let lineCount = 0;
+  //
+  //       for(let i = 0; i < splitDescription.length; i++){
+  //         // If the next word does not make the line go over the character limit, append it
+  //         if(line.length + splitDescription[i].length < this.itemDescriptionLineCharacterLimit){
+  //           line += " " + splitDescription[i];
+  //         } else { // Otherwise, print the line
+  //           this.canvas.fillText(line,
+  //                               descriptionX + descriptionImageOffset,
+  //                               descriptionY + 4*descriptionImageOffset + 2*lineCount*descriptionImageOffset + 7 + TILESIZE,
+  //                               this.itemTooltipSizeX - 2*descriptionImageOffset);
+  //           lineCount++;
+  //           // Start the next line with the current word
+  //           line = splitDescription[i];
+  //         }
+  //         // On the last loop iteration, print what is left in line, if anything
+  //         if(i === (splitDescription.length - 1) && line.length > 0){
+  //           this.canvas.fillText(line,
+  //                               descriptionX + descriptionImageOffset,
+  //                               descriptionY + 4*descriptionImageOffset + 2*lineCount*descriptionImageOffset + 7 + TILESIZE,
+  //                               this.itemTooltipSizeX - 2*descriptionImageOffset);
+  //           lineCount++;
+  //         }
+  //       }
+  //
+  //       // Scale the tooltip height based on the description length
+  //       this.itemTooltipSizeY = 4*descriptionImageOffset + TILESIZE + 2*lineCount*descriptionImageOffset;
+  //
+  //       this.canvas.globalAlpha = 1;
+  //
+  //       this.canvas.drawImage(getImageByIndex(itemImg["item"][inventory.items[slot].id],0),descriptionX + descriptionImageOffset, descriptionY + descriptionImageOffset);
+  //     }
+  //   }
+  // }
 
-        // ID, ATK, DEF
-        this.canvas.fillStyle = "#FFFFFF";
-        this.canvas.font = "14px Calibri";
-        this.canvas.textAlign = "start";
+  drawItemDescription(item,x,y){
+    if(item !== undefined){
+      // top left corner of the description box
+      let descriptionX = x;
+      let descriptionY = y;
+      // the margin for the image
+      let descriptionImageOffset = 10;
+      this.canvas.globalAlpha = 0.7;
+      // background
+      this.canvas.fillStyle = "#000000";
+      this.canvas.fillRect(descriptionX, descriptionY, this.itemTooltipSizeX, this.itemTooltipSizeY);
+      // image border
+      this.canvas.beginPath();
+      this.canvas.lineWidth = 1;
+      this.canvas.strokeStyle = "#CCCCCC";
+      this.canvas.rect(descriptionX + descriptionImageOffset, descriptionY + descriptionImageOffset, TILESIZE, TILESIZE);
+      this.canvas.stroke();
 
-        this.canvas.fillText("ID: " + inventory.items[slot].id,descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + descriptionImageOffset + 8);
-        if(inventory.items[slot].atk)
-        this.canvas.fillText("ATK: " + inventory.items[slot].atk,descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + 3*descriptionImageOffset + 8);
-        if(inventory.items[slot].def)
-        this.canvas.fillText("DEF: " + inventory.items[slot].def,descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + 5*descriptionImageOffset + 8);
+      // ID, ATK, DEF
+      this.canvas.fillStyle = "#FFFFFF";
+      this.canvas.font = "14px Calibri";
+      this.canvas.textAlign = "start";
 
-        // Item name
-        this.canvas.fillText(inventory.items[slot].name,descriptionX + descriptionImageOffset, descriptionY + 2*descriptionImageOffset + 7 + TILESIZE);
+      this.canvas.fillText("ID: " + item.id,descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + descriptionImageOffset + 8);
+      if(item.atk)
+      this.canvas.fillText("ATK: " + item.atk,descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + 3*descriptionImageOffset + 8);
+      if(item.def)
+      this.canvas.fillText("DEF: " + item.def,descriptionX + 2*descriptionImageOffset + TILESIZE, descriptionY + 5*descriptionImageOffset + 8);
 
-        // Description - with wordwrap
-        //let description = "Phasellus ut sapien non purus interdum euismod. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce varius lacus mattis ornare tristique. Duis molestie pellentesque augue, sagittis hendrerit velit egestas vitae. Phasellus ut sapien non purus interdum euismod.";
-        let description = inventory.items[slot].description
-        let splitDescription = description.split(" ");
-        let line = "";
-        let lineCount = 0;
+      // Item name
+      this.canvas.fillText(item.name,descriptionX + descriptionImageOffset, descriptionY + 2*descriptionImageOffset + 7 + TILESIZE);
 
-        for(let i = 0; i < splitDescription.length; i++){
-          // If the next word does not make the line go over the character limit, append it
-          if(line.length + splitDescription[i].length < this.itemDescriptionLineCharacterLimit){
-            line += " " + splitDescription[i];
-          } else { // Otherwise, print the line
-            this.canvas.fillText(line,
-                                descriptionX + descriptionImageOffset,
-                                descriptionY + 4*descriptionImageOffset + 2*lineCount*descriptionImageOffset + 7 + TILESIZE,
-                                this.itemTooltipSizeX - 2*descriptionImageOffset);
-            lineCount++;
-            // Start the next line with the current word
-            line = splitDescription[i];
-          }
-          // On the last loop iteration, print what is left in line, if anything
-          if(i === (splitDescription.length - 1) && line.length > 0){
-            this.canvas.fillText(line,
-                                descriptionX + descriptionImageOffset,
-                                descriptionY + 4*descriptionImageOffset + 2*lineCount*descriptionImageOffset + 7 + TILESIZE,
-                                this.itemTooltipSizeX - 2*descriptionImageOffset);
-            lineCount++;
-          }
+      // Description - with wordwrap
+      //let description = "Phasellus ut sapien non purus interdum euismod. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce varius lacus mattis ornare tristique. Duis molestie pellentesque augue, sagittis hendrerit velit egestas vitae. Phasellus ut sapien non purus interdum euismod.";
+      let description = item.description
+      let splitDescription = description.split(" ");
+      let line = "";
+      let lineCount = 0;
+
+      for(let i = 0; i < splitDescription.length; i++){
+        // If the next word does not make the line go over the character limit, append it
+        if(line.length + splitDescription[i].length < this.itemDescriptionLineCharacterLimit){
+          line += " " + splitDescription[i];
+        } else { // Otherwise, print the line
+          this.canvas.fillText(line,
+                              descriptionX + descriptionImageOffset,
+                              descriptionY + 4*descriptionImageOffset + 2*lineCount*descriptionImageOffset + 7 + TILESIZE,
+                              this.itemTooltipSizeX - 2*descriptionImageOffset);
+          lineCount++;
+          // Start the next line with the current word
+          line = splitDescription[i];
         }
-
-        // Scale the tooltip height based on the description length
-        this.itemTooltipSizeY = 4*descriptionImageOffset + TILESIZE + 2*lineCount*descriptionImageOffset;
-
-        this.canvas.globalAlpha = 1;
-
-        this.canvas.drawImage(getImageByIndex(itemImg["item"][inventory.items[slot].id],0),descriptionX + descriptionImageOffset, descriptionY + descriptionImageOffset);
+        // On the last loop iteration, print what is left in line, if anything
+        if(i === (splitDescription.length - 1) && line.length > 0){
+          this.canvas.fillText(line,
+                              descriptionX + descriptionImageOffset,
+                              descriptionY + 4*descriptionImageOffset + 2*lineCount*descriptionImageOffset + 7 + TILESIZE,
+                              this.itemTooltipSizeX - 2*descriptionImageOffset);
+          lineCount++;
+        }
       }
+
+      // Scale the tooltip height based on the description length
+      this.itemTooltipSizeY = 4*descriptionImageOffset + TILESIZE + 2*lineCount*descriptionImageOffset;
+
+      this.canvas.globalAlpha = 1;
+
+      this.canvas.drawImage(getImageByIndex(itemImg["item"][item.id],0),descriptionX + descriptionImageOffset, descriptionY + descriptionImageOffset);
     }
   }
 
@@ -378,7 +449,6 @@ class Hud {
         mouseX < (this.equipmentX + this.equipmentWidth) &&
         mouseY > (this.equipmentY) &&
         mouseY < (this.equipmentY + this.equipmentHeight)) {
-        console.log("mouse is over equipment")
         return true;
       } else {
         return false;
