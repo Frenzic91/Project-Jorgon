@@ -301,56 +301,64 @@ class Hud {
     // Helmet
     let helmetSlot = {
       x: this.inventoryX + this.equipmentWidth/2,
-      y: this.equipmentY + 72
+      y: this.equipmentY + 72,
+      type: "helmet"
     };
     this.equipmentSlots.push(helmetSlot);
 
     // Chest
     let chestSlot = {
       x: this.inventoryX + this.equipmentWidth/2,
-      y: this.equipmentY + 120
+      y: this.equipmentY + 120,
+      type: "chest"
     };
     this.equipmentSlots.push(chestSlot);
 
-    // Pants
-    let pantsSlot = {
+    // Legs
+    let legsSlot = {
       x: this.inventoryX + this.equipmentWidth/2,
-      y: this.equipmentY + 195
+      y: this.equipmentY + 195,
+      type: "legs"
     };
-    this.equipmentSlots.push(pantsSlot);
+    this.equipmentSlots.push(legsSlot);
 
     // Boots
     let bootsSlot = {
       x: this.inventoryX + this.equipmentWidth/2,
-      y: this.equipmentY + 310
+      y: this.equipmentY + 310,
+      type: "boots"
     };
     this.equipmentSlots.push(bootsSlot);
 
     // Gloves
-    let gloveSlot = {
+    let glovesSlot = {
       x: this.inventoryX + 227,
-      y: this.equipmentY + 155
+      y: this.equipmentY + 155,
+      type: "gloves"
     };
-    this.equipmentSlots.push(gloveSlot);
+    this.equipmentSlots.push(glovesSlot);
 
-    // Shoulders Hand
+    // Shoulders
     let shouldersSlot = {
       x: this.inventoryX + 132,
-      y: this.equipmentY + 105
+      y: this.equipmentY + 105,
+      type: "shoulders"
     };
     this.equipmentSlots.push(shouldersSlot);
 
     // Left Hand
     let leftHandSlot = {
       x: this.inventoryX + 110,
-      y: this.equipmentY + 200
+      y: this.equipmentY + 200,
+      type: "leftHand"
     };
     this.equipmentSlots.push(leftHandSlot);
 
     // Right Hand
     let rightHandSlot = {
       x: this.inventoryX + 230,
-      y: this.equipmentY + 200
+      y: this.equipmentY + 200,
+      type: "rightHand"
     };
     this.equipmentSlots.push(rightHandSlot);
   }
@@ -361,6 +369,36 @@ class Hud {
       this.inventoryY += this.equipmentHeight;
     } else {
       this.inventoryY -= this.equipmentHeight;
+    }
+  }
+
+  isMouseOverEquipment(mouseX, mouseY) {
+    if(this.equipmentEnabled) {
+      if(mouseX > (this.equipmentX) &&
+        mouseX < (this.equipmentX + this.equipmentWidth) &&
+        mouseY > (this.equipmentY) &&
+        mouseY < (this.equipmentY + this.equipmentHeight)) {
+        console.log("mouse is over equipment")
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  getEquipmentSlot(mouseX, mouseY){
+    if(this.isMouseOverEquipment(mouseX,mouseY)){
+      for(let i = 0; i < this.equipmentSlots.length; i++){
+        if(isCoordInSquare(mouseX, mouseY, this.equipmentSlots[i].x - TILESIZE/4, this.equipmentSlots[i].y - TILESIZE/4, TILESIZE/2, TILESIZE/2)){
+          return this.equipmentSlots[i].type;
+        }
+      }
+      return undefined;
+    }
+    else {
+      return undefined;
     }
   }
 

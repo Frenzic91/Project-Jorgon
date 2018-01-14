@@ -10,25 +10,6 @@ class Node {
   }
 }
 
-function shuffle(array) {
-  var currentIndex = array.length, temporaryValue, randomIndex;
-
-  // While there remain elements to shuffle...
-  while (0 !== currentIndex) {
-
-    // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
-
-    // And swap it with the current element.
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
-  }
-
-  return array;
-}
-
 function calcEuclideanDistance(startCoord, endCoord) {
   return Math.sqrt(Math.pow((endCoord.x - startCoord.x), 2) + Math.pow((endCoord.y - startCoord.y), 2));
 }
@@ -96,6 +77,7 @@ function findPath(startCoord, endCoord) {
   let currentNode = new Node(startCoord.x, startCoord.y);
   currentNode.f = 0;
   currentNode.g = currentNode.f + calcEuclideanDistance(startCoord, endCoord);
+  //currentNode.g = currentNode.f + calcManhattanDistance(startCoord, endCoord);
 
   let openSet = [];
   let closedSet = [];
@@ -115,7 +97,6 @@ function findPath(startCoord, endCoord) {
 
     // reached the end
     if (currentNode.x == endCoord.x && currentNode.y == endCoord.y) {
-      console.log(timeElapsed);
       return reconstructPath(currentNode);
     }
 
@@ -125,7 +106,7 @@ function findPath(startCoord, endCoord) {
       closedSet.push(openSet.splice(index, 1)[0]);
     }
 
-    let neighbours = shuffle(getNeighbourNodes(currentNode));
+    let neighbours = getNeighbourNodes(currentNode);
 
     for (n in neighbours) {
       let currentNeighbour = neighbours[n];
@@ -146,7 +127,7 @@ function findPath(startCoord, endCoord) {
     }
 
     timeElapsed += Date.now() - start
-    if (timeElapsed > 500) { // taking too long to find path, likely doesnt exist
+    if (timeElapsed > 5000) { // taking too long to find path, likely doesnt exist
       console.log("Sorry, not possible.");
       return null;
     }

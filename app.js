@@ -172,7 +172,7 @@ io.sockets.on('connection', function(socket){
 
   // also move to Player class
   socket.on('dragToTile', function(data) {
-    var player = playerList[data.clickingPlayer];
+    var player = playerList[socket.id];
     var mouseDownTile = tileMap[100 * data.fromTile.y + data.fromTile.x];
     var mouseUpTile = tileMap[100 * data.toTile.y + data.toTile.x];
     var fromInventorySlot = data.fromInventorySlot;
@@ -222,10 +222,14 @@ io.sockets.on('connection', function(socket){
   });
 
   socket.on('dragToInventory', function(data) {
-    var player = playerList[data.clickingPlayer];
+    var player = playerList[socket.id];
     var mouseDownTile = tileMap[100 * data.fromTile.y + data.fromTile.x];
     var fromInventorySlot = data.fromInventorySlot;
     var toInventorySlot = data.toInventorySlot;
+    var toEquipmentSlot = data.toEquipmentSlot;
+    var fromEquipmentSlot = data.fromEquipmentSlot;
+
+    console.log("fromInventorySlot:", fromInventorySlot, ", toInventorySlot:", toInventorySlot, "toEquipmentSlot:", toEquipmentSlot, "fromEquipmentSlot:", fromEquipmentSlot);
 
     // If player is not logged in, do nothing.
     if(!player){
@@ -234,16 +238,35 @@ io.sockets.on('connection', function(socket){
 
     // check that tiles are valid
     // ...
-    if(player.inventory.items[fromInventorySlot]){
+    if(player.inventory.items[fromInventorySlot]) { // If dragging from inventory
       console.log("moving inventory item");
-      let temp = player.inventory.items[toInventorySlot];
-      player.inventory.items[toInventorySlot] = player.inventory.items[fromInventorySlot];
+      let temp;
+      if(toInventorySlot){
+        temp = player.inventory.items[toInventorySlot];
+        player.inventory.items[toInventorySlot] = player.inventory.items[fromInventorySlot];
+      } else if(toEquipmentSlot){
+        console.log("equiping item");
+        temp = player.equipment[toEquipmentSlot];
+        player.equipment[toEquipmentSlot] = player.inventory.items[fromInventorySlot];
+        console.log(toEquipmentSlot, player.equipment);
+      }
+
       player.inventory.items[fromInventorySlot] = temp || undefined;
+    } else if(player.equipment[fromEquipmentSlot]) { // If dragging from equipment
+        console.log("moving equipment item");
+        let temp = player.inventory.items[toInventorySlot];
+        player.inventory.items[toInventorySlot] = player.equipment[fromEquipmentSlot];
+        player.equipment[fromEquipmentSlot] = temp || undefined;
     } else if((Math.abs(player.x - data.fromTile.x) <= 1 && Math.abs(player.y - data.fromTile.y) <= 1)){
       if (mouseDownTile.itemStack.length > 0){
-        temp = player.inventory.items[toInventorySlot];
-
-        player.inventory.items[toInventorySlot] = mouseDownTile.itemStack.pop();
+        let temp;
+        if(toInventorySlot){
+          temp = player.inventory.items[toInventorySlot];
+          player.inventory.items[toInventorySlot] = mouseDownTile.itemStack.pop();
+        } else if(toEquipmentSlot){
+          temp = player.equipment[toEquipmentSlot];
+          player.equipment[toEquipmentSlot] = mouseDownTile.itemStack.pop();
+        }
 
         if(temp){
           mouseDownTile.itemStack.push(temp);
@@ -268,7 +291,11 @@ io.sockets.on('connection', function(socket){
       slotOne: fromInventorySlot,
       slotTwo: toInventorySlot,
       itemOne: player.inventory.items[fromInventorySlot],
-      itemTwo: player.inventory.items[toInventorySlot]
+      itemTwo: player.inventory.items[toInventorySlot],
+      fromEquipmentSlot: fromEquipmentSlot,
+      toEquipmentSlot: toEquipmentSlot,
+      equipmentFrom: player.equipment[fromEquipmentSlot],
+      equipmentTo: player.equipment[toEquipmentSlot]
     });
   });
 

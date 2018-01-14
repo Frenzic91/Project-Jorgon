@@ -46,3 +46,12 @@ function rotateAndCache(image,angle) {
 function getIndexFromCoords(x,y){
   return y * map.width + x;
 }
+
+function isCoordInSquare(mX, mY, x, y, dx, dy){
+  if( mX >= x && mX <= (x + dx)
+      && mY >= y && mY <= (y + dy) ) {
+    return true;
+  } else {
+    return false;
+  }
+}

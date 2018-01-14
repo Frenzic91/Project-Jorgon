@@ -34,6 +34,8 @@ var playerY = 0;
 var playerXPixels = 0;
 var playerYPixels = 0;
 var playerID = 0;
+var inventory;
+var equipment;
 
 let xTrans = 0;
 let yTrans = 0;
@@ -43,6 +45,7 @@ var mouseY = 0;
 var mouseClicked = false;
 var mouseDownTileInfo = {x: -1, y: -1};
 var mouseDownInventorySlot = undefined;
+var mouseDownEquipmentSlot = undefined;
 
 var pressingUp = false;
 var pressingDown = false;
@@ -88,6 +91,7 @@ socket.on('initPlayer',function(data){
   playerY = data.y;
   playerID = data.id;
   inventory = data.inventory;
+  equipment = data.equipment || {};
   drawTestMap();
   hud = new Hud(ctxHUD);
   map = new Map(ctxGround,worldJSON);
@@ -206,6 +210,12 @@ socket.on('inventoryUpdate', function(data) {
   if(data.slotTwo !== undefined){
     inventory.items[data.slotTwo] = data.itemTwo;
   }
+  if(data.fromEquipmentSlot !== undefined){
+    equipment[data.fromEquipmentSlot] = data.equipmentFrom;
+  }
+  if(data.toEquipmentSlot !== undefined){
+    equipment[data.toEquipmentSlot] = data.equipmentTo;
+  }
 });
 
 socket.on('recalculatePath', function(data) {
@@ -315,6 +325,8 @@ document.onmousedown = function(event){
         mouseDownTileInfo['x'] = targetTileX;
         mouseDownTileInfo['y'] = targetTileY;
         mouseDownInventorySlot = hud.getInventorySlot(mouseX,mouseY);
+        mouseDownEquipmentSlot = hud.getEquipmentSlot(mouseX,mouseY);
+        console.log(mouseDownEquipmentSlot);
       }
     }
     //socket.emit('keyPress', {inputId:'attack', state:true});
@@ -345,7 +357,7 @@ document.onmouseup = function(event){
   if (loggedIn) {
     //socket.emit('playerMouseUp', {clickingPlayer: playerID, tileX: targetTileX, tileY: targetTileY});
     // If player dragged an item over the inventory
-    if(hud.inventoryEnabled && hud.isMouseOverInventory(mouseX, mouseY)){
+    if(hud.isMouseOverInventory(mouseX, mouseY) || hud.isMouseOverEquipment(mouseX, mouseY)){
       console.log(mouseDownInventorySlot, hud.getInventorySlot(mouseX,mouseY));
       socket.emit('dragToInventory', {
         clickingPlayer: playerID,
@@ -354,7 +366,9 @@ document.onmouseup = function(event){
           y: mouseDownTileInfo.y
         },
         fromInventorySlot: mouseDownInventorySlot,
-        toInventorySlot: hud.getInventorySlot(mouseX,mouseY)
+        toInventorySlot: hud.getInventorySlot(mouseX,mouseY),
+        fromEquipmentSlot: mouseDownEquipmentSlot,
+        toEquipmentSlot: hud.getEquipmentSlot(mouseX,mouseY)
       });
     } else { //If player dragged something to a tile (player or item)
       if (mouseDownTileInfo.x == targetTileX && mouseDownTileInfo.y == targetTileY) {
