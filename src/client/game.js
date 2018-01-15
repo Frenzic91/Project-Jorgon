@@ -111,14 +111,14 @@ socket.on('init', function(data){
 
   // 'init' event is also being sent every server frame so check is needed until conflicting names changed
   if (data.tileData) {
-    let tileDataRaw = JSON.parse(data.tileData);
+    let tileDataRaw = data.tileData;
     for (let t in tileDataRaw) {
       tileData.push(new Tile(tileDataRaw[t].x, tileDataRaw[t].y, tileDataRaw[t].occupyingPlayer, tileDataRaw[t].collision, tileDataRaw[t].itemStack));
     }
   }
 
   if (data.creatures) {
-    let creatureDataRaw = JSON.parse(data.creatures);
+    let creatureDataRaw = data.creatures;
     for(let i = 0; i < creatureDataRaw.length; i++){
       creatureList.push(creatureDataRaw[i]);
     }

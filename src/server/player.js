@@ -418,8 +418,8 @@ class Player extends Entity {
 
     socket.emit('init', {
       players: players,
-      creatures: JSON.stringify(creatureList),
-      tileData: JSON.stringify(tileMap)
+      creatures: creatureList,
+      tileData: tileMap
     });
   }
 
