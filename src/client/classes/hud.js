@@ -485,6 +485,10 @@ class Hud {
     this.canvas.textAlign = "start";
     this.canvas.fillText("EQUIPMENT", this.inventoryX + 10, this.equipmentY + 10 + 8);
 
+    this.canvas.font = "14px Calibri";
+    this.canvas.fillText("ATK: "+atk, this.inventoryX + 15, this.equipmentY + 50);
+    this.canvas.fillText("DEF: "+def, this.inventoryX + 15, this.equipmentY + 70);
+
     // Equipment slots
     this.canvas.beginPath();
     this.canvas.lineWidth = 1;

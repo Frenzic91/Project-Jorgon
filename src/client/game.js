@@ -37,6 +37,9 @@ var playerID = 0;
 var inventory;
 var equipment;
 
+var atk;
+var def;
+
 let xTrans = 0;
 let yTrans = 0;
 
@@ -97,6 +100,7 @@ socket.on('initPlayer',function(data){
   map = new Map(ctxGround,worldJSON);
   entities = new Entities(ctxEntities,worldJSON);
   entities.initializeAllEntities();
+  Player.updateEquipment();
   loggedIn = true;
 });
 
@@ -216,6 +220,7 @@ socket.on('inventoryUpdate', function(data) {
   if(data.toEquipmentSlot !== undefined){
     equipment[data.toEquipmentSlot] = data.equipmentTo;
   }
+  Player.updateEquipment();
 });
 
 socket.on('recalculatePath', function(data) {

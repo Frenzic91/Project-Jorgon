@@ -157,41 +157,6 @@ class Player {
     }
   }
 
-  // drawPlayer(isMoving, width, height) {
-  //   let index;
-  //   if(isMoving){
-  //     index = undefined;
-  //   } else {
-  //     index = 1;
-  //   }
-  //
-  //   // if(this.runState === 0){
-  //   //   ctxEntities.drawImage(playerImg.player.playerFull, index*57 || 57*0, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
-  //   //
-  //   //   if(Date.now() - this.stateTime >= ANIMATIONTIME){
-  //   //     this.runState = 1;
-  //   //     this.stateTime = Date.now();
-  //   //   }
-  //   //
-  //   // } else if(this.runState === 1) {
-  //   //   ctxEntities.drawImage(playerImg.player.playerFull, index*57 || 57*1, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
-  //   //
-  //   //   if(Date.now() - this.stateTime >= ANIMATIONTIME/2){
-  //   //     this.runState = 2;
-  //   //     this.stateTime = Date.now();
-  //   //   }
-  //   //
-  //   // } else if(this.runState === 2) {
-  //   //   ctxEntities.drawImage(playerImg.player.playerFull, index*57 || 57*2, 57*this.direction, 57, 57, this.xOld-width/2, this.yOld-height/2, 57, 57);
-  //   //
-  //   //   if(Date.now() - this.stateTime >= ANIMATIONTIME){w
-  //   //     this.runState = 0;
-  //   //     this.stateTime = Date.now();
-  //   //   }
-  //   // }
-  //
-  // }
-
   drawPlayer() {
     if(this.isMoving() || (Date.now() - this.stopTime) < 100){ // Performance improvement here (calls Date.now every time)
       this.animation.update();
@@ -211,5 +176,17 @@ class Player {
     }
   }
 
+  static updateEquipment(){
+    let updatedAtk = 0;
+    let updatedDef = 0;
+    for(let key in equipment){
+      if(equipment[key]){
+        updatedAtk += (equipment[key].atk ? equipment[key].atk : 0);
+        updatedDef += (equipment[key].def ? equipment[key].def : 0);
+      }
+    }
+    atk = updatedAtk;
+    def = updatedDef;
+  }
 
 }

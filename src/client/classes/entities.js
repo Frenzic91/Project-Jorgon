@@ -52,7 +52,7 @@ class Entities {
     let startX = playerX - Math.ceil((WIDTH/TILESIZE)/2);
     let startY = playerY - Math.ceil((HEIGHT/TILESIZE)/2);
     let EndX = startX + WIDTH/TILESIZE;
-    let EndY = startY + HEIGHT/TILESIZE;
+    let EndY = startY + HEIGHT/TILESIZE + 1; // + 1 to prevent items disappearing when heading up off screen
 
     for(let i = getIndexFromCoords(startX,startY); i <= getIndexFromCoords(EndX,EndY); i++){
       if(tileData[i].itemStack.length > 0){

@@ -254,7 +254,10 @@ io.sockets.on('connection', function(socket){
       } else if(toEquipmentSlot){
         console.log("equiping item");
         temp = player.equipment[toEquipmentSlot];
-        player.equipment[toEquipmentSlot] = player.inventory.items[fromInventorySlot];
+        if(!player.equipItem(player.inventory.items[fromInventorySlot],toEquipmentSlot)){
+          return;
+        }
+        //player.equipment[toEquipmentSlot] = player.inventory.items[fromInventorySlot];
         console.log(toEquipmentSlot, player.equipment);
       }
 
@@ -262,8 +265,15 @@ io.sockets.on('connection', function(socket){
     } else if(player.equipment[fromEquipmentSlot] && toInventorySlot) { // If dragging from equipment
         console.log("moving equipment item");
         let temp = player.inventory.items[toInventorySlot];
+        if(temp){
+          if(!player.equipItem(temp,fromEquipmentSlot)){
+            return;
+          }
+        }
+
         player.inventory.items[toInventorySlot] = player.equipment[fromEquipmentSlot];
-        player.equipment[fromEquipmentSlot] = temp || undefined;
+        player.unequipItem(fromEquipmentSlot);
+        //player.equipment[fromEquipmentSlot] = temp || undefined;
     } else if((Math.abs(player.x - data.fromTile.x) <= 1 && Math.abs(player.y - data.fromTile.y) <= 1)){
       if (mouseDownTile.itemStack.length > 0){
         let temp;

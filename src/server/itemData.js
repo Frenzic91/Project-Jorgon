@@ -3,7 +3,7 @@
 
 var itemData = {
   16: {
-    "type": 1,
+    "type": "weapon",
     "subtype": 1,
     "name": "Battle Axe",
     "atk": 45,
@@ -14,9 +14,9 @@ var itemData = {
     "description": "A weapon once used by the Vikings. Heavy, but deadly."
   },
   17: {
-    "type": 2,
+    "type": "chest",
     "subtype": 1,
-    "name": "Armor",
+    "name": "Chest Armor",
     "atk": 12,
     "def": 20,
     "levelReq": 1,

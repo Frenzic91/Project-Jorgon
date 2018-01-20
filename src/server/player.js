@@ -281,6 +281,22 @@ class Player extends Entity {
     this.pendingMoveY = 0;
   }
 
+  equipItem(item,slot){
+    if(item && slot){
+      if(item.type == slot){
+        this.equipment[slot] = item;
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
+  }
+
+  unequipItem(slot){
+    this.equipment[slot] = undefined;
+  }
+
   // Sends the starting data to the client for this player
   getInitPack(){
     return {
