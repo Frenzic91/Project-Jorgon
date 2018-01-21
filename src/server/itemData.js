@@ -18,7 +18,7 @@ var itemData = {
     "subtype": 1,
     "name": "Chest Armor",
     "atk": 12,
-    "def": 20,
+    "def": 100,
     "levelReq": 1,
     "description": "An armor fit for a king. Many have spoken about it, but very few have seen it's shine."
   },

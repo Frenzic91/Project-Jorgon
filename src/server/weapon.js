@@ -5,6 +5,7 @@ class Weapon extends Item {
   constructor(itemID) {
     super(itemID);
     this.atk = itemData[itemID].atk;
+    this.def = itemData[itemID].def;
     this.range = itemData[itemID].range;
     this.attackDelay = itemData[itemID].attackDelay;
     this.levelReq = itemData[itemID].levelReq;

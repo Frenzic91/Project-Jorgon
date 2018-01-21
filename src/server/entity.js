@@ -4,9 +4,11 @@ let Game = require('./game.js');
 let gameInstance = new Game();
 
 class Entity {
-  constructor(SpawnX = CT.DEFAULTSPAWNX, SpawnY = CT.DEFAULTSPAWNY) {
+  constructor(SpawnX = CT.DEFAULTSPAWNX, SpawnY = CT.DEFAULTSPAWNY, atk, def) {
     this.x = SpawnX;
     this.y = SpawnY;
+    this.atk = atk || 0;
+    this.def = def || 0;
     this.spdX = 0;
     this.spdY = 0;
     this.id = "";

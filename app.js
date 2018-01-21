@@ -192,7 +192,7 @@ io.sockets.on('connection', function(socket){
         player.inventory.items[fromInventorySlot] = undefined;
       } else if(player.equipment[fromEquipmentSlot]){
         mouseUpTile.pushItem(player.equipment[fromEquipmentSlot]);
-        player.equipment[fromEquipmentSlot] = undefined;
+        player.unequipItem(fromEquipmentSlot);
       }
 
       socket.emit('inventoryUpdate',{
@@ -282,7 +282,11 @@ io.sockets.on('connection', function(socket){
           player.inventory.items[toInventorySlot] = mouseDownTile.itemStack.pop();
         } else if(toEquipmentSlot){
           temp = player.equipment[toEquipmentSlot];
-          player.equipment[toEquipmentSlot] = mouseDownTile.itemStack.pop();
+          tempTile = mouseDownTile.itemStack.pop()
+          if(!player.equipItem(tempTile,toEquipmentSlot)){
+            mouseDownTile.itemStack.push(tempTile);
+            return;
+          }
         }
 
         if(temp){

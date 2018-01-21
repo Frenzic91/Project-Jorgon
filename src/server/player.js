@@ -42,6 +42,7 @@ class Player extends Entity {
     };
 
     this.equipment = {"weapon": new Weapon(16)};
+    this.updateEquipment();
   }
 
   getHp() {
@@ -92,26 +93,43 @@ class Player extends Entity {
 
   isTargetInRange() {
     if (this.target) {
-      return (Math.abs(Math.round(this.x) - Math.round(this.target.x)) <= this.equipment.weapon.range) &&
-              (Math.abs(Math.round(this.y) - Math.round(this.target.y)) <= this.equipment.weapon.range)
+      let range;
+      if(this.equipment.weapon){
+        range = this.equipment.weapon.range;
+      } else {
+        range = 1;
+      }
+      return (Math.abs(Math.round(this.x) - Math.round(this.target.x)) <= range) &&
+              (Math.abs(Math.round(this.y) - Math.round(this.target.y)) <= range)
     }
     return false;
   }
 
   attack() {
     // only melee attacks for now
-    if (this.isTargetInRange() && (Date.now() - this.lastAttacked > this.equipment.weapon.attackDelay)) {
+    let attackDelay;
+    if(this.equipment.weapon){
+      attackDelay = this.equipment.weapon.attackDelay;
+    } else {
+      attackDelay = 500; // Attack delay with no weapon (fists)
+    }
+    if (this.isTargetInRange() && (Date.now() - this.lastAttacked > attackDelay)) {
       // set lastAttacked back to curret time
       this.lastAttacked = Date.now();
 
-      if(this.target.takeDamage(Utils.randNumBetween(5, this.equipment.weapon.atk))){
+      if(this.target.takeDamage(Utils.randNumBetween(5, this.atk))){
         this.target = undefined;
       }
     }
   }
 
   takeDamage(amount){
-    this.hp -= amount;
+    let damageTaken = Math.floor(amount * ((100 - this.def)/100))
+    if (damageTaken < 0){
+      damageTaken = 0;
+    }
+    console.log(this.def, amount, " damage sent. ", damageTaken, "damage taken.");
+    this.hp -= damageTaken;
     if(this.hp > 0){
       return false;
     } else {
@@ -285,6 +303,7 @@ class Player extends Entity {
     if(item && slot){
       if(item.type == slot){
         this.equipment[slot] = item;
+        this.updateEquipment();
         return true;
       } else {
         return false;
@@ -295,6 +314,22 @@ class Player extends Entity {
 
   unequipItem(slot){
     this.equipment[slot] = undefined;
+    this.updateEquipment();
+  }
+
+  updateEquipment(){
+    console.log(this.equipment);
+    let updatedAtk = 0;
+    let updatedDef = 0;
+    for(let key in this.equipment){
+      let equipmentPiece = this.equipment[key];
+      if(equipmentPiece){
+        updatedAtk += (equipmentPiece.atk ? equipmentPiece.atk : 0);
+        updatedDef += (equipmentPiece.def ? equipmentPiece.def : 0);
+      }
+    }
+    this.atk = updatedAtk;
+    this.def = updatedDef;
   }
 
   // Sends the starting data to the client for this player
@@ -311,7 +346,8 @@ class Player extends Entity {
       mouseAngle: this.mouseAngle,
       moveDelay: this.moveDelay,
       moveAmount: this.moveAmount,
-      inventory: this.inventory
+      inventory: this.inventory,
+      equipment: this.equipment
     }
   }
 

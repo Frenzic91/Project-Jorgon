@@ -417,21 +417,21 @@ class Hud {
     };
     this.equipmentSlots.push(shouldersSlot);
 
-    // Left Hand
-    let leftHandSlot = {
+    // Weapon - Left Hand
+    let weapon = {
       x: this.inventoryX + 110,
       y: this.equipmentY + 200,
-      type: "leftHand"
+      type: "weapon"
     };
-    this.equipmentSlots.push(leftHandSlot);
+    this.equipmentSlots.push(weapon);
 
-    // Right Hand
-    let rightHandSlot = {
+    // offHand - Right Hand
+    let offHand = {
       x: this.inventoryX + 230,
       y: this.equipmentY + 200,
-      type: "rightHand"
+      type: "offHand"
     };
-    this.equipmentSlots.push(rightHandSlot);
+    this.equipmentSlots.push(offHand);
   }
 
   toggleEquipment(){
