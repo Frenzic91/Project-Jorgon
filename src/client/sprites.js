@@ -93,6 +93,11 @@ var itemSprites = [
     type: "item",
     name: "18",
     src: "client/images/rune.png"
+  },
+  {
+    type: "item",
+    name: "19",
+    src: "client/images/knightHelmet.png"
   }
 ];
 

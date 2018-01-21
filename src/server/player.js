@@ -41,7 +41,10 @@ class Player extends Entity {
                 new Item(18), new Item(18), new Item(18), new Item(18), new Item(18), new Item(18), new Item(18)]
     };
 
-    this.equipment = {"weapon": new Weapon(16)};
+    this.equipment = {
+      "weapon": new Weapon(16),
+      "helmet": new Item(19)
+    };
     this.updateEquipment();
   }
 
